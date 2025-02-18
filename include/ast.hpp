@@ -14,7 +14,7 @@ class Node
 public:
     virtual std::string toString() const = 0;
     virtual ~Node() = default;
-    virtual std::shared_ptr<EvalObject> evaluate() { return nullptr; }
+    virtual std::shared_ptr<EvalObject> evaluate() = 0;
 };
 
 class Statement : public Node
@@ -76,6 +76,7 @@ public:
     explicit Identifier(const std::string &value);
     const std::string &value() const { return value_; }
     std::string toString() const override;
+    std::shared_ptr<EvalObject> evaluate() override;
 
 private:
     std::string value_;

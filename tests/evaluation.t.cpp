@@ -160,6 +160,13 @@ TEST_CASE("Test_EvalReturnStatements")
         {"return 10; 9;", 10},
         {"return 2 * 5; 9;", 10},
         {"9; return 2 * 5; 9;", 10},
+        {"if (10 > 1) {\
+            if (10 > 1) {\
+                return 10;\
+            }\
+         return 1;\
+        } ",
+         10},
     };
 
     for (const auto &tt : tests)
