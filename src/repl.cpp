@@ -47,7 +47,10 @@ void Repl::start()
 		}
 
 		auto evaluated = Eval(program.get());
-		std::cout << inspect(*evaluated);
-		std::cout << "\n";
+		if (evaluated)
+		{
+			std::cout << inspect(*evaluated);
+			std::cout << "\n";
+		}
 	}
 }
