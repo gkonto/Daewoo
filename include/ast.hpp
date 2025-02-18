@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <cassert>
 
 #include "object.hpp"
 
@@ -64,6 +65,7 @@ public:
     const std::string &name() const;
     std::string toString() const override;
     const Expression *value() const { return value_.get(); }
+    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
 
 private:
     std::unique_ptr<Identifier> name_ = nullptr;
@@ -76,7 +78,7 @@ public:
     explicit Identifier(const std::string &value);
     const std::string &value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
 
 private:
     std::string value_;
@@ -189,6 +191,7 @@ public:
     const Identifier *param(size_t i) const { return parameters_.at(i).get(); }
     size_t size() const { return body_->size(); }
     const BlockStatement *body() const { return body_.get(); }
+    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
 
 private:
     std::unique_ptr<BlockStatement> body_;
@@ -203,6 +206,7 @@ public:
     const Expression *function() const { return function_.get(); }
     size_t argsSize() const { return arguments_.size(); }
     const Expression *argument(size_t i) const { return arguments_.at(i).get(); }
+    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
 
 private:
     std::unique_ptr<Expression> function_;

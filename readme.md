@@ -109,5 +109,8 @@ TODO
 
 ## NOTES TODOLIST
 
+Current chapter: 3.9 BINDINGS & THE ENVIRONMENT
+
 1. Repl> Hold history, with arrow "up"
 2. Repl> typing a wrong string like "lala" causes segmentation fault.
+3. Segmentation Fault in expression> "if (10 > 1) @{ if (10 > 1) { return true + false;} return 1; }"

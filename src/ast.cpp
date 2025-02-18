@@ -435,10 +435,6 @@ std::shared_ptr<EvalObject> IntegerLiteral::evaluate()
 	return o;
 }
 
-std::shared_ptr<EvalObject> Identifier::evaluate()
-{
-}
-
 std::shared_ptr<EvalObject> Program::evaluate()
 {
 	std::shared_ptr<EvalObject> result = nullptr;
