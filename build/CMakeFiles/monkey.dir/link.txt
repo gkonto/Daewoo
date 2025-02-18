@@ -1,0 +1,1 @@
+/usr/bin/g++ -g CMakeFiles/monkey.dir/main.cpp.o CMakeFiles/monkey.dir/src/token.cpp.o CMakeFiles/monkey.dir/src/lexer.cpp.o CMakeFiles/monkey.dir/src/repl.cpp.o CMakeFiles/monkey.dir/src/ast.cpp.o CMakeFiles/monkey.dir/src/parser.cpp.o CMakeFiles/monkey.dir/src/object.cpp.o CMakeFiles/monkey.dir/src/evaluator.cpp.o CMakeFiles/monkey.dir/src/globals.cpp.o -o monkey 
