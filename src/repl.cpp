@@ -5,6 +5,7 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "evaluator.hpp"
+#include "environment.hpp"
 
 static std::string formatToken(const Token &t, const Lexer &l)
 {
@@ -28,6 +29,7 @@ static void printParserErrors(std::ostream &out, const Parser::Errors &errors)
 void Repl::start()
 {
 	std::string input;
+	auto env = std::make_unique<Environment>();
 
 	while (true)
 	{
@@ -46,7 +48,7 @@ void Repl::start()
 			continue;
 		}
 
-		auto evaluated = Eval(program.get());
+		auto evaluated = Eval(program.get(), env.get());
 		if (evaluated)
 		{
 			std::cout << inspect(*evaluated);

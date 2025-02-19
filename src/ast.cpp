@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "globals.hpp"
+#include "environment.hpp"
 
 namespace
 {
@@ -427,7 +428,7 @@ static std::shared_ptr<EvalObject> evalInfixExpression(const std::string &op, st
 	}
 }
 
-std::shared_ptr<EvalObject> IntegerLiteral::evaluate()
+std::shared_ptr<EvalObject> IntegerLiteral::evaluate(Environment *env)
 {
 	auto o = std::make_unique<EvalObject>();
 	o->type = ObjType::Integer;
@@ -435,12 +436,12 @@ std::shared_ptr<EvalObject> IntegerLiteral::evaluate()
 	return o;
 }
 
-std::shared_ptr<EvalObject> Program::evaluate()
+std::shared_ptr<EvalObject> Program::evaluate(Environment *env)
 {
 	std::shared_ptr<EvalObject> result = nullptr;
 	for (const auto &stmt : statements_)
 	{
-		result = stmt->evaluate();
+		result = stmt->evaluate(env);
 		if (result->type == ObjType::Return)
 		{
 			return result->getObject();
@@ -453,35 +454,35 @@ std::shared_ptr<EvalObject> Program::evaluate()
 	return result;
 }
 
-std::shared_ptr<EvalObject> ExpressionStatement::evaluate()
+std::shared_ptr<EvalObject> ExpressionStatement::evaluate(Environment *env)
 {
-	return expression_->evaluate();
+	return expression_->evaluate(env);
 }
 
-std::shared_ptr<EvalObject> Boolean::evaluate()
+std::shared_ptr<EvalObject> Boolean::evaluate(Environment *env)
 {
 	return nativeBoolToBooleanObject(value_);
 }
 
-std::shared_ptr<EvalObject> PrefixExpression::evaluate()
+std::shared_ptr<EvalObject> PrefixExpression::evaluate(Environment *env)
 {
-	auto right = right_->evaluate();
+	auto right = right_->evaluate(env);
 	return evalPrefixExpression(operator_, right);
 }
 
-std::shared_ptr<EvalObject> InfixExpression::evaluate()
+std::shared_ptr<EvalObject> InfixExpression::evaluate(Environment *env)
 {
-	auto left = lhs_->evaluate();
-	auto right = rhs_->evaluate();
+	auto left = lhs_->evaluate(env);
+	auto right = rhs_->evaluate(env);
 	return evalInfixExpression(operator_, left, right);
 }
 
-std::shared_ptr<EvalObject> BlockStatement::evaluate()
+std::shared_ptr<EvalObject> BlockStatement::evaluate(Environment *env)
 {
 	std::shared_ptr<EvalObject> result = nullptr;
 	for (const auto &stmt : statements_)
 	{
-		result = stmt->evaluate();
+		result = stmt->evaluate(env);
 		if (result)
 		{
 			if (result->type == ObjType::Return || result->type == ObjType::Error)
@@ -491,6 +492,16 @@ std::shared_ptr<EvalObject> BlockStatement::evaluate()
 		}
 	}
 	return result;
+}
+
+std::shared_ptr<EvalObject> LetStatement::evaluate(Environment *env)
+{
+	auto val = value_->evaluate(env);
+	if (val->type == ObjType::Error)
+	{
+		return val;
+	}
+	env->set(name_->value(), val);
 }
 
 static bool isTruthy(const EvalObject *o)
@@ -514,17 +525,17 @@ static bool isTruthy(const EvalObject *o)
 	}
 }
 
-std::shared_ptr<EvalObject> IfExpression::evaluate()
+std::shared_ptr<EvalObject> IfExpression::evaluate(Environment *env)
 {
 	// evalIfExpression
-	auto condition = condition_->evaluate();
+	auto condition = condition_->evaluate(env);
 	if (isTruthy(condition.get()))
 	{
-		return consequence_->evaluate();
+		return consequence_->evaluate(env);
 	}
 	else if (alternative_)
 	{
-		return alternative_->evaluate();
+		return alternative_->evaluate(env);
 	}
 	else
 	{
@@ -532,11 +543,31 @@ std::shared_ptr<EvalObject> IfExpression::evaluate()
 	}
 }
 
-std::shared_ptr<EvalObject> ReturnStatement::evaluate()
+std::shared_ptr<EvalObject> ReturnStatement::evaluate(Environment *env)
 {
-	auto val = return_value_->evaluate();
+	auto val = return_value_->evaluate(env);
 	auto ret = std::make_unique<EvalObject>();
 	ret->type = ObjType::Return;
 	ret->value = val;
 	return ret;
+}
+
+static std::shared_ptr<EvalObject> evalIdentifier(Identifier &node, const Environment *env)
+{
+	auto val = env->get(node.value());
+	if (!val)
+	{
+		Error error;
+		error << "identifier not found: " << node.value();
+		auto e = std::make_unique<EvalObject>();
+		e->type = ObjType::Error;
+		e->value = error.msg();
+		return e;
+	}
+	return val;
+}
+
+std::shared_ptr<EvalObject> Identifier::evaluate(Environment *env)
+{
+	return evalIdentifier(*this, env);
 }

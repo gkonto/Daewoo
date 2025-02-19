@@ -21,6 +21,7 @@ struct EvalObject
     bool getBool() const { return std::get<bool>(value); }
     Enclosed getObject() const { return std::get<Enclosed>(value); }
     std::string getString() const { return std::get<std::string>(value); }
+
     ObjType type = ObjType::Null;
     std::variant<int, bool, Enclosed, std::string> value;
 };

@@ -57,6 +57,7 @@ set(MONKEY_SRC_FILES
     src/object.cpp
     src/evaluator.cpp
     src/globals.cpp
+    src/environment.cpp
 )
 
 set(MONKEY_HEADER_FILES
@@ -68,6 +69,7 @@ set(MONKEY_HEADER_FILES
     include/object.hpp
     include/evaluator.hpp
     include/globals.hpp
+    include/environment.hpp
 )
 
 add_executable(monkey main.cpp ${MONKEY_SRC_FILES} ${MONKEY_HEADER_FILES})

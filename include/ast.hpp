@@ -9,13 +9,14 @@
 #include "object.hpp"
 
 class Identifier;
+class Environment;
 
 class Node
 {
 public:
     virtual std::string toString() const = 0;
     virtual ~Node() = default;
-    virtual std::shared_ptr<EvalObject> evaluate() = 0;
+    virtual std::shared_ptr<EvalObject> evaluate(Environment *env) = 0;
 };
 
 class Statement : public Node
@@ -36,7 +37,7 @@ public:
     explicit ExpressionStatement(std::unique_ptr<Expression> &&exp);
     const Expression *expression() const { return expression_.get(); }
     std::string toString() const override { return expression_->toString(); }
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::unique_ptr<Expression> expression_ = nullptr;
@@ -52,7 +53,7 @@ public:
     const Statement *at(size_t i) const { return statements_[i].get(); }
     void add(std::unique_ptr<Statement> &&s);
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     Statements statements_;
@@ -65,7 +66,7 @@ public:
     const std::string &name() const;
     std::string toString() const override;
     const Expression *value() const { return value_.get(); }
-    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::unique_ptr<Identifier> name_ = nullptr;
@@ -78,7 +79,7 @@ public:
     explicit Identifier(const std::string &value);
     const std::string &value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::string value_;
@@ -91,7 +92,7 @@ class ReturnStatement : public Statement
 public:
     explicit ReturnStatement(std::unique_ptr<Expression> ret_value);
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::unique_ptr<Expression> return_value_ = nullptr;
@@ -103,7 +104,7 @@ public:
     explicit IntegerLiteral(int v);
     int value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     int value_ = 0;
@@ -116,7 +117,7 @@ public:
     const std::string &op() const { return operator_; }
     const Expression *right() const { return right_.get(); }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::string operator_;
@@ -131,7 +132,7 @@ public:
     const Expression *right() const { return rhs_.get(); }
     const std::string op() const { return operator_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::unique_ptr<Expression> lhs_;
@@ -145,7 +146,7 @@ public:
     explicit Boolean(bool value);
     bool value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     bool value_;
@@ -158,7 +159,7 @@ public:
     std::string toString() const;
     size_t size() const { return statements_.size(); }
     const Statement *at(size_t i) const { return statements_.at(i).get(); }
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::vector<std::unique_ptr<Statement>> statements_;
@@ -174,7 +175,7 @@ public:
     const Expression *condition() const { return condition_.get(); }
     const BlockStatement *consequence() const { return consequence_.get(); }
     const BlockStatement *alternative() const { return alternative_.get(); }
-    std::shared_ptr<EvalObject> evaluate() override;
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
 
 private:
     std::unique_ptr<Expression> condition_;
@@ -191,7 +192,7 @@ public:
     const Identifier *param(size_t i) const { return parameters_.at(i).get(); }
     size_t size() const { return body_->size(); }
     const BlockStatement *body() const { return body_.get(); }
-    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override { assert(true); }
 
 private:
     std::unique_ptr<BlockStatement> body_;
@@ -206,7 +207,7 @@ public:
     const Expression *function() const { return function_.get(); }
     size_t argsSize() const { return arguments_.size(); }
     const Expression *argument(size_t i) const { return arguments_.at(i).get(); }
-    std::shared_ptr<EvalObject> evaluate() override { assert(true); }
+    std::shared_ptr<EvalObject> evaluate(Environment *env) override { assert(true); }
 
 private:
     std::unique_ptr<Expression> function_;

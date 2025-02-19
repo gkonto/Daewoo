@@ -8,6 +8,7 @@
 #include "evaluator.hpp"
 #include "ast.hpp"
 #include "globals.hpp"
+#include "environment.hpp"
 
 struct IntegerExpected
 {
@@ -33,7 +34,8 @@ testEval(const std::string input)
     Lexer l(input);
     Parser p(l);
     auto program = p.parseProgram();
-    return Eval(program.get());
+    auto env = std::make_unique<Environment>();
+    return Eval(program.get(), env.get());
 }
 
 static void testIntegerObject(const EvalObject *obj, int expected)
@@ -207,11 +209,30 @@ TEST_CASE("Test_ErrorHandling")
             "if (10 > 1) { if (10 > 1) { return true + false;} return 1; }",
             "unknown operator: BOOLEAN + BOOLEAN",
         },
-    };
+        {
+            "foobar",
+            "identifier not found: foobar",
+        }};
     for (const auto &tt : tests)
     {
         auto evaluated = testEval(tt.input);
         REQUIRE(evaluated->type == ObjType::Error);
         REQUIRE(evaluated->getString() == tt.expected);
+    }
+}
+
+TEST_CASE("Test_EvalLetStatements")
+{
+    std::vector<IntegerExpected> tests = {
+        {"let a = 5;", 5},
+        {"let a = 5 * 5; a;", 25},
+        {"let a = 5; let b = a; b;", 5},
+        {"let a = 5; let b = a; let c = a + b + 5; c;", 15},
+    };
+
+    for (const auto &[input, expected] : tests)
+    {
+        auto evaluated = testEval(input);
+        testIntegerObject(evaluated.get(), expected);
     }
 }

@@ -5,7 +5,8 @@
 #include "object.hpp"
 
 class Node;
+class Environment;
 
-std::shared_ptr<EvalObject> Eval(Node *n);
+std::shared_ptr<EvalObject> Eval(Node *n, Environment *env);
 
 #endif
