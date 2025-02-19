@@ -109,14 +109,12 @@ TODO
 
 ## NOTES TODOLIST
 
-Current chapter: 3.9 BINDINGS & THE ENVIRONMENT
+Current chapter: 3.10
 
 1. Repl> Hold history, with arrow "up"
-2. Repl> typing a wrong string like "lala" causes segmentation fault.
-3. Segmentation Fault in expression> "if (10 > 1) @{ if (10 > 1) { return true + false;} return 1; }"
-4. I don't like the fact that in order to add Environment on the evaluator,
+2. I don't like the fact that in order to add Environment on the evaluator,
    i will have to modify the interface of the nodes.
    evaluate function should not exist on the on the API.
    Maybe i need an Evaluator that will evaluate each node based on the type.
-5. Should i pass raw pointers, or smart ptrs ? or references ?
-6. se arketa simeia sto evaluation kano make_unique kai telika gurnao shared_ptr.... kalos... oute RVO den exei auto...
+3. Should i pass raw pointers, or smart ptrs ? or references ?
+4. se arketa simeia sto evaluation kano make_unique kai telika gurnao shared_ptr.... kalos... oute RVO den exei auto...
