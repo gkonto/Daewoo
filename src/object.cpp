@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include "ast.hpp"
 
 static std::string inspectInteger(const EvalObject &o)
 {
@@ -27,6 +28,19 @@ static std::string inspectError(const EvalObject &o)
     return buffer;
 }
 
+static std::string inspectFunction(const EvalObject &o)
+{
+    std::string buffer;
+    buffer += "fn";
+    buffer += "(";
+    buffer += "";
+    buffer += ") {\n";
+
+    buffer += o.getFunction().body()->toString();
+    buffer += "\n}";
+    return buffer;
+}
+
 std::string inspect(const EvalObject &o)
 {
     switch (o.type)
@@ -41,6 +55,8 @@ std::string inspect(const EvalObject &o)
         return inspectReturn(o);
     case ObjType::Error:
         return inspectError(o);
+    case ObjType::Function:
+        return inspectFunction(o);
     }
     return "";
 }
@@ -59,6 +75,8 @@ std::string typeStr(ObjType type)
         return "RETURN";
     case ObjType::Error:
         return "ERROR";
+    case ObjType::Function:
+        return "FUNCTION";
     }
     return "";
 }

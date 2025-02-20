@@ -3,6 +3,7 @@
 
 #include "lexer.hpp"
 #include "token.hpp"
+#include "macros.hpp"
 #include <memory>
 #include <string>
 #include <array>
@@ -35,32 +36,32 @@ enum Precedence
 class Parser
 {
 public:
-    using PrefixParseF = std::function<std::unique_ptr<Expression>()>;
-    using InfixParseF = std::function<std::unique_ptr<Expression>(std::unique_ptr<Expression>)>;
+    using PrefixParseF = std::function<__Ptr<Expression>()>;
+    using InfixParseF = std::function<__Ptr<Expression>(__Ptr<Expression>)>;
     using Errors = std::vector<std::string>;
 
     explicit Parser(Lexer &l);
     void nextToken();
 
-    std::unique_ptr<Program> parseProgram();
-    std::unique_ptr<Boolean> parseBoolean();
-    std::unique_ptr<Statement> parseStatement();
-    std::unique_ptr<Expression> parseIdentifier();
-    std::unique_ptr<IntegerLiteral> parseIntegerLiteral();
-    std::unique_ptr<Expression> parsePrefixExpression();
-    std::unique_ptr<Expression> parseGroupedExpression();
-    std::unique_ptr<Expression> parseIfExpression();
-    std::unique_ptr<BlockStatement> parseBlockStatement();
-    std::unique_ptr<FunctionLiteral> parseFunctionLiteral();
-    std::unique_ptr<Expression> parseInfixExpression(std::unique_ptr<Expression> left);
-    std::unique_ptr<Expression> parseCallExpression(std::unique_ptr<Expression> left);
-    std::vector<std::unique_ptr<Expression>> parseCallArguments();
-    std::vector<std::unique_ptr<Identifier>> parseFunctionParameters();
+    __Ptr<Program> parseProgram();
+    __Ptr<Boolean> parseBoolean();
+    __Ptr<Statement> parseStatement();
+    __Ptr<Expression> parseIdentifier();
+    __Ptr<IntegerLiteral> parseIntegerLiteral();
+    __Ptr<Expression> parsePrefixExpression();
+    __Ptr<Expression> parseGroupedExpression();
+    __Ptr<Expression> parseIfExpression();
+    __Ptr<BlockStatement> parseBlockStatement();
+    __Ptr<FunctionLiteral> parseFunctionLiteral();
+    __Ptr<Expression> parseInfixExpression(__Ptr<Expression> left);
+    __Ptr<Expression> parseCallExpression(__Ptr<Expression> left);
+    std::vector<__Ptr<Expression>> parseCallArguments();
+    std::vector<__Ptr<Identifier>> parseFunctionParameters();
 
-    std::unique_ptr<Expression> parseExpression(Precedence p);
-    std::unique_ptr<LetStatement> parseLetStatement();
-    std::unique_ptr<ReturnStatement> parseReturnStatement();
-    std::unique_ptr<ExpressionStatement> parseExpressionStatement();
+    __Ptr<Expression> parseExpression(Precedence p);
+    __Ptr<LetStatement> parseLetStatement();
+    __Ptr<ReturnStatement> parseReturnStatement();
+    __Ptr<ExpressionStatement> parseExpressionStatement();
 
     bool curTokenIs(Token::Type t) const;
     bool peekTokenIs(Token::Type t) const;

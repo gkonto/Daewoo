@@ -16,7 +16,7 @@ class Node
 public:
     virtual std::string toString() const = 0;
     virtual ~Node() = default;
-    virtual std::shared_ptr<EvalObject> evaluate(Environment *env) = 0;
+    virtual __Ptr<EvalObject> evaluate(__Ptr<Environment> env) = 0;
 };
 
 class Statement : public Node
@@ -34,26 +34,26 @@ public:
 class ExpressionStatement : public Statement
 {
 public:
-    explicit ExpressionStatement(std::unique_ptr<Expression> &&exp);
+    explicit ExpressionStatement(__Ptr<Expression> &&exp);
     const Expression *expression() const { return expression_.get(); }
     std::string toString() const override { return expression_->toString(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Expression> expression_ = nullptr;
+    __Ptr<Expression> expression_ = nullptr;
 };
 
 class Program : public Node
 {
 public:
-    using Statements = std::vector<std::unique_ptr<Statement>>;
+    using Statements = std::vector<__Ptr<Statement>>;
     size_t size() const;
     Statements::const_iterator begin() const;
     Statements::const_iterator end() const;
     const Statement *at(size_t i) const { return statements_[i].get(); }
-    void add(std::unique_ptr<Statement> &&s);
+    void add(__Ptr<Statement> &&s);
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
     Statements statements_;
@@ -62,15 +62,15 @@ private:
 class LetStatement : public Statement
 {
 public:
-    explicit LetStatement(const std::string &name, std::unique_ptr<Expression> value);
+    explicit LetStatement(const std::string &name, __Ptr<Expression> value);
     const std::string &name() const;
     std::string toString() const override;
     const Expression *value() const { return value_.get(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Identifier> name_ = nullptr;
-    std::unique_ptr<Expression> value_ = nullptr;
+    __Ptr<Identifier> name_ = nullptr;
+    __Ptr<Expression> value_ = nullptr;
 };
 
 class Identifier : public Expression
@@ -79,7 +79,7 @@ public:
     explicit Identifier(const std::string &value);
     const std::string &value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
     std::string value_;
@@ -90,12 +90,12 @@ private:
 class ReturnStatement : public Statement
 {
 public:
-    explicit ReturnStatement(std::unique_ptr<Expression> ret_value);
+    explicit ReturnStatement(__Ptr<Expression> ret_value);
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Expression> return_value_ = nullptr;
+    __Ptr<Expression> return_value_ = nullptr;
 };
 
 class IntegerLiteral : public Expression
@@ -104,7 +104,7 @@ public:
     explicit IntegerLiteral(int v);
     int value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
     int value_ = 0;
@@ -113,31 +113,31 @@ private:
 class PrefixExpression : public Expression
 {
 public:
-    PrefixExpression(const std::string &op, std::unique_ptr<Expression> right);
+    PrefixExpression(const std::string &op, __Ptr<Expression> right);
     const std::string &op() const { return operator_; }
     const Expression *right() const { return right_.get(); }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
     std::string operator_;
-    std::unique_ptr<Expression> right_ = nullptr;
+    __Ptr<Expression> right_ = nullptr;
 };
 
 class InfixExpression : public Expression
 {
 public:
-    InfixExpression(std::unique_ptr<Expression> lhs, const std::string &op, std::unique_ptr<Expression> rhs);
+    InfixExpression(__Ptr<Expression> lhs, const std::string &op, __Ptr<Expression> rhs);
     const Expression *left() const { return lhs_.get(); }
     const Expression *right() const { return rhs_.get(); }
     const std::string op() const { return operator_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Expression> lhs_;
+    __Ptr<Expression> lhs_;
     std::string operator_;
-    std::unique_ptr<Expression> rhs_;
+    __Ptr<Expression> rhs_;
 };
 
 class Boolean : public Expression
@@ -146,7 +146,7 @@ public:
     explicit Boolean(bool value);
     bool value() const { return value_; }
     std::string toString() const override;
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
     bool value_;
@@ -155,63 +155,63 @@ private:
 class BlockStatement : public Statement
 {
 public:
-    explicit BlockStatement(std::vector<std::unique_ptr<Statement>> statements);
+    explicit BlockStatement(std::vector<__Ptr<Statement>> statements);
     std::string toString() const;
     size_t size() const { return statements_.size(); }
     const Statement *at(size_t i) const { return statements_.at(i).get(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::vector<std::unique_ptr<Statement>> statements_;
+    std::vector<__Ptr<Statement>> statements_;
 };
 
 class IfExpression : public Expression
 {
 public:
-    IfExpression(std::unique_ptr<Expression> condition,
-                 std::unique_ptr<BlockStatement> consequence,
-                 std::unique_ptr<BlockStatement> alternative);
+    IfExpression(__Ptr<Expression> condition,
+                 __Ptr<BlockStatement> consequence,
+                 __Ptr<BlockStatement> alternative);
     std::string toString() const override;
     const Expression *condition() const { return condition_.get(); }
     const BlockStatement *consequence() const { return consequence_.get(); }
     const BlockStatement *alternative() const { return alternative_.get(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override;
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Expression> condition_;
-    std::unique_ptr<BlockStatement> consequence_;
-    std::unique_ptr<BlockStatement> alternative_;
+    __Ptr<Expression> condition_;
+    __Ptr<BlockStatement> consequence_;
+    __Ptr<BlockStatement> alternative_;
 };
 
 class FunctionLiteral : public Expression
 {
 public:
-    FunctionLiteral(std::unique_ptr<BlockStatement> body, std::vector<std::unique_ptr<Identifier>> parameters);
+    FunctionLiteral(__Ptr<BlockStatement> body, std::vector<__Ptr<Identifier>> parameters);
     std::string toString() const override;
     size_t paramsSize() const { return parameters_.size(); }
     const Identifier *param(size_t i) const { return parameters_.at(i).get(); }
     size_t size() const { return body_->size(); }
     const BlockStatement *body() const { return body_.get(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override { assert(true); }
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<BlockStatement> body_;
-    std::vector<std::unique_ptr<Identifier>> parameters_;
+    __Ptr<BlockStatement> body_;
+    std::vector<__Ptr<Identifier>> parameters_;
 };
 
 class CallExpression : public Expression
 {
 public:
-    CallExpression(std::unique_ptr<Expression> function, std::vector<std::unique_ptr<Expression>> args);
+    CallExpression(__Ptr<Expression> function, std::vector<__Ptr<Expression>> args);
     std::string toString() const override;
     const Expression *function() const { return function_.get(); }
     size_t argsSize() const { return arguments_.size(); }
     const Expression *argument(size_t i) const { return arguments_.at(i).get(); }
-    std::shared_ptr<EvalObject> evaluate(Environment *env) override { assert(true); }
+    __Ptr<EvalObject> evaluate(__Ptr<Environment> env) override;
 
 private:
-    std::unique_ptr<Expression> function_;
-    std::vector<std::unique_ptr<Expression>> arguments_;
+    __Ptr<Expression> function_;
+    std::vector<__Ptr<Expression>> arguments_;
 };
 
 #endif

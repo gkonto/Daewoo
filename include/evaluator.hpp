@@ -7,6 +7,6 @@
 class Node;
 class Environment;
 
-std::shared_ptr<EvalObject> Eval(Node *n, Environment *env);
+__Ptr<EvalObject> Eval(Node *n, __Ptr<Environment> env);
 
 #endif

@@ -4,17 +4,23 @@
 #include <map>
 #include <string>
 #include <memory>
+#include "macros.hpp"
 
 struct EvalObject;
 
 class Environment
 {
 public:
-    std::shared_ptr<EvalObject> get(const std::string &name) const;
-    void set(const std::string &name, std::shared_ptr<EvalObject> val);
+    Environment() = default;
+    Environment(__Ptr<Environment> env)
+        : outer_(env) {}
+
+    __Ptr<EvalObject> get(const std::string &name) const;
+    void set(const std::string &name, __Ptr<EvalObject> val);
 
 private:
-    std::map<std::string, std::shared_ptr<EvalObject>> repo_;
+    std::map<std::string, __Ptr<EvalObject>> repo_;
+    __Ptr<Environment> outer_ = nullptr;
 };
 
 #endif

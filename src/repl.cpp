@@ -29,7 +29,7 @@ static void printParserErrors(std::ostream &out, const Parser::Errors &errors)
 void Repl::start()
 {
 	std::string input;
-	auto env = std::make_unique<Environment>();
+	auto env = std::make_shared<Environment>();
 
 	while (true)
 	{
@@ -48,7 +48,7 @@ void Repl::start()
 			continue;
 		}
 
-		auto evaluated = Eval(program.get(), env.get());
+		auto evaluated = Eval(program.get(), env);
 		if (evaluated)
 		{
 			std::cout << inspect(*evaluated);

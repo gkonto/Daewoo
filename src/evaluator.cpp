@@ -3,7 +3,7 @@
 #include "object.hpp"
 #include "environment.hpp"
 
-std::shared_ptr<EvalObject> Eval(Node *n, Environment *env)
+__Ptr<EvalObject> Eval(Node *n, __Ptr<Environment> env)
 {
     return n->evaluate(env);
 }

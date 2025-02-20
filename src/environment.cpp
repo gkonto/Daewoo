@@ -1,18 +1,22 @@
 #include "environment.hpp"
 #include "object.hpp"
 
-std::shared_ptr<EvalObject>
+__Ptr<EvalObject>
 Environment::get(const std::string &name) const
 {
     auto it = repo_.find(name);
-    if (it != repo_.end())
+    if (it == repo_.end() && outer_)
+    {
+        return outer_->get(name);
+    }
+    else if (it != repo_.end())
     {
         return it->second;
     }
     return nullptr;
 }
 
-void Environment::set(const std::string &name, std::shared_ptr<EvalObject> val)
+void Environment::set(const std::string &name, __Ptr<EvalObject> val)
 {
     repo_[name] = val;
 }

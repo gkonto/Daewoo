@@ -70,6 +70,7 @@ set(MONKEY_HEADER_FILES
     include/evaluator.hpp
     include/globals.hpp
     include/environment.hpp
+    include/macros.hpp
 )
 
 add_executable(monkey main.cpp ${MONKEY_SRC_FILES} ${MONKEY_HEADER_FILES})

@@ -20,17 +20,17 @@ Globals &Globals::getInstance()
     return globals;
 }
 
-std::shared_ptr<EvalObject> Globals::getTrue() const
+__Ptr<EvalObject> Globals::getTrue() const
 {
     return TRUE;
 }
 
-std::shared_ptr<EvalObject> Globals::getFalse() const
+__Ptr<EvalObject> Globals::getFalse() const
 {
     return FALSE;
 }
 
-std::shared_ptr<EvalObject> Globals::getNull() const
+__Ptr<EvalObject> Globals::getNull() const
 {
     return NIL;
 }

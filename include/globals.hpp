@@ -2,6 +2,7 @@
 #define GLOBALS_HPP_INCLUDED
 
 #include <memory>
+#include "macros.hpp"
 
 struct EvalObject;
 
@@ -9,15 +10,15 @@ class Globals
 {
 public:
     static Globals &getInstance();
-    std::shared_ptr<EvalObject> getTrue() const;
-    std::shared_ptr<EvalObject> getFalse() const;
-    std::shared_ptr<EvalObject> getNull() const;
+    __Ptr<EvalObject> getTrue() const;
+    __Ptr<EvalObject> getFalse() const;
+    __Ptr<EvalObject> getNull() const;
 
 private:
     Globals();
-    std::shared_ptr<EvalObject> TRUE;
-    std::shared_ptr<EvalObject> FALSE;
-    std::shared_ptr<EvalObject> NIL;
+    __Ptr<EvalObject> TRUE;
+    __Ptr<EvalObject> FALSE;
+    __Ptr<EvalObject> NIL;
 };
 
 #endif
