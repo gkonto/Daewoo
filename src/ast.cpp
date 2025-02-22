@@ -317,20 +317,6 @@ static __Ptr<EvalObject> evalPrefixExpression(const std::string op, __Ptr<EvalOb
 	}
 }
 
-// static __Ptr<EvalObject> evalStatements(const std::vector<__Ptr<Statement>> &statements)
-// {
-// 	__Ptr<EvalObject> result = nullptr;
-// 	for (const auto &stmt : statements)
-// 	{
-// 		result = stmt->evaluate();
-// 		if (result->type == ObjType::Return)
-// 		{
-// 			return result->getObject();
-// 		}
-// 	}
-// 	return result;
-// }
-
 static __Ptr<EvalObject> nativeBoolToBooleanObject(bool value)
 {
 	auto g = Globals::getInstance();
@@ -503,6 +489,7 @@ __Ptr<EvalObject> LetStatement::evaluate(__Ptr<Environment> env)
 		return val;
 	}
 	env->set(name_->value(), val);
+	return val;
 }
 
 static bool isTruthy(const EvalObject *o)
@@ -620,7 +607,6 @@ static __Ptr<EvalObject> unwrapReturnValue(__Ptr<EvalObject> obj)
 
 static __Ptr<EvalObject> applyFunction(__Ptr<EvalObject> fn, std::vector<__Ptr<EvalObject>> args)
 {
-
 	if (fn->type != ObjType::Function)
 	{
 		Error error;
@@ -632,7 +618,6 @@ static __Ptr<EvalObject> applyFunction(__Ptr<EvalObject> fn, std::vector<__Ptr<E
 	}
 
 	auto function = fn->getFunction();
-
 	auto extendedEnv = extendFunctionEnv(function, args);
 	auto evaluated = function.body()->evaluate(extendedEnv);
 	return unwrapReturnValue(evaluated);

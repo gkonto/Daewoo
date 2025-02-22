@@ -23,8 +23,10 @@ To build and run the Monkey Interpreter, follow these steps:
 Start by creating a `build` directory inside the project directory to store build artifacts:
 
 ```bash
-mkdir build
-cd build
+mkdir build_64
+
+mkdir build_64rel
+
 ```
 
 ### 2. Run CMake
@@ -32,7 +34,14 @@ cd build
 Generate the necessary build files using CMake. If you're using Unix Makefiles, run the following command:
 
 ```bash
-cmake -G "Unix Makefiles" ..
+cd build_64rel
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j{num_procs}
+cd ..
+
+cd build_64
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+make -j{num_procs}
 ```
 
 ### 3. Build the Project
@@ -106,4 +115,3 @@ We are always happy to engage with users, contributors, or anyone curious about 
 TODO
 
 ---
-
