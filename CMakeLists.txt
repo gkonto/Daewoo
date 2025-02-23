@@ -110,8 +110,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         /w14254 # Warn on signed/unsigned mismatches
         /w14263 # Warn on potentially dangerous pointer truncation
         /w14264 # Warn on variable shadowing
-        /Zi # Enable debug information
     )
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Zi /O2")
+
 
 endif()
 

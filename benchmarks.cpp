@@ -30,7 +30,7 @@ int main(void)
 {
     std::vector<BenchmarkCase> tests =
         {
-            {"fibonacci(33)", "let fibonacci = fn(x) { if (x == 0) { 0 } else { if (x == 1) { 1 } else { fibonacci(x - 1) + fibonacci(x - 2); } } }; fibonacci(33);"}};
+            {"fibonacci(30)", "let fibonacci = fn(x) { if (x == 0) { 0 } else { if (x == 1) { 1 } else { fibonacci(x - 1) + fibonacci(x - 2); } } }; fibonacci(30);"}};
 
     for (const auto &[name, input] : tests)
     {
