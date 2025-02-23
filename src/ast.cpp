@@ -33,71 +33,6 @@ Error &Error::operator<<(const T &value)
 	return *this;
 }
 
-size_t Program::size() const
-{
-	return statements_.size();
-}
-
-Program::Statements::const_iterator Program::begin() const
-{
-	return statements_.begin();
-}
-
-Program::Statements::const_iterator Program::end() const
-{
-	return statements_.end();
-}
-
-const std::string &LetStatement::name() const
-{
-	return name_->value();
-}
-
-void Program::add(__Ptr<Statement> &&s)
-{
-	statements_.emplace_back(std::move(s));
-}
-
-Identifier::Identifier(const std::string &value)
-	: value_(value)
-{
-}
-
-LetStatement::LetStatement(const std::string &name, __Ptr<Expression> value)
-	: name_(std::make_shared<Identifier>(name)), value_(std::move(value))
-{
-}
-
-ExpressionStatement::ExpressionStatement(__Ptr<Expression> &&exp)
-	: expression_(std::move(exp))
-{
-}
-
-IntegerLiteral::IntegerLiteral(int v)
-	: value_(v)
-{
-}
-
-ReturnStatement::ReturnStatement(__Ptr<Expression> ret_value)
-	: return_value_(std::move(ret_value))
-{
-}
-
-PrefixExpression::PrefixExpression(const std::string &op, __Ptr<Expression> right)
-	: operator_(op), right_(std::move(right))
-{
-}
-
-InfixExpression::InfixExpression(__Ptr<Expression> lhs, const std::string &op, __Ptr<Expression> rhs)
-	: lhs_(std::move(lhs)), operator_(op), rhs_(std::move(rhs))
-{
-}
-
-Boolean::Boolean(bool v)
-	: value_(v)
-{
-}
-
 std::string Program::toString() const
 {
 	std::stringstream out;
@@ -120,11 +55,6 @@ std::string LetStatement::toString() const
 	return out.str();
 }
 
-std::string Identifier::toString() const
-{
-	return value_;
-}
-
 std::string ReturnStatement::toString() const
 {
 	std::stringstream out;
@@ -134,11 +64,6 @@ std::string ReturnStatement::toString() const
 	}
 	out << ";";
 	return out.str();
-}
-
-std::string IntegerLiteral::toString() const
-{
-	return std::to_string(value_);
 }
 
 std::string PrefixExpression::toString() const
@@ -160,11 +85,6 @@ std::string InfixExpression::toString() const
 	out << rhs_->toString();
 	out << ")";
 	return out.str();
-}
-
-std::string Boolean::toString() const
-{
-	return value_ ? "true" : "false";
 }
 
 std::string BlockStatement::toString() const
@@ -190,29 +110,6 @@ std::string IfExpression::toString() const
 		out << alternative_->toString();
 	}
 	return out.str();
-}
-
-IfExpression::IfExpression(__Ptr<Expression> condition,
-						   __Ptr<BlockStatement> consequence,
-						   __Ptr<BlockStatement> alternative)
-	: condition_(std::move(condition)), consequence_(std::move(consequence)),
-	  alternative_(std::move(alternative))
-{
-}
-
-BlockStatement::BlockStatement(std::vector<__Ptr<Statement>> statements)
-	: statements_(std::move(statements))
-{
-}
-
-FunctionLiteral::FunctionLiteral(__Ptr<BlockStatement> body, std::vector<__Ptr<Identifier>> parameters)
-	: body_(std::move(body)), parameters_(std::move(parameters))
-{
-}
-
-CallExpression::CallExpression(__Ptr<Expression> function, std::vector<__Ptr<Expression>> args)
-	: function_(std::move(function)), arguments_(std::move(args))
-{
 }
 
 std::string FunctionLiteral::toString() const
@@ -317,7 +214,7 @@ static __Ptr<EvalObject> evalPrefixExpression(const std::string op, __Ptr<EvalOb
 	}
 }
 
-static __Ptr<EvalObject> nativeBoolToBooleanObject(bool value)
+__Ptr<EvalObject> nativeBoolToBooleanObject(bool value)
 {
 	auto g = Globals::getInstance();
 	return value ? g.getTrue() : g.getFalse();
@@ -439,16 +336,6 @@ __Ptr<EvalObject> Program::evaluate(__Ptr<Environment> env)
 		}
 	}
 	return result;
-}
-
-__Ptr<EvalObject> ExpressionStatement::evaluate(__Ptr<Environment> env)
-{
-	return expression_->evaluate(env);
-}
-
-__Ptr<EvalObject> Boolean::evaluate(__Ptr<Environment> env)
-{
-	return nativeBoolToBooleanObject(value_);
 }
 
 __Ptr<EvalObject> PrefixExpression::evaluate(__Ptr<Environment> env)
