@@ -6,6 +6,16 @@
 #include "token.hpp"
 #include "defs.hpp"
 
+class Scanner
+{
+public:
+    void scanString(const std::string &input);
+    void scanFile(const std::string &filename);
+    void nextToken(TokenRecord token);
+
+private:
+};
+
 class Lexer
 {
 public:
