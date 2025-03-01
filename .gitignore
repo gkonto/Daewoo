@@ -70,3 +70,5 @@ Thumbs.db
 # Ignore auto-generated documentation
 docs/doxygen/html/
 docs/doxygen/latex/
+
+*.json

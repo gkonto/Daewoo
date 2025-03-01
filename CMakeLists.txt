@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 enable_testing()
 
-include_directories(include src)
+include_directories(src)
 
 set(MONKEY_SRC_FILES
     src/token.cpp
@@ -18,19 +18,20 @@ set(MONKEY_SRC_FILES
     src/evaluator.cpp
     src/globals.cpp
     src/environment.cpp
+    src/token.hpp
+    src/lexer.hpp
+    src/repl.hpp
+    src/ast.hpp
+    src/parser.hpp
+    src/object.hpp
+    src/evaluator.hpp
+    src/globals.hpp
+    src/environment.hpp
+    src/macros.hpp
 )
 
 set(MONKEY_HEADER_FILES
-    include/token.hpp
-    include/lexer.hpp
-    include/repl.hpp
-    include/ast.hpp
-    include/parser.hpp
-    include/object.hpp
-    include/evaluator.hpp
-    include/globals.hpp
-    include/environment.hpp
-    include/macros.hpp
+
 )
 
 # Define compilation flags for different compilers
@@ -119,9 +120,9 @@ endif()
 
 option(BUILD_TESTS "Build unit tests" ON)
 
-add_executable(monkey main.cpp ${MONKEY_SRC_FILES} ${MONKEY_HEADER_FILES})
+add_executable(monkey main.cpp ${MONKEY_SRC_FILES})
 
-add_executable(monkey_benchmarks benchmarks.cpp ${MONKEY_SRC_FILES} ${MONKEY_HEADER_FILES})
+add_executable(monkey_benchmarks benchmarks.cpp ${MONKEY_SRC_FILES})
 
 # Output build configuration
 message(STATUS "Project: ${PROJECT_NAME}")
