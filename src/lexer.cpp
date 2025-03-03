@@ -409,7 +409,7 @@ void Scanner::nextToken()
     {
         getWord();
     }
-    else if (isdigit(ch_))
+    else if (isdigit(ch_) || ch_ == '.')
     {
         getNumber();
     }

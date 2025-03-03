@@ -28,10 +28,15 @@ set(MONKEY_SRC_FILES
     src/globals.hpp
     src/environment.hpp
     src/macros.hpp
-)
-
-set(MONKEY_HEADER_FILES
-
+    src/syntaxParser.cpp
+    src/syntaxParser.hpp
+    src/tokenTable.cpp
+    src/tokenTable.hpp
+    src/ASTBuilder.cpp
+    src/ASTBuilder.hpp
+    src/ASTNode.cpp
+    src/ASTNode.hpp
+    src/ASTNodeTypes.hpp
 )
 
 # Define compilation flags for different compilers

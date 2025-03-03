@@ -1,6 +1,164 @@
 #include "token.hpp"
 #include <unordered_map>
 
+std::string tokenToString(TokenCode code)
+{
+    switch (code)
+    {
+    case TokenCode::tIdentifier:
+        return "identifier";
+    case TokenCode::tInteger:
+        return "integer";
+    case TokenCode::tFloat:
+        return "float";
+    case TokenCode::tString:
+        return "string \"";
+    case TokenCode::tMinus:
+        return "character: '-'";
+    case TokenCode::tPlus:
+        return "character: '+'";
+        break;
+    case TokenCode::tMult:
+        return "character: '*'";
+        break;
+    case TokenCode::tDivide:
+        return "character: '/'";
+        break;
+    case TokenCode::tPower:
+        return "character: '^'";
+        break;
+    case TokenCode::tRightParenthesis:
+        return "character: ')'";
+        break;
+    case TokenCode::tLeftParenthesis:
+        return "character: '('";
+        break;
+    case TokenCode::tRightBracket:
+        return "character: ']'";
+        break;
+    case TokenCode::tLeftBracket:
+        return "character: '['";
+        break;
+    case TokenCode::tLeftCurleyBracket:
+        return "character: '{'";
+        break;
+    case TokenCode::tRightCurleyBracket:
+        return "character: '}'";
+        break;
+    case TokenCode::tAssign:
+        return "character: '='";
+        break;
+    case TokenCode::tEquivalence:
+        return "spcharacterecial: '=='";
+        break;
+    case TokenCode::tMoreThan:
+        return "character: '>'";
+        break;
+    case TokenCode::tLessThan:
+        return "character: '<'";
+        break;
+    case TokenCode::tMoreThanOrEqual:
+        return "character: '>='";
+        break;
+    case TokenCode::tLessThanOrEqual:
+        return "character: '<='";
+        break;
+    case TokenCode::tApostrophy:
+        return "character: Apostrphy";
+        break;
+    case TokenCode::tSemicolon:
+        return "character: ';'";
+        break;
+    case TokenCode::tColon:
+        return "character: ':'";
+        break;
+    case TokenCode::tComma:
+        return "character: ','";
+        break;
+    case TokenCode::tPeriod:
+        return "character: '.'";
+        break;
+    case TokenCode::tDollar:
+        return "character: '$'";
+        break;
+    case TokenCode::tArrow:
+        return "character: '->'";
+        break;
+    case TokenCode::tEnd:
+        return "key word: <end>";
+        break;
+    case TokenCode::tIf:
+        return "key word: <if>";
+        break;
+    case TokenCode::tThen:
+        return "key word: <then> ";
+        break;
+    case TokenCode::tFor:
+        return "Key word: <for>";
+        break;
+    case TokenCode::tTo:
+        return "key word: <to>";
+        break;
+    case TokenCode::tDownTo:
+        return "key word: <downto>";
+        break;
+    case TokenCode::tWhile:
+        return "key word: <while>";
+        break;
+    case TokenCode::tDo:
+        return "key word: <do>";
+        break;
+    case TokenCode::tElse:
+        return "key word: <else>";
+        break;
+    case TokenCode::tRepeat:
+        return "key word: <repeat>";
+        break;
+    case TokenCode::tUntil:
+        return "key word: <until>";
+        break;
+    case TokenCode::tCase:
+        return "key word: <case>";
+        break;
+    case TokenCode::tSwitch:
+        return "key word: <switch>";
+        break;
+    case TokenCode::tReturn:
+        return "key word: <return>";
+        break;
+    case TokenCode::tImport:
+        return "key word: <import>";
+        break;
+    case TokenCode::tGlobal:
+        return "key word: <global>";
+        break;
+    case TokenCode::tFunction:
+        return "key word: <function>";
+        break;
+    case TokenCode::tBreak:
+        return "key word: <break>";
+        break;
+    case TokenCode::tStep:
+        return "key word: <step>";
+        break;
+    case TokenCode::tFalse:
+        return "False";
+        break;
+    case TokenCode::tTrue:
+        return "True";
+        break;
+    case TokenCode::tPrint:
+        return "print";
+        break;
+    case TokenCode::tPrintln:
+        return "println";
+        break;
+    case TokenCode::tEndofStream:
+        return "End of Stream";
+        break;
+    }
+}
+
 Token::Token(Type type, BufferSize sp, Length l)
     : type_(type), position_(sp), length_(l)
 {

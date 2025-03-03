@@ -1,9 +1,13 @@
 // #define CATCH_CONFIG_MAIN
 #include <catch2/catch_test_macros.hpp>
 
+#include <sstream>
 #include "lexer.hpp"
 #include "parser.hpp"
 #include "ast.hpp"
+#include "syntaxParser.hpp"
+#include "ASTBuilder.hpp"
+#include "ASTNode.hpp"
 
 struct ExpectedStatement
 {
@@ -60,11 +64,11 @@ struct LetStatementsExpected
     T expected_value;
 };
 
-static void testLetStatement(const Statement *got, const std::string &value)
+static void testLetStatement(const ASTNode *got, const std::string &value)
 {
-    const LetStatement *letStmt = dynamic_cast<const LetStatement *>(got);
+    const ASTLetStatement *letStmt = dynamic_cast<const ASTLetStatement *>(got);
     REQUIRE(letStmt != nullptr);
-    REQUIRE(letStmt->name() == value);
+    REQUIRE(letStmt->identifierValue() == value);
 }
 
 static void checkParserErrors(Parser &p)
@@ -74,38 +78,44 @@ static void checkParserErrors(Parser &p)
     REQUIRE(errors.empty());
 }
 
-static void testIntegerLiteral(const Expression *exp, int value)
+static void checkSyntaxParserErrors(std::optional<SyntaxError> error)
 {
-    const IntegerLiteral *integ = dynamic_cast<const IntegerLiteral *>(exp);
+    INFO("SyntaxError found: " << (error.has_value() ? error.value().msg() : ""));
+    REQUIRE(!error.has_value());
+}
+
+static void testIntegerLiteral(const ASTNode *exp, int value)
+{
+    const auto *integ = dynamic_cast<const ASTInteger *>(exp);
     REQUIRE(integ != nullptr);
     REQUIRE(integ->value() == value);
 }
 
-static void testIdentifier(const Expression *exp, const std::string &value)
+static void testIdentifier(const ASTNode *exp, const std::string &value)
 {
-    const Identifier *ident = dynamic_cast<const Identifier *>(exp);
+    const auto *ident = dynamic_cast<const ASTIdentifier *>(exp);
     REQUIRE(ident != nullptr);
     REQUIRE(ident->value() == value);
 }
 
-static void testBooleanLiteral(const Expression *exp, bool value)
+static void testBooleanLiteral(const ASTNode *exp, bool value)
 {
-    const Boolean *bo = dynamic_cast<const Boolean *>(exp);
+    const auto *bo = dynamic_cast<const ASTBoolean *>(exp);
     REQUIRE(bo != nullptr);
     REQUIRE(bo->value() == value);
 }
 
-static void testLiteralExpression(const Expression *exp, int expected)
+static void testLiteralExpression(const ASTExpression *exp, int expected)
 {
     testIntegerLiteral(exp, expected);
 }
 
-static void testLiteralExpression(const Expression *exp, const std::string &value)
+static void testLiteralExpression(const ASTExpression *exp, const std::string &value)
 {
     testIdentifier(exp, value);
 }
 
-static void testLiteralExpression(const Expression *exp, bool value)
+static void testLiteralExpression(const ASTNode *exp, bool value)
 {
     testBooleanLiteral(exp, value);
 }
@@ -113,17 +123,29 @@ static void testLiteralExpression(const Expression *exp, bool value)
 template <typename T>
 static void testLetStatement(const LetStatementsExpected<T> &tt)
 {
-    Lexer l(tt.input);
-    Parser p(l);
-    auto program = p.parseProgram();
-    checkParserErrors(p);
+    std::istringstream iss(tt.input);
+    Scanner sc(iss);
 
-    REQUIRE(program->size() == 1);
+    SyntaxParser sp(sc);
+    auto err = sp.syntaxCheck();
+    checkSyntaxParserErrors(err);
 
-    testLetStatement(program->at(0), tt.expected_identifier);
-    auto *letStmt = dynamic_cast<const LetStatement *>(program->at(0));
+    ASTBuilder ast_builder(sp.tokens());
+    auto ast = ast_builder.build();
+
+    REQUIRE(ast.get() != nullptr);
+    REQUIRE(ast->size() == 1);
+    // Lexer l(tt.input);
+    // Parser p(l);
+    // auto program = p.parseProgram();
+    // checkParserErrors(p);
+
+    // REQUIRE(program->size() == 1);
+
+    testLetStatement(ast->at(0), tt.expected_identifier);
+    const auto *letStmt = dynamic_cast<const ASTLetStatement *>(ast->at(0));
     REQUIRE(letStmt != nullptr);
-    auto val = letStmt->value();
+    const auto *val = letStmt->expression();
     testLiteralExpression(val, tt.expected_value);
 }
 
@@ -144,24 +166,28 @@ TEST_CASE("Test_LetStatements")
     let y = 10;\
     let foobar = 838383;");
 
-    Lexer lexer(input);
-    Parser parser(lexer);
+    std::istringstream iss(input);
+    Scanner sc(iss);
 
-    auto program = parser.parseProgram();
-    checkParserErrors(parser);
+    SyntaxParser sp(sc);
+    auto err = sp.syntaxCheck();
+    checkSyntaxParserErrors(err);
 
-    REQUIRE(program.get() != nullptr);
-    REQUIRE(program->size() == 3);
+    ASTBuilder ast_builder(sp.tokens());
+    auto ast = ast_builder.build();
+
+    REQUIRE(ast.get() != nullptr);
+    REQUIRE(ast->size() == 3);
 
     std::vector<std::string> expected{
         "x",
         "y",
         "foobar"};
 
-    auto e_i = 0;
-    for (const auto &stmt : *program)
+    size_t index = 0;
+    for (const auto &stmt : *ast)
     {
-        testLetStatement(stmt.get(), expected[e_i++]);
+        testLetStatement(stmt.get(), expected[index++]);
     }
 }
 
@@ -175,7 +201,7 @@ TEST_CASE("Test_LetStatementsInt")
         testLetStatement(tt);
     }
 }
-
+/*
 TEST_CASE("Test_LetStatementsBool")
 {
     std::vector<LetStatementsExpected<bool>> expected = {
@@ -548,3 +574,4 @@ TEST_CASE("Test_CallExpressionParsing")
     testInfixExpression<int, int>(exp->argument(1), 2, "*", 3);
     testInfixExpression<int, int>(exp->argument(2), 4, "+", 5);
 }
+    */

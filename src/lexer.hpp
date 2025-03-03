@@ -38,7 +38,7 @@ class Scanner
 public:
     Scanner(std::istream &input);
     void nextToken();
-    const TokenRecord &token() const { return tokenRecord_; }
+    TokenRecord token() const { return tokenRecord_; }
 
     std::string tokenToString(TokenCode code);
 

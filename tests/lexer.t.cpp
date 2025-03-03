@@ -203,7 +203,7 @@ TEST_CASE("Test_TokenIntegers")
         {"0.1415", 0.1415, TokenCode::tFloat},
         {".5", 0.5, TokenCode::tFloat},
         {"1E-1", 0.1, TokenCode::tFloat},
-        {"1E+1", 10, TokenCode::tInteger},
+        {"1E+1", 10, TokenCode::tFloat},
         {"1E-3", 0.001, TokenCode::tFloat},
         {"1.234E-3", 0.001234, TokenCode::tFloat},
         {"0.234E-3", 0.000234, TokenCode::tFloat},

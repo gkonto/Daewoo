@@ -105,6 +105,8 @@ private:
     std::string tString_;
 };
 
+std::string tokenToString(TokenCode code);
+
 struct Token
 {
     enum class Type

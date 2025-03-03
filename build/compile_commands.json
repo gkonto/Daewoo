@@ -51,6 +51,26 @@
 },
 {
   "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey.dir/src/syntaxParser.cpp.o -c /home/shortjohn/dev/monkey/src/syntaxParser.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/syntaxParser.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey.dir/src/tokenTable.cpp.o -c /home/shortjohn/dev/monkey/src/tokenTable.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/tokenTable.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey.dir/src/ASTBuilder.cpp.o -c /home/shortjohn/dev/monkey/src/ASTBuilder.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/ASTBuilder.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey.dir/src/ASTNode.cpp.o -c /home/shortjohn/dev/monkey/src/ASTNode.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/ASTNode.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
   "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/benchmarks.cpp.o -c /home/shortjohn/dev/monkey/benchmarks.cpp",
   "file": "/home/shortjohn/dev/monkey/benchmarks.cpp"
 },
@@ -98,5 +118,25 @@
   "directory": "/home/shortjohn/dev/monkey/build",
   "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/src/environment.cpp.o -c /home/shortjohn/dev/monkey/src/environment.cpp",
   "file": "/home/shortjohn/dev/monkey/src/environment.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/src/syntaxParser.cpp.o -c /home/shortjohn/dev/monkey/src/syntaxParser.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/syntaxParser.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/src/tokenTable.cpp.o -c /home/shortjohn/dev/monkey/src/tokenTable.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/tokenTable.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/src/ASTBuilder.cpp.o -c /home/shortjohn/dev/monkey/src/ASTBuilder.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/ASTBuilder.cpp"
+},
+{
+  "directory": "/home/shortjohn/dev/monkey/build",
+  "command": "/usr/bin/g++  -I/home/shortjohn/dev/monkey/src -g -Wall -Wextra -pedantic -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Wunused -Woverloaded-virtual -Wconversion -Wsign-conversion -Wformat=2 -Wmissing-declarations -O1 -g -o CMakeFiles/monkey_benchmarks.dir/src/ASTNode.cpp.o -c /home/shortjohn/dev/monkey/src/ASTNode.cpp",
+  "file": "/home/shortjohn/dev/monkey/src/ASTNode.cpp"
 }
 ]
