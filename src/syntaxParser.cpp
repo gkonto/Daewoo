@@ -319,6 +319,17 @@ SyntaxParser::factor()
             return err;
         break;
     }
+    case (TokenCode::tNot):
+    {
+        nextToken();
+        auto node = expression();
+        if (err)
+        {
+            return err;
+        }
+
+        break;
+    }
     case (TokenCode::tError):
         err = SyntaxError("Expecting a factor [literal, identifier]");
         break;

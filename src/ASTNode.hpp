@@ -70,6 +70,8 @@ class ASTPrimary : public ASTNode
 public:
     ASTPrimary(std::unique_ptr<ASTNode> factor, std::unique_ptr<ASTNode> primaryPlus, int linenumber)
         : ASTNode(ASTNodeType::ntPrimary, linenumber), factor_(std::move(factor)), primaryPlus_(std::move(primaryPlus)) {}
+    const ASTNode *factor() const { return factor_.get(); }
+    const ASTNode *primaryPlus() const { return primaryPlus_.get(); }
 
 private:
     std::unique_ptr<ASTNode> factor_;
@@ -109,7 +111,7 @@ public:
           rightSide_(std::move(rhs)) {}
 
     const std::string &identifierValue() const { return leftSide_->value(); }
-    const ASTNode *expression() const { return rightSide_.get(); }
+    const ASTNode *rhs() const { return rightSide_.get(); }
 
 private:
     std::unique_ptr<ASTIdentifier> leftSide_;
@@ -132,6 +134,8 @@ class ASTExpressionStatement : public ASTNode
 public:
     ASTExpressionStatement(std::unique_ptr<ASTNode> expr, int lineNumber)
         : ASTNode(ASTNodeType::ntExpressionStatement, lineNumber), expression_(std::move(expr)) {}
+
+    const ASTNode *expression() const { return expression_.get(); }
 
 private:
     std::unique_ptr<ASTNode> expression_;
@@ -169,6 +173,8 @@ class ASTBinOp : public ASTNode
 public:
     ASTBinOp(std::unique_ptr<ASTNode> lhs, std::unique_ptr<ASTNode> rhs, ASTNodeType nodeType, int linenumber)
         : ASTNode(nodeType, linenumber), left_(std::move(lhs)), right_(std::move(rhs)) {}
+    const auto *lhs() const { return left_.get(); }
+    const auto *rhs() const { return right_.get(); }
 
 private:
     std::unique_ptr<ASTNode> left_;
@@ -191,6 +197,8 @@ class ASTUniOp : public ASTNode
 public:
     ASTUniOp(std::unique_ptr<ASTNode> left, ASTNodeType type, int linenumber)
         : ASTNode(type, linenumber), left_(std::move(left)) {}
+
+    const auto *left() const { return left_.get(); }
 
 private:
     std::unique_ptr<ASTNode> left_;
@@ -240,6 +248,7 @@ class ASTNotOp : public ASTNode
 public:
     ASTNotOp(std::unique_ptr<ASTNode> node, int linenumber)
         : ASTNode(ASTNodeType::ntNOT, linenumber), expression_(std::move(node)) {}
+    const ASTNode *expression() const { return expression_.get(); }
 
 private:
     std::unique_ptr<ASTNode> expression_;

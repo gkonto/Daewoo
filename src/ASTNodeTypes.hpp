@@ -43,7 +43,7 @@ enum class ASTNodeType
     ntAssertFalse,
     ntAssertFalseEx,
     ntHelp,
-    ntSwitch, // 41
+    ntSwitch, // 40
     ntListOfCaseStatements,
     ntCaseStatement,
     ntIf,
@@ -52,8 +52,8 @@ enum class ASTNodeType
     ntFor,
     ntIter,
     ntTo,
-    ntDownTo,   // 50
-    ntFunction, // 51
+    ntDownTo,
+    ntFunction, // 50
     ntFunctionArguments,
     ntReturn,
     ntAssignment,
@@ -62,8 +62,8 @@ enum class ASTNodeType
     ntFunctionCall,
     ntStatementList,
     ntExpressionStatement,
-    ntIdentifier, // 60
-    ntPrimary,
+    ntIdentifier,
+    ntPrimary, // 60
     ntPrimaryPeriod,
     ntPrimaryIndex,
     ntPrimaryFunction,

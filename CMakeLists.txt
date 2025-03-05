@@ -61,7 +61,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     )
         # Set Debug optimization level to -O1
         if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(-O1 -g)  # Lower optimization for debugging
+        add_compile_options(-O0 -g)  # Lower optimization for debugging
     endif()
 
     # Set Release optimization level to -O3

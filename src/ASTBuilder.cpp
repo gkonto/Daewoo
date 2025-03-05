@@ -72,7 +72,7 @@ ASTBuilder::expect(TokenCode tc)
     return nullptr;
 }
 
-// statement = exprStatement | ifStatement | returnStatement | function | letStatement
+// statement = assignment | endOfStream | exprStatement | ifStatement | returnStatement | function | letStatement
 std::unique_ptr<ASTNode>
 ASTBuilder::statement()
 {
@@ -239,6 +239,7 @@ ASTBuilder::parseUserDefinedFunction()
         lineNumber());
 }
 
+// expression = simpleExpression | simpleExpression relationalOp simpleExpression
 std::unique_ptr<ASTNode>
 ASTBuilder::expression()
 {
@@ -397,7 +398,8 @@ std::unique_ptr<ASTNode>
 ASTBuilder::power()
 {
     int unaryMinus_count = 0;
-    while (code() == TokenCode::tMinus || code() == TokenCode::tPlus)
+    while (code() == TokenCode::tMinus ||
+           code() == TokenCode::tPlus)
     {
         if (code() == TokenCode::tMinus)
         {
@@ -429,6 +431,7 @@ ASTBuilder::primary()
     return std::make_unique<ASTPrimary>(factor(), primaryPlus(), lineNumber());
 }
 
+// factor = '(' expression ')' | variable | number | string | NOT factor | functionCall
 std::unique_ptr<ASTNode>
 ASTBuilder::factor()
 {
@@ -477,6 +480,16 @@ ASTBuilder::factor()
         auto result = std::make_unique<ASTBoolean>(true, lineNumber());
         nextToken();
         return result;
+    }
+    else if (code() == TokenCode::tNot)
+    {
+        nextToken();
+        auto node = expression();
+        if (node->type() == ASTNodeType::ntError)
+        {
+            return node;
+        }
+        return std::make_unique<ASTNotOp>(std::move(node), lineNumber());
     }
     else if (code() == TokenCode::tLeftParenthesis)
     {

@@ -32,7 +32,7 @@ struct ExpectedInfixBoolean
 {
     std::string input;
     bool lhs;
-    std::string op;
+    ASTNodeType op;
     bool rhs;
 };
 
@@ -40,7 +40,7 @@ struct ExpectedInfix
 {
     std::string input;
     int lhs;
-    std::string op;
+    ASTNodeType op;
     int rhs;
 };
 
@@ -86,21 +86,33 @@ static void checkSyntaxParserErrors(std::optional<SyntaxError> error)
 
 static void testIntegerLiteral(const ASTNode *exp, int value)
 {
-    const auto *integ = dynamic_cast<const ASTInteger *>(exp);
+    REQUIRE(exp->type() == ASTNodeType::ntPrimary);
+    const auto *primary = dynamic_cast<const ASTPrimary *>(exp);
+    const auto *factor = primary->factor();
+    REQUIRE(factor->type() == ASTNodeType::ntInteger);
+    const auto *integ = dynamic_cast<const ASTInteger *>(factor);
     REQUIRE(integ != nullptr);
     REQUIRE(integ->value() == value);
 }
 
-static void testIdentifier(const ASTNode *exp, const std::string &value)
+static void testIdentifierLiteral(const ASTNode *exp, const std::string &value)
 {
-    const auto *ident = dynamic_cast<const ASTIdentifier *>(exp);
+    REQUIRE(exp->type() == ASTNodeType::ntPrimary);
+    const auto *primary = dynamic_cast<const ASTPrimary *>(exp);
+    const auto *factor = primary->factor();
+    REQUIRE(factor->type() == ASTNodeType::ntIdentifier);
+    const auto *ident = dynamic_cast<const ASTIdentifier *>(factor);
     REQUIRE(ident != nullptr);
     REQUIRE(ident->value() == value);
 }
 
 static void testBooleanLiteral(const ASTNode *exp, bool value)
 {
-    const auto *bo = dynamic_cast<const ASTBoolean *>(exp);
+    REQUIRE(exp->type() == ASTNodeType::ntPrimary);
+    const auto *primary = dynamic_cast<const ASTPrimary *>(exp);
+    const auto *factor = primary->factor();
+    REQUIRE(factor->type() == ASTNodeType::ntBoolean);
+    const auto *bo = dynamic_cast<const ASTBoolean *>(factor);
     REQUIRE(bo != nullptr);
     REQUIRE(bo->value() == value);
 }
@@ -112,41 +124,12 @@ static void testLiteralExpression(const ASTExpression *exp, int expected)
 
 static void testLiteralExpression(const ASTExpression *exp, const std::string &value)
 {
-    testIdentifier(exp, value);
+    testIdentifierLiteral(exp, value);
 }
 
 static void testLiteralExpression(const ASTNode *exp, bool value)
 {
     testBooleanLiteral(exp, value);
-}
-
-template <typename T>
-static void testLetStatement(const LetStatementsExpected<T> &tt)
-{
-    std::istringstream iss(tt.input);
-    Scanner sc(iss);
-
-    SyntaxParser sp(sc);
-    auto err = sp.syntaxCheck();
-    checkSyntaxParserErrors(err);
-
-    ASTBuilder ast_builder(sp.tokens());
-    auto ast = ast_builder.build();
-
-    REQUIRE(ast.get() != nullptr);
-    REQUIRE(ast->size() == 1);
-    // Lexer l(tt.input);
-    // Parser p(l);
-    // auto program = p.parseProgram();
-    // checkParserErrors(p);
-
-    // REQUIRE(program->size() == 1);
-
-    testLetStatement(ast->at(0), tt.expected_identifier);
-    const auto *letStmt = dynamic_cast<const ASTLetStatement *>(ast->at(0));
-    REQUIRE(letStmt != nullptr);
-    const auto *val = letStmt->expression();
-    testLiteralExpression(val, tt.expected_value);
 }
 
 template <typename Left, typename Right>
@@ -198,10 +181,27 @@ TEST_CASE("Test_LetStatementsInt")
     };
     for (const auto &tt : expected)
     {
-        testLetStatement(tt);
+        std::istringstream iss(tt.input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        testLetStatement(ast->at(0), tt.expected_identifier);
+        const auto *letStmt = dynamic_cast<const ASTLetStatement *>(ast->at(0));
+        REQUIRE(letStmt != nullptr);
+        const auto *rhs = letStmt->rhs();
+        testIntegerLiteral(rhs, tt.expected_value);
     }
 }
-/*
+
 TEST_CASE("Test_LetStatementsBool")
 {
     std::vector<LetStatementsExpected<bool>> expected = {
@@ -209,7 +209,24 @@ TEST_CASE("Test_LetStatementsBool")
     };
     for (const auto &tt : expected)
     {
-        testLetStatement(tt);
+        std::istringstream iss(tt.input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        testLetStatement(ast->at(0), tt.expected_identifier);
+        const auto *letStmt = dynamic_cast<const ASTLetStatement *>(ast->at(0));
+        REQUIRE(letStmt != nullptr);
+        const auto *rhs = letStmt->rhs();
+        testBooleanLiteral(rhs, tt.expected_value);
     }
 }
 
@@ -220,7 +237,24 @@ TEST_CASE("Test_LetStatementsString")
 
     for (const auto &tt : expected)
     {
-        testLetStatement(tt);
+        std::istringstream iss(tt.input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        testLetStatement(ast->at(0), tt.expected_identifier);
+        const auto *letStmt = dynamic_cast<const ASTLetStatement *>(ast->at(0));
+        REQUIRE(letStmt != nullptr);
+        const auto *rhs = letStmt->rhs();
+        testIdentifierLiteral(rhs, tt.expected_value);
     }
 }
 
@@ -229,37 +263,43 @@ TEST_CASE("Test_ReturnStatements")
     std::string input(" return 5;\
         return 10;\
         return 993322;");
-    Lexer l(input);
-    Parser p(l);
-    auto program = p.parseProgram();
-    checkParserErrors(p);
 
-    REQUIRE(program.get() != nullptr);
-    REQUIRE(program->size() == 3);
+    std::istringstream iss(input);
+    Scanner sc(iss);
 
-    for (const auto &stmt : *program)
-    {
-        const ReturnStatement *returnStmt = dynamic_cast<const ReturnStatement *>(stmt.get());
-        REQUIRE(returnStmt != nullptr);
-    }
+    SyntaxParser sp(sc);
+    auto err = sp.syntaxCheck();
+
+    REQUIRE(err.has_value());
+    REQUIRE(err.value().msg() == "You cannot use a return statement outside a user function");
 }
 
 TEST_CASE("Test_Identifier")
 {
     std::string input("foobar;");
-    Lexer l(input);
-    Parser p(l);
-    auto program = p.parseProgram();
-    checkParserErrors(p);
+    std::istringstream iss(input);
+    Scanner sc(iss);
 
-    REQUIRE(program.get() != nullptr);
-    REQUIRE(program->size() == 1);
+    SyntaxParser sp(sc);
+    auto err = sp.syntaxCheck();
+    checkSyntaxParserErrors(err);
+    ASTBuilder ast_builder(sp.tokens());
+    auto ast = ast_builder.build();
+    REQUIRE(ast.get() != nullptr);
+    REQUIRE(ast->size() == 1);
 
-    for (const auto &stmt : *program)
+    for (const auto &stmt : *ast)
     {
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(stmt.get());
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt.get());
         REQUIRE(expr_stmt != nullptr);
-        const Identifier *ident = dynamic_cast<const Identifier *>(expr_stmt->expression());
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == ASTNodeType::ntPrimary);
+        const auto *primary = dynamic_cast<const ASTPrimary *>(expr);
+        REQUIRE(primary != nullptr);
+        const auto *factor = primary->factor();
+        REQUIRE(factor->type() == ASTNodeType::ntIdentifier);
+        const auto *ident = dynamic_cast<const ASTIdentifier *>(factor);
         REQUIRE(ident != nullptr);
         REQUIRE(ident->value() == "foobar");
     }
@@ -267,121 +307,250 @@ TEST_CASE("Test_Identifier")
 
 TEST_CASE("Test_IntegerLiteralExpression")
 {
-    std::string input("5");
+    std::string input("5;");
+    std::istringstream iss(input);
+    Scanner sc(iss);
 
-    Lexer l(input);
-    Parser p(l);
-    auto program = p.parseProgram();
-    checkParserErrors(p);
-
-    REQUIRE(program.get() != nullptr);
-    REQUIRE(program->size() == 1);
-
-    for (const auto &stmt : *program)
+    SyntaxParser sp(sc);
+    auto err = sp.syntaxCheck();
+    checkSyntaxParserErrors(err);
+    ASTBuilder ast_builder(sp.tokens());
+    auto ast = ast_builder.build();
+    REQUIRE(ast.get() != nullptr);
+    REQUIRE(ast->size() == 1);
+    for (const auto &stmt : *ast)
     {
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(stmt.get());
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt.get());
         REQUIRE(expr_stmt != nullptr);
-        const IntegerLiteral *integer_l = dynamic_cast<const IntegerLiteral *>(expr_stmt->expression());
-        REQUIRE(integer_l != nullptr);
-        REQUIRE(integer_l->value() == 5);
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == ASTNodeType::ntPrimary);
+        const auto *primary = dynamic_cast<const ASTPrimary *>(expr);
+        REQUIRE(primary != nullptr);
+        const auto *factor = primary->factor();
+        REQUIRE(factor->type() == ASTNodeType::ntInteger);
+        const auto *integer = dynamic_cast<const ASTInteger *>(factor);
+        REQUIRE(integer != nullptr);
+        REQUIRE(integer->value() == 5);
     }
 }
 
-TEST_CASE("Test_ParsingPrefixExpressions")
+TEST_CASE("Test_ParsingUnaryExpression")
 {
     std::vector<ExpectedPrefix> expected{
-        {"!5;", "!", 5},
         {"-15;", "-", 15},
     };
 
-    for (const auto &e : expected)
+    for (const auto &[input, op, value] : expected)
     {
-        Lexer l(e.input);
-        Parser p(l);
-        auto program = p.parseProgram();
-        checkParserErrors(p);
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(program->at(0));
+        std::istringstream iss(input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        const auto *stmt = ast->at(0);
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt);
         REQUIRE(expr_stmt != nullptr);
-        const PrefixExpression *exp = dynamic_cast<const PrefixExpression *>(expr_stmt->expression());
-        REQUIRE(exp->op() == e.op);
-        testIntegerLiteral(exp->right(), e.value);
+
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == ASTNodeType::ntUnaryMinus);
+        const auto *uniminus = dynamic_cast<const ASTUniOp *>(expr);
+        REQUIRE(uniminus != nullptr);
+
+        const auto *left = uniminus->left();
+        REQUIRE(left->type() == ASTNodeType::ntPrimary);
+
+        const auto *primary = dynamic_cast<const ASTPrimary *>(left);
+        REQUIRE(primary != nullptr);
+
+        const auto *factor = primary->factor();
+        REQUIRE(factor->type() == ASTNodeType::ntInteger);
+
+        const auto *integer = dynamic_cast<const ASTInteger *>(factor);
+        REQUIRE(integer != nullptr);
+        REQUIRE(integer->value() == value);
+
+        const auto *primaryPlus = primary->primaryPlus();
+        REQUIRE(primaryPlus->type() == ASTNodeType::ntNull);
     }
 }
 
 TEST_CASE("Test_ParsingPrefixExpressionsBoolean")
 {
     std::vector<ExpectedPrefixBoolean> expected{
-        {"!true;", "!", true},
-        {"!false;", "!", false},
+        {"not true;", "!", true},
+        {"not false;", "!", false},
     };
 
-    for (const auto &e : expected)
+    for (const auto &[input, op, value] : expected)
     {
-        Lexer l(e.input);
-        Parser p(l);
-        auto program = p.parseProgram();
-        checkParserErrors(p);
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(program->at(0));
+        std::istringstream iss(input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        const auto *stmt = ast->at(0);
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt);
         REQUIRE(expr_stmt != nullptr);
-        const PrefixExpression *exp = dynamic_cast<const PrefixExpression *>(expr_stmt->expression());
-        REQUIRE(exp->op() == e.op);
-        testLiteralExpression(exp->right(), e.value);
+
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == ASTNodeType::ntPrimary);
+
+        const auto *primary = dynamic_cast<const ASTPrimary *>(expr);
+        REQUIRE(primary != nullptr);
+
+        const auto *factor = primary->factor();
+        REQUIRE(factor->type() == ASTNodeType::ntNOT);
+
+        const auto *notOp = dynamic_cast<const ASTNotOp *>(factor);
+        REQUIRE(notOp != nullptr);
+
+        const auto *notOpExpr = notOp->expression();
+        REQUIRE(notOpExpr->type() == ASTNodeType::ntPrimary);
+
+        const auto *notOpPrimary = dynamic_cast<const ASTPrimary *>(notOpExpr);
+        REQUIRE(notOpPrimary != nullptr);
+
+        const auto *v = notOpPrimary->factor();
+        REQUIRE(v->type() == ASTNodeType::ntBoolean);
+        // REQUIRE(notOp->expression() == bool);
+
+        const auto *primaryPlus = notOpPrimary->primaryPlus();
+        REQUIRE(primaryPlus->type() == ASTNodeType::ntNull);
     }
 }
 
 TEST_CASE("Test_ParsingInfixExpressions")
 {
     std::vector<ExpectedInfix> expected{
-        {"5 + 5;", 5, "+", 5},
-        {"5- 5;", 5, "-", 5},
-        {"5 * 5;", 5, "*", 5},
-        {"5 / 5;", 5, "/", 5},
-        {"5 > 5;", 5, ">", 5},
-        {"5 < 5;", 5, "<", 5},
-        {"5 == 5;", 5, "==", 5},
-        {"5 != 5;", 5, "!=", 5},
+        {"5 + 5;", 5, ASTNodeType::ntAdd, 5},
+        {"5- 5;", 5, ASTNodeType::ntSub, 5},
+        {"5 * 5;", 5, ASTNodeType::ntMult, 5},
+        {"5 / 5;", 5, ASTNodeType::ntDiv, 5},
+        {"5 > 5;", 5, ASTNodeType::ntGT, 5},
+        {"5 < 5;", 5, ASTNodeType::ntLT, 5},
+        {"5 == 5;", 5, ASTNodeType::ntEQ, 5},
+        {"5 != 6;", 5, ASTNodeType::ntNE, 6},
     };
 
-    for (const auto &tt : expected)
+    for (const auto &[input, lhs_exp, op, rhs_exp] : expected)
     {
-        Lexer l(tt.input);
-        Parser p(l);
-        auto program = p.parseProgram();
-        checkParserErrors(p);
-        REQUIRE(program->size() == 1);
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(program->at(0));
+        std::istringstream iss(input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        const auto *stmt = ast->at(0);
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt);
         REQUIRE(expr_stmt != nullptr);
-        const InfixExpression *exp = dynamic_cast<const InfixExpression *>(expr_stmt->expression());
-        testIntegerLiteral(exp->left(), tt.lhs);
-        REQUIRE(exp->op() == tt.op);
-        testIntegerLiteral(exp->right(), tt.rhs);
+
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == op);
+
+        const auto *binop = dynamic_cast<const ASTBinOp *>(expr);
+        REQUIRE(binop != nullptr);
+
+        const auto *lhs = binop->lhs();
+        REQUIRE(lhs->type() == ASTNodeType::ntPrimary);
+        const auto *lhspr = dynamic_cast<const ASTPrimary *>(lhs);
+        REQUIRE(lhspr != nullptr);
+
+        const auto *lhs_fac = lhspr->factor();
+        REQUIRE(lhs_fac->type() == ASTNodeType::ntInteger);
+        const auto *lhs_i = dynamic_cast<const ASTInteger *>(lhs_fac);
+
+        REQUIRE(lhs_i->value() == lhs_exp);
+
+        const auto *rhs = binop->rhs();
+        REQUIRE(rhs->type() == ASTNodeType::ntPrimary);
+        const auto *rhspr = dynamic_cast<const ASTPrimary *>(rhs);
+        REQUIRE(rhspr != nullptr);
+
+        const auto *rhs_fac = rhspr->factor();
+        REQUIRE(rhs_fac->type() == ASTNodeType::ntInteger);
+        const auto *rhs_i = dynamic_cast<const ASTInteger *>(rhs_fac);
+
+        REQUIRE(rhs_i->value() == rhs_exp);
     }
 }
 
 TEST_CASE("Test_ParsingInfixExpressionsBoolean")
 {
     std::vector<ExpectedInfixBoolean> expected{
-        {"true == true", true, "==", true},
-        {"true != false", true, "!=", false},
-        {"false == false", false, "==", false},
+        {"true == true", true, ASTNodeType::ntEQ, true},
+        {"true != false", true, ASTNodeType::ntNE, false},
+        {"false == false", false, ASTNodeType::ntEQ, false},
     };
 
-    for (const auto &tt : expected)
+    for (const auto &[input, lhs_exp, op, rhs_exp] : expected)
     {
-        Lexer l(tt.input);
-        Parser p(l);
-        auto program = p.parseProgram();
-        checkParserErrors(p);
-        REQUIRE(program->size() == 1);
-        const ExpressionStatement *expr_stmt = dynamic_cast<const ExpressionStatement *>(program->at(0));
+        std::istringstream iss(input);
+        Scanner sc(iss);
+
+        SyntaxParser sp(sc);
+        auto err = sp.syntaxCheck();
+        checkSyntaxParserErrors(err);
+        ASTBuilder ast_builder(sp.tokens());
+        auto ast = ast_builder.build();
+        REQUIRE(ast.get() != nullptr);
+        REQUIRE(ast->size() == 1);
+
+        const auto *stmt = ast->at(0);
+        REQUIRE(stmt->type() == ASTNodeType::ntExpressionStatement);
+        const auto *expr_stmt = dynamic_cast<const ASTExpressionStatement *>(stmt);
         REQUIRE(expr_stmt != nullptr);
-        const InfixExpression *exp = dynamic_cast<const InfixExpression *>(expr_stmt->expression());
-        testLiteralExpression(exp->left(), tt.lhs);
-        REQUIRE(exp->op() == tt.op);
-        testLiteralExpression(exp->right(), tt.rhs);
+
+        const auto *expr = expr_stmt->expression();
+        REQUIRE(expr->type() == op);
+
+        const auto *binop = dynamic_cast<const ASTBinOp *>(expr);
+        REQUIRE(binop != nullptr);
+
+        const auto *lhs = binop->lhs();
+        REQUIRE(lhs->type() == ASTNodeType::ntPrimary);
+        const auto *lhspr = dynamic_cast<const ASTPrimary *>(lhs);
+        REQUIRE(lhspr != nullptr);
+
+        const auto *lhs_fac = lhspr->factor();
+        REQUIRE(lhs_fac->type() == ASTNodeType::ntBoolean);
+        const auto *lhs_i = dynamic_cast<const ASTBoolean *>(lhs_fac);
+
+        REQUIRE(lhs_i->value() == lhs_exp);
+
+        const auto *rhs = binop->rhs();
+        REQUIRE(rhs->type() == ASTNodeType::ntPrimary);
+        const auto *rhspr = dynamic_cast<const ASTPrimary *>(rhs);
+        REQUIRE(rhspr != nullptr);
+
+        const auto *rhs_fac = rhspr->factor();
+        REQUIRE(rhs_fac->type() == ASTNodeType::ntBoolean);
+        const auto *rhs_i = dynamic_cast<const ASTBoolean *>(rhs_fac);
+
+        REQUIRE(rhs_i->value() == rhs_exp);
     }
 }
-
+/*
 TEST_CASE("Test_OperatorPrecedenceParsing")
 {
     std::vector<OperatorPrecedenceExpected> expected{
@@ -489,7 +658,8 @@ TEST_CASE("Test_OperatorPrecedenceParsing")
         REQUIRE(got == tt.expected);
     }
 }
-
+*/
+/*
 TEST_CASE("Test_IfExpression")
 {
     std::string input("if (x < y) { x }");
@@ -509,7 +679,8 @@ TEST_CASE("Test_IfExpression")
     testIdentifier(consequence->expression(), "x");
     REQUIRE(exp->alternative() == nullptr);
 }
-
+    */
+/*
 TEST_CASE("Test_FunctionLiteranParsing")
 {
     std::string input("fn(x, y) { x + y; }");
@@ -574,4 +745,4 @@ TEST_CASE("Test_CallExpressionParsing")
     testInfixExpression<int, int>(exp->argument(1), 2, "*", 3);
     testInfixExpression<int, int>(exp->argument(2), 4, "+", 5);
 }
-    */
+*/
