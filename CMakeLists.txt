@@ -28,6 +28,7 @@ set(MONKEY_SRC_FILES
     src/globals.hpp
     src/environment.hpp
     src/macros.hpp
+    src/macros.cpp
     src/syntaxParser.cpp
     src/syntaxParser.hpp
     src/tokenTable.cpp
