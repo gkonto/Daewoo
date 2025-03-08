@@ -47,7 +47,7 @@ public:
 
     const std::string &symbolName() const { return name_; }
     int ivalue() const { return std::get<int>(value_); }
-    int dvalue() const { return std::get<double>(value_); }
+    double dvalue() const { return std::get<double>(value_); }
 
 private:
     TSymbolElementType type_;
@@ -58,7 +58,7 @@ private:
 class TSymbolTable
 {
 public:
-    const TSymbol &get(size_t index) const { return symbols_[index]; };
+    const TSymbol &get(int index) const { return symbols_[index]; };
     void store(int index, int ivalue);
     void store(int index, bool bvalue);
     void store(int index, double dvalue);

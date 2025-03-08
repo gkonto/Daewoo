@@ -55,27 +55,30 @@ void VM::run(const TProgram &code)
         case OpCodes::Inc:
             incOp(byteCode.index);
             break;
-            // case OpCodes::Pushi:
-            //  push(byteCode.index);
-            // break;
-            //  case OpCodes::Add:
-            //      addOp();
-            //      break;
-            //  case OpCodes::Sub:
-            //      subOp();
-            //      break;
-            //  case OpCodes::Mult:
-            //      multOp();
-            //      break;
-            //  case OpCodes::Divide:
-            //      divOp();
-            //      break;
-            //  case OpCodes::Umi:
-            //      unaryMinusOp();
-            //      break;
-            //  case OpCodes::Power:
-            //      powerOp();
-            //      break;
+        case OpCodes::Dec:
+            decOp(byteCode.index);
+            break;
+        case OpCodes::And:
+            andOp();
+            break;
+        case OpCodes::Or:
+            orOp();
+            break;
+        case OpCodes::Not:
+            notOp();
+            break;
+        case OpCodes::Xor:
+            xorOp();
+            break;
+        case OpCodes::IsLt:
+            isLt();
+            break;
+        case OpCodes::IsGt:
+            isGt();
+            break;
+        case OpCodes::IsGte:
+            isGte();
+            break;
         }
     }
 }
@@ -468,5 +471,195 @@ void VM::incOp(int index)
         break;
     default:
         throw std::runtime_error("Internal error: Illegal use of incBy on a non-integer/double type");
+    }
+}
+
+void VM::decOp(int index)
+{
+    auto &st = symboltable();
+    auto symbol = st.get(index);
+    switch (symbol.type())
+    {
+    case TSymbolElementType::Integer:
+        st.store(index, symbol.ivalue() - 1);
+        break;
+    case TSymbolElementType::Double:
+        st.store(index, symbol.dvalue() - 1);
+        break;
+    default:
+        throw std::runtime_error("Internal error: Illegal use of deccBy on a non-integer/double type");
+    }
+}
+
+void VM::andOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean)
+    {
+        stack_.push(st1.bvalue() && st2.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible types in AND operation");
+}
+
+void VM::orOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean)
+    {
+        stack_.push(st1.bvalue() || st2.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible types in OR operation");
+}
+
+void VM::notOp()
+{
+    auto st = stack_.pop();
+    if (st.type() == TStackRecordType::stBoolean)
+    {
+        stack_.push(!st.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible type in NOT operation");
+}
+
+void VM::xorOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean)
+    {
+        stack_.push(st1.bvalue() ^ st2.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible types in XOR operation");
+}
+
+void VM::isLt()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger)
+    {
+        if (st2.type() == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() < st1.ivalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() < st1.ivalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+        }
+    }
+    else if (st1_type == TStackRecordType::stDouble)
+    {
+        if (st2_type == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() < st1.dvalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() < st1.dvalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+    }
+}
+
+void VM::isGt()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger)
+    {
+        if (st2.type() == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() > st1.ivalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() > st1.ivalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+        }
+    }
+    else if (st1_type == TStackRecordType::stDouble)
+    {
+        if (st2_type == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() > st1.dvalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() > st1.dvalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+    }
+}
+
+void VM::isGte()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger)
+    {
+        if (st2.type() == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() >= st1.ivalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() >= st1.ivalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+        }
+    }
+    else if (st1_type == TStackRecordType::stDouble)
+    {
+        if (st2_type == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() >= st1.dvalue());
+        }
+        else if (st2_type == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() >= st1.dvalue());
+        }
+        else
+        {
+            throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
     }
 }

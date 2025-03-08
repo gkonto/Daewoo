@@ -26,6 +26,14 @@ public:
     void unaryMinusOp();
     void powerOp();
     void incOp(int index);
+    void decOp(int index);
+    void andOp();
+    void orOp();
+    void notOp();
+    void xorOp();
+    void isLt();
+    void isGt();
+    void isGte();
 
 private:
     static void error(const std::string &arg, const TMachineStackRecord &st1, const TMachineStackRecord &st2);
