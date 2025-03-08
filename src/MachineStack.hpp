@@ -6,31 +6,37 @@
 #include <stack>
 
 // Define stack types
-enum class TStackType
+enum class TStackRecordType
 {
     stNone,
     stInteger,
     stDouble,
     stBoolean,
-    stString
+    stString,
+    stList
 };
 
 // Define the structure using std::variant for type safety
 class TMachineStackRecord
 {
 public:
-    using TStackRecordValue = std::variant<std::monostate, int, bool, double>;
+    using TStackRecordValue = std::variant<std::monostate, int, bool, double, std::string>;
 
-    TMachineStackRecord() : stackType_(TStackType::stNone), value_(std::monostate{}) {}
-    TMachineStackRecord(int i) : stackType_(TStackType::stInteger), value_(i) {}
-    TMachineStackRecord(bool b) : stackType_(TStackType::stBoolean), value_(b) {}
-    TMachineStackRecord(double d) : stackType_(TStackType::stDouble), value_(d) {}
+    TMachineStackRecord() : stackType_(TStackRecordType::stNone), value_(std::monostate{}) {}
+    TMachineStackRecord(int i) : stackType_(TStackRecordType::stInteger), value_(i) {}
+    TMachineStackRecord(bool b) : stackType_(TStackRecordType::stBoolean), value_(b) {}
+    TMachineStackRecord(double d) : stackType_(TStackRecordType::stDouble), value_(d) {}
 
     const TStackRecordValue &value() const { return value_; }
-    TStackType type() const { return stackType_; }
+    int ivalue() const { return std::get<int>(value_); }
+    bool bvalue() const { return std::get<bool>(value_); }
+    double dvalue() const { return std::get<double>(value_); }
+    std::string svalue() const { return std::get<std::string>(value_); }
+
+    TStackRecordType type() const { return stackType_; }
 
 private:
-    TStackType stackType_;
+    TStackRecordType stackType_;
     TStackRecordValue value_;
 };
 
@@ -56,5 +62,7 @@ private:
     int stackSize_;
     std::stack<TMachineStackRecord> stack_;
 };
+
+std::string TStackRecordTypeToStr(TStackRecordType type);
 
 #endif

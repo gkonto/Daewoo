@@ -24,9 +24,9 @@ public:
     void divOp();
     void unaryMinusOp();
     void powerOp();
-    void push();
 
 private:
+    static void error(const std::string &arg, const TMachineStackRecord &st1, const TMachineStackRecord &st2);
     TMachineStack stack_;
     std::shared_ptr<TModule> module_;
 };
