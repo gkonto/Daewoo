@@ -42,6 +42,7 @@ set(MONKEY_SRC_FILES
     src/TSymbolTable.hpp
     src/TSymbolTable.cpp
     src/OpCodes.hpp
+    src/OpCodes.cpp
     src/MachineStack.hpp
     src/MachineStack.cpp
 )

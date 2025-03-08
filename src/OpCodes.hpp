@@ -1,8 +1,11 @@
 #ifndef OPCODES_HPP_INCLUDED
 #define OPCODES_HPP_INCLUDED
 
+#include <string>
+
 enum class OpCodes
 {
+    Nop,
     Halt,
     // Arithmetic
     Add, // Pop two values off stack; add them and push reult on to stack
@@ -59,7 +62,7 @@ enum class OpCodes
 
     // Calling routines
     Call,    // Call a user defined function
-    Builtin, // Call a builin function
+    BuiltIn, // Call a builin function
     Ret,     // Return from a function
 
     Print,       // Pop the stack and write the item to stdout
@@ -71,4 +74,7 @@ enum class OpCodes
 
     PopAndSend // Debug opcode
 };
+
+std::string OpCodeToName(OpCodes code);
+
 #endif
