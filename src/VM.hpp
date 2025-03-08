@@ -5,6 +5,7 @@
 #include "MachineStack.hpp"
 #include "ConstantTable.hpp"
 #include "TSymbolTable.hpp"
+#include "TModule.hpp"
 
 class TModule;
 
@@ -24,9 +25,12 @@ public:
     void divOp();
     void unaryMinusOp();
     void powerOp();
+    void incOp(int index);
 
 private:
     static void error(const std::string &arg, const TMachineStackRecord &st1, const TMachineStackRecord &st2);
+    TSymbolTable &symboltable() { return module_->symboltable(); }
+
     TMachineStack stack_;
     std::shared_ptr<TModule> module_;
 };

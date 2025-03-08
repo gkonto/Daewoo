@@ -3,8 +3,23 @@
 
 #include <vector>
 #include <cstddef>
+#include <variant>
 
 #include "OpCodes.hpp"
+
+using TSymbolValue = std::variant<int, double, bool, std::string>;
+
+enum class TSymbolElementType
+{
+    NonExistant,
+    Undefined,
+    Integer,
+    Double,
+    Boolean,
+    String,
+    List,
+    UserFunc
+};
 
 struct TByteCode
 {
@@ -22,10 +37,35 @@ private:
     std::vector<TByteCode> bcode_;
 };
 
+class TSymbol
+{
+public:
+    friend class TSymbolTable;
+
+    TSymbolElementType type() const { return type_; }
+    void setType(TSymbolElementType type) { type_ = type; }
+
+    const std::string &symbolName() const { return name_; }
+    int ivalue() const { return std::get<int>(value_); }
+    int dvalue() const { return std::get<double>(value_); }
+
+private:
+    TSymbolElementType type_;
+    std::string name_;
+    TSymbolValue value_;
+};
+
 class TSymbolTable
 {
 public:
+    const TSymbol &get(size_t index) const { return symbols_[index]; };
+    void store(int index, int ivalue);
+    void store(int index, bool bvalue);
+    void store(int index, double dvalue);
+
 private:
+    void checkForExistingData(int index);
+    std::vector<TSymbol> symbols_;
 };
 
 #endif

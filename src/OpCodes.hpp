@@ -11,8 +11,8 @@ enum class OpCodes
     Add, // Pop two values off stack; add them and push reult on to stack
     Sub,
     Mult,
-    Divi, // Integer division
-    Mod,  // Modulus of two integer values
+    // Divi, // Integer division
+    Mod, // Modulus of two integer values
     Divide,
     Umi,
     Power,

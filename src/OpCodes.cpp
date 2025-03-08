@@ -15,8 +15,6 @@ std::string OpCodeToName(OpCodes code)
         return "sub";
     case OpCodes::Mult:
         return "mult";
-    case OpCodes::Divi:
-        return "divi";
     case OpCodes::Divide:
         return "divide";
     case OpCodes::Mod:

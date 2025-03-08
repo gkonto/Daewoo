@@ -11,6 +11,7 @@ public:
         : name_(name) {}
 
     const TProgram &code() const { return code_; }
+    TSymbolTable &symboltable() { return symboltable_; }
 
 private:
     std::string name_;

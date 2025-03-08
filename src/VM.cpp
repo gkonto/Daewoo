@@ -52,6 +52,9 @@ void VM::run(const TProgram &code)
         case OpCodes::Umi:
             unaryMinusOp();
             break;
+        case OpCodes::Inc:
+            incOp(byteCode.index);
+            break;
             // case OpCodes::Pushi:
             //  push(byteCode.index);
             // break;
@@ -448,5 +451,22 @@ void VM::unaryMinusOp()
         break;
     default:
         throw std::runtime_error("Data type not supported by unary operator");
+    }
+}
+
+void VM::incOp(int index)
+{
+    auto &st = symboltable();
+    auto symbol = st.get(index);
+    switch (symbol.type())
+    {
+    case TSymbolElementType::Integer:
+        st.store(index, symbol.ivalue() + 1);
+        break;
+    case TSymbolElementType::Double:
+        st.store(index, symbol.dvalue() + 1);
+        break;
+    default:
+        throw std::runtime_error("Internal error: Illegal use of incBy on a non-integer/double type");
     }
 }
