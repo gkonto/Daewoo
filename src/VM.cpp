@@ -1,5 +1,5 @@
 #include <stdexcept>
-
+#include <cmath>
 #include "VM.hpp"
 #include "TModule.hpp"
 #include "OpCodes.hpp"
@@ -37,8 +37,20 @@ void VM::run(const TProgram &code)
         case OpCodes::Add:
             addOp();
             break;
+        case OpCodes::Sub:
+            subOp();
+            break;
         case OpCodes::Mult:
             multOp();
+            break;
+        case OpCodes::Divide:
+            divOp();
+            break;
+        case OpCodes::Power:
+            powerOp();
+            break;
+        case OpCodes::Umi:
+            unaryMinusOp();
             break;
             // case OpCodes::Pushi:
             //  push(byteCode.index);
@@ -236,11 +248,11 @@ void VM::multOp()
     {
         if (st1_typ == TStackRecordType::stInteger)
         {
-            stack_.push(st1.ivalue() + st2.dvalue());
+            stack_.push(st1.ivalue() * st2.dvalue());
         }
         else if (st1_typ == TStackRecordType::stDouble)
         {
-            stack_.push(st1.dvalue() + st2.dvalue());
+            stack_.push(st1.dvalue() * st2.dvalue());
         }
         else
         {
@@ -270,6 +282,171 @@ void VM::multOp()
     }
     else
     {
-        throw std::runtime_error("Internal Error: Unsupported datatype in add");
+        throw std::runtime_error("Internal Error: Unsupported datatype in multiply");
+    }
+}
+
+void VM::divOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+
+    auto st1_typ = st1.type();
+    auto st2_typ = st2.type();
+
+    if (st1_typ == TStackRecordType::stNone ||
+        st2_typ == TStackRecordType::stNone)
+    {
+        throw std::runtime_error("RunTimeError: Variable undefined");
+    }
+
+    if (st2_typ == TStackRecordType::stInteger)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() / st1.ivalue());
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() / st1.ivalue());
+        }
+        else
+        {
+            error("dividing", st2, st1);
+        }
+    }
+    else if (st2_typ == TStackRecordType::stDouble)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.dvalue() / st1.ivalue());
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() / st1.dvalue());
+        }
+        else
+        {
+            error("dividing", st2, st1);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Internal Error: Unsupported datatype in dividing");
+    }
+}
+
+void VM::subOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+
+    auto st1_typ = st1.type();
+    auto st2_typ = st2.type();
+
+    if (st1_typ == TStackRecordType::stNone ||
+        st2_typ == TStackRecordType::stNone)
+    {
+        throw std::runtime_error("RunTimeError: Variable undefined");
+    }
+
+    if (st2_typ == TStackRecordType::stInteger)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.ivalue() - st1.ivalue());
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.ivalue() - st1.dvalue());
+        }
+        else
+        {
+            error("subtracting", st2, st1);
+        }
+    }
+    else if (st2_typ == TStackRecordType::stDouble)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(st2.dvalue() - st1.ivalue());
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(st2.dvalue() - st1.dvalue());
+        }
+        else
+        {
+            error("subtracting", st2, st1);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Internal Error: Only integers and floats can be subtracted from each other");
+    }
+}
+
+void VM::powerOp()
+{
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+
+    auto st1_typ = st1.type();
+    auto st2_typ = st2.type();
+
+    if (st1_typ == TStackRecordType::stNone ||
+        st2_typ == TStackRecordType::stNone)
+    {
+        throw std::runtime_error("RunTimeError: Variable undefined");
+    }
+
+    if (st2_typ == TStackRecordType::stInteger)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(std::pow(st2.ivalue(), st1.ivalue()));
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(std::pow(st2.ivalue(), st1.dvalue()));
+        }
+        else
+        {
+            error("exponential", st2, st1);
+        }
+    }
+    else if (st2_typ == TStackRecordType::stDouble)
+    {
+        if (st1_typ == TStackRecordType::stInteger)
+        {
+            stack_.push(std::pow(st2.dvalue(), st1.ivalue()));
+        }
+        else if (st1_typ == TStackRecordType::stDouble)
+        {
+            stack_.push(std::pow(st2.dvalue(), st1.dvalue()));
+        }
+        else
+        {
+            error("exponential", st2, st1);
+        }
+    }
+    else
+    {
+        throw std::runtime_error("Internal Error: Data type not supported by power operator");
+    }
+}
+void VM::unaryMinusOp()
+{
+    auto st = stack_.pop();
+    switch (st.type())
+    {
+    case TStackRecordType::stInteger:
+        stack_.push(-st.ivalue());
+        break;
+    case TStackRecordType::stDouble:
+        stack_.push(-st.dvalue());
+        break;
+    default:
+        throw std::runtime_error("Data type not supported by unary operator");
     }
 }
