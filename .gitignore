@@ -1,5 +1,5 @@
 # Ignore build directories
-build_64*/*
+build*/*
 build_linux/
 cmake-build-*/
 

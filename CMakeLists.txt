@@ -37,6 +37,13 @@ set(MONKEY_SRC_FILES
     src/ASTNode.cpp
     src/ASTNode.hpp
     src/ASTNodeTypes.hpp
+    src/VM.hpp
+    src/VM.cpp
+    src/TSymbolTable.hpp
+    src/TSymbolTable.cpp
+    src/OpCodes.hpp
+    src/MachineStack.hpp
+    src/MachineStack.cpp
 )
 
 # Define compilation flags for different compilers
