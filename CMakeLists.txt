@@ -9,7 +9,7 @@ enable_testing()
 include_directories(src)
 
 set(MONKEY_SRC_FILES
-    src/token.cpp
+    src/Token.cpp
     src/lexer.cpp
     src/repl.cpp
     src/ast.cpp
@@ -18,7 +18,7 @@ set(MONKEY_SRC_FILES
     src/evaluator.cpp
     src/globals.cpp
     src/environment.cpp
-    src/token.hpp
+    src/Token.hpp
     src/lexer.hpp
     src/repl.hpp
     src/ast.hpp
@@ -29,23 +29,30 @@ set(MONKEY_SRC_FILES
     src/environment.hpp
     src/macros.hpp
     src/macros.cpp
-    src/syntaxParser.cpp
-    src/syntaxParser.hpp
-    src/tokenTable.cpp
-    src/tokenTable.hpp
+    src/SyntaxParser.cpp
+    src/SyntaxParser.hpp
+    src/TokenTable.cpp
+    src/TokenTable.hpp
     src/ASTBuilder.cpp
     src/ASTBuilder.hpp
     src/ASTNode.cpp
     src/ASTNode.hpp
     src/ASTNodeTypes.hpp
-    src/VM.hpp
-    src/VM.cpp
+    #src/VM.hpp
+    #src/VM.cpp
     src/TSymbolTable.hpp
     src/TSymbolTable.cpp
     src/OpCodes.hpp
     src/OpCodes.cpp
-    src/MachineStack.hpp
-    src/MachineStack.cpp
+    #src/MachineStack.hpp
+    #src/MachineStack.cpp
+    src/ConstantTable.hpp
+    src/ConstantTable.cpp
+    src/TStringObject.hpp
+    src/MemoryManager.hpp
+    src/MemoryManager.cpp
+    src/TListObject.hpp
+    src/TListObject.cpp
 )
 
 # Define compilation flags for different compilers

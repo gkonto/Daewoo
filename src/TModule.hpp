@@ -4,8 +4,8 @@
 
 #include "TSymbolTable.hpp"
 
-class TModule
-{
+/* A module is a pair of bytecode associated with a symboltable */
+class TModule {
 public:
     explicit TModule(const std::string &name)
         : name_(name) {}

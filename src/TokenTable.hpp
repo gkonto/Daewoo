@@ -2,21 +2,15 @@
 #define TOKENTABLE_HPP_INCLUDED
 
 #include <vector>
-#include "token.hpp"
+#include "Token.hpp"
 
-class TokensTable
-{
+class TokensTable {
 public:
-    enum class Mode
-    {
-        Saving,
-        Reading
-    };
+    enum class Mode { Saving, Reading };
 
 public:
     template <typename T>
-    void add(T &&entry)
-    {
+    void add(T &&entry) {
         tokens_.emplace_back(std::forward<TokenRecord>(entry));
         tokenRecord_ = tokens_.back();
     }
@@ -31,7 +25,7 @@ public:
 
 private:
     std::vector<TokenRecord> tokens_;
-    TokenRecord tokenRecord_; // FIXME do i need this ?
+    TokenRecord tokenRecord_;  // FIXME do i need this ?
     size_t ptr_ = 0;
     Mode mode_ = Mode::Saving;
 };

@@ -3,13 +3,12 @@
 
 #include <vector>
 #include <optional>
-#include "token.hpp"
-#include "tokenTable.hpp"
+#include "Token.hpp"
+#include "TokenTable.hpp"
 
 class Scanner;
 
-class SyntaxError
-{
+class SyntaxError {
 public:
     template <typename T>
     SyntaxError(T &&msg)
@@ -21,8 +20,7 @@ private:
     std::string msg_;
 };
 
-class SyntaxParser
-{
+class SyntaxParser {
 public:
     explicit SyntaxParser(Scanner &sc);
     std::optional<SyntaxError> syntaxCheck();

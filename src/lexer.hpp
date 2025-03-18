@@ -6,19 +6,17 @@
 #include <istream>
 #include <utility>
 #include <deque>
-#include "token.hpp"
+#include "Token.hpp"
 #include "defs.hpp"
 
-class ScannerError
-{
+class ScannerError {
 public:
     ScannerError() = default;
     ScannerError(const std::string &errorMsg, int lineNumber, int columnNumber)
         : errorMsg_(errorMsg), lineNumber_(lineNumber), columnNumber_(columnNumber) {}
 
     template <typename T>
-    void setError(T &&msg, int lineNumber, int columnNumber)
-    {
+    void setError(T &&msg, int lineNumber, int columnNumber) {
         errorMsg_ = std::forward<std::string>(msg);
         lineNumber_ = lineNumber;
         columnNumber_ = columnNumber;
@@ -33,8 +31,7 @@ private:
     int columnNumber_ = 0;
 };
 
-class Scanner
-{
+class Scanner {
 public:
     Scanner(std::istream &input);
     void nextToken();
@@ -80,8 +77,7 @@ private:
     static constexpr char CR = '\r';
 };
 
-class Lexer
-{
+class Lexer {
 public:
     explicit Lexer(const std::string &input);
 

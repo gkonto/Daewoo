@@ -1,0 +1,77 @@
+# Clang-Format Configuration for C++ (2025)
+---
+Language: Cpp
+BasedOnStyle: LLVM
+
+# Indentation and Spacing
+IndentWidth: 4 # Use 4 spaces for indentation
+TabWidth: 4 # Tab width set to 4 spaces
+UseTab: Never # Always use spaces instead of tabs
+IndentCaseLabels: true # Indent 'case' labels in switch statements
+ContinuationIndentWidth: 4 # Indentation for line continuations
+AccessModifierOffset: -4 # Align public/protected/private with class definition
+
+# Brace Formatting
+BreakBeforeBraces: Attach # Keep opening braces on the same line
+AllowShortIfStatementsOnASingleLine: true # Allow one-line 'if' statements
+AllowShortLoopsOnASingleLine: true # Allow short loops on one line
+AllowShortFunctionsOnASingleLine: Inline # Allow small functions to be inline
+AllowShortEnumsOnASingleLine: false
+
+# Column and Wrapping Rules
+ColumnLimit: 120 # Maximum line width (increase for wide monitors)
+PenaltyExcessCharacter: 5000 # Higher penalty for exceeding column limit
+PenaltyBreakBeforeFirstCallParameter: 50 # Lower penalty for breaking function calls
+PenaltyBreakString: 100 # Prefer keeping long strings on one line
+
+# Function Formatting
+AlwaysBreakAfterReturnType: None # Keep return type and function name on the same line
+AlwaysBreakBeforeMultilineStrings: true # Break long string literals across lines
+BreakConstructorInitializersBeforeComma: false # Keep initializers compact
+
+# Pointer and Reference Formatting
+PointerAlignment: Right # Align '*' and '&' with variable name (e.g., `int* ptr;`)
+SpaceAfterCStyleCast: true # Add space after C-style casts
+
+# Namespace and Class Formatting
+NamespaceIndentation: None # No extra indentation inside namespaces
+FixNamespaceComments: true # Add closing comments for namespaces
+SortUsingDeclarations: true # Sort 'using' statements alphabetically
+EmptyLineBeforeAccessModifier: LogicalBlock # Add space before public/private/protected
+PackConstructorInitializers: NextLineOnly
+
+# Operator Formatting
+SpacesInAngles: false # No spaces inside '<' and '>' in templates
+SpacesInSquareBrackets: false # No spaces inside '[ ]'
+SpaceBeforeParens: ControlStatements # Add space before '(' in 'if', 'for', 'while', etc.
+SpaceBeforeRangeBasedForLoopColon: false # Add space before ':' in range-based loops
+SpacesInConditionalStatement: false # Keep spaces in 'condition ? true : false'
+SpacesInParentheses: false # No spaces inside '()'
+
+# Comment Formatting
+ReflowComments: true # Wrap long comments automatically
+AlignTrailingComments: true # Align trailing comments
+KeepEmptyLinesAtTheStartOfBlocks: true # Preserve empty lines inside functions
+
+# Include Formatting
+IncludeBlocks: Preserve # Keep original include grouping
+IncludeCategories:
+  - Regex: '^<.*\.h>' # System headers (e.g., <vector>)
+    Priority: 1
+  - Regex: '^"project/.*"' # Project-specific headers
+    Priority: 2
+  - Regex: ".*" # Other includes
+    Priority: 3
+SortIncludes: false # Sort includes in order
+IncludeIsMainRegex: "([-_]?test)?$" # Recognize main project header files
+
+# Formatting for Templates and Lambdas
+BreakBeforeInheritanceComma: false # Keep base class declarations compact
+AlignAfterOpenBracket: Align # Align function parameters after '('
+AllowAllArgumentsOnNextLine: true # Allow breaking long function arguments
+LambdaBodyIndentation: Signature # Indent lambda bodies relative to signature
+AlwaysBreakTemplateDeclarations: Yes
+
+# Miscellaneous
+DerivePointerAlignment: false # Do not override PointerAlignment
+SpacesBeforeTrailingComments: 2 # Two spaces before inline comments

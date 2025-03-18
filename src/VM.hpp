@@ -9,8 +9,7 @@
 
 class TModule;
 
-class VM
-{
+class VM {
 public:
     explicit VM(int stackSize)
         : stack_(stackSize) {}
@@ -32,10 +31,21 @@ public:
     void notOp();
     void xorOp();
     void isLt();
+    void isLte();
     void isGt();
     void isGte();
+    void modOp();
+    void isEq();
+    void isNotEq();
+    void loadSymbol(int index);
 
 private:
+    void push(int value) { stack_.push(value); }
+    void push(bool value) { stack_.push(value); }
+    void push(double value) { stack_.push(value); }
+    void push(const std::string &value) { stack_.push(value); }
+    void push() { stack_.push(); };
+
     static void error(const std::string &arg, const TMachineStackRecord &st1, const TMachineStackRecord &st2);
     TSymbolTable &symboltable() { return module_->symboltable(); }
 

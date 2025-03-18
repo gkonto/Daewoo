@@ -2,12 +2,11 @@
 #define ASTCONSTRUCT_HPP_INCLUDED
 
 #include <memory>
-#include "tokenTable.hpp"
-#include "token.hpp"
+#include "TokenTable.hpp"
+#include "Token.hpp"
 #include "ASTNode.hpp"
 
-class ASTBuilder
-{
+class ASTBuilder {
 public:
     explicit ASTBuilder(TokensTable &sc);
     std::unique_ptr<ASTProgram> build();

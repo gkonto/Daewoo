@@ -2,7 +2,7 @@
 #define PARSER_HPP_INCLUDED
 
 #include "lexer.hpp"
-#include "token.hpp"
+#include "Token.hpp"
 #include "macros.hpp"
 #include <memory>
 #include <string>
@@ -22,8 +22,7 @@ class BlockStatement;
 class FunctionLiteral;
 class Identifier;
 
-enum Precedence
-{
+enum Precedence {
     Lowest,
     Equals,
     LessGreater,
@@ -33,8 +32,7 @@ enum Precedence
     Call,
 };
 
-class Parser
-{
+class Parser {
 public:
     using PrefixParseF = std::function<__Ptr<Expression>()>;
     using InfixParseF = std::function<__Ptr<Expression>(__Ptr<Expression>)>;
