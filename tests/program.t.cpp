@@ -113,6 +113,35 @@ static TProgram simple_12() {
     return program;
 }
 
+static TProgram simple_13() {
+    // "--32;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 32);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_14() {
+    // "---32;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 32);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_15() {
+    // "++++32;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 32);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static TProgram addition_1() {
     TProgram program;
     program.addByteCode(OpCode::Pushi, 1);
@@ -648,6 +677,63 @@ static TProgram relational_operators_7() {
     return program;
 }
 
+static TProgram relational_operators_8() {
+    // "x < x and x > x;"
+    TProgram program;
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::IsLt);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::IsGt);
+    program.addByteCode(OpCode::And);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram relational_operators_9() {
+    // "((x >= y1) and not (w <= v);"
+    TProgram program;
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::IsGte);
+    program.addByteCode(OpCode::Load, 3);
+    program.addByteCode(OpCode::Load, 4);
+    program.addByteCode(OpCode::IsLte);
+    program.addByteCode(OpCode::Not);
+    program.addByteCode(OpCode::And);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram relational_operators_10() {
+    // "not (1 > 2);"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::IsGt);
+    program.addByteCode(OpCode::Not);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram relational_operators_11() {
+    // "((x >= y1) and not (w <= v)) == False)"
+    TProgram program;
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::IsGte);
+    program.addByteCode(OpCode::Load, 3);
+    program.addByteCode(OpCode::Load, 4);
+    program.addByteCode(OpCode::IsLte);
+    program.addByteCode(OpCode::Not);
+    program.addByteCode(OpCode::And);
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::IsEq);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static void testByteCodeCore(const std::string &input, const TProgram &expected) {
     std::istringstream iss(input);
     Scanner sc(iss);
@@ -686,6 +772,9 @@ TEST_CASE("Test_ParsingByteCode") {
             {"1.2E2",  simple_10()},
             {"0.1E2",  simple_11()},
             {"1.2E-2", simple_12()},
+            {"--32;",  simple_13()},
+            {"---32;", simple_14()},
+            {"++++32", simple_15()}
         };
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
@@ -808,15 +897,28 @@ TEST_CASE("Test_ParsingByteCode") {
 
     SECTION("Relational Operators") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
-            {"2 < 3;",      relational_operators_1()},
-            {"2 > 3;",      relational_operators_2()},
-            {"2 <= 3;",     relational_operators_3()},
-            {"2 >= 3;",     relational_operators_4()},
-            {"2 == 3;",     relational_operators_5()},
-            {"2 != 3;",     relational_operators_6()},
-            {"2 + 3 == 5;", relational_operators_7()}
+            {"2 < 3;",                                relational_operators_1() },
+            {"2 > 3;",                                relational_operators_2() },
+            {"2 <= 3;",                               relational_operators_3() },
+            {"2 >= 3;",                               relational_operators_4() },
+            {"2 == 3;",                               relational_operators_5() },
+            {"2 != 3;",                               relational_operators_6() },
+            {"2 + 3 == 5;",                           relational_operators_7() },
+            {"x < x and x > x;",                      relational_operators_8() },
+            {"((x >= y1) and not (w <= v);",          relational_operators_9() },
+            {"not (1 > 2);",                          relational_operators_10()},
+            {"((x >= y1) and not (w <= v)) == false", relational_operators_11()}
         };
 
+        for (const auto &[input, expected]: tests) {
+            testByteCodeCore(input, expected);
+        }
+    }
+
+    SECTION("Expression") {
+        std::vector<std::tuple<std::string, TProgram>> tests = {
+            //{"not (false or true);", expression_1()},
+        };
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
         }

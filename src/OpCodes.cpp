@@ -76,24 +76,10 @@ std::string OpCodeToString(OpCode code) {
             return "jmpIfTrue";
         case OpCode::JmpIfFalse:
             return "jmpIfFalse";
-            // case OpCodes::LvecIdx:
-            //     return "lvecIdx";
-            // case OpCodes::SvecIdx:
-            //     return "svecIdx";
-            // case OpCodes::LocalLvecIdx:
-            //     return "locallvecIdx";
-            // case OpCodes::LocalSvecIdx:
-            return "localsvecIdx";
         case OpCode::Call:
             return "call";
-        // case OpCodes::BuiltIn:
-        //     return "builtin";
         case OpCode::Ret:
             return "ret";
-            // case OpCodes::CreateList:
-            //     return "createList";
-            // case OpCodes::AppendList:
-            //     return "appendList";
     }
     return "";
 }

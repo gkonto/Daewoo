@@ -109,7 +109,7 @@ void SyntaxParser::nextToken() {
 // OR (exprStatement) -> (expression)
 std::optional<SyntaxError> SyntaxParser::expressionStatement() {
     auto err = expression();
-    if (err) return err;
+    if (err.has_value()) return err;
 
     if (tokenVector_.token().code() == TokenCode::tAssign) {
         nextToken();
@@ -143,6 +143,7 @@ std::optional<SyntaxError> SyntaxParser::relationalOperators() {
 // expression = simpleExpression | simpleExpression relationalOp simpleExpression
 std::optional<SyntaxError> SyntaxParser::expression() {
     auto err = relationalOperators();
+    if (err) return err;
 
     while (tokenVector_.token().code() == TokenCode::tOr ||
            tokenVector_.token().code() == TokenCode::tAnd) {
@@ -156,6 +157,7 @@ std::optional<SyntaxError> SyntaxParser::expression() {
 // expression = term { ('+' | '-' | MOD | DIV) power }
 std::optional<SyntaxError> SyntaxParser::simpleExpression() {
     auto err = term();
+    if (err) return err;
 
     while (tokenVector_.token().code() == TokenCode::tPlus ||
            tokenVector_.token().code() == TokenCode::tMinus) {
@@ -183,9 +185,6 @@ std::optional<SyntaxError> SyntaxParser::term() {
 std::optional<SyntaxError> SyntaxParser::power() {
     while (tokenVector_.token().code() == TokenCode::tMinus ||
            tokenVector_.token().code() == TokenCode::tPlus) {
-        if (tokenVector_.token().code() == TokenCode::tPlus) {
-            return SyntaxError("Too many plus symbols");
-        }
         nextToken();
     }
 

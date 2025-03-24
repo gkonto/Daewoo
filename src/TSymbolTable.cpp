@@ -44,7 +44,7 @@ static TByteCode createByteCode(OpCode opcode, const std::string &svalue) {
 bool TSymbolTable::find(const std::string &name, int &index) {
     for (size_t i = 0; i < symbols_.size(); ++i) {
         if (symbols_[i].name() == name) {
-            index = static_cast<int>(i);
+            index = static_cast<int>(i + 1);
             return true;
         }
     }
@@ -53,18 +53,18 @@ bool TSymbolTable::find(const std::string &name, int &index) {
 
 int TSymbolTable::addSymbol(const std::string &name) {
     symbols_.emplace_back(name);
-    return static_cast<int>(symbols_.size() - 1);
+    return static_cast<int>(symbols_.size());
 }
 
 int TSymbolTable::addSymbol(TUserFunction *fvalue) {
     symbols_.emplace_back(fvalue);
-    return static_cast<int>(symbols_.size() - 1);
+    return static_cast<int>(symbols_.size());
 }
 
 bool TSymbolTable::reverseFind(const std::string &name, int &index) {
     for (size_t i = symbols_.size() - 1; i == 0; --i) {
         if (symbols_[i].name() == name) {
-            index = static_cast<int>(i);
+            index = static_cast<int>(i + 1);
             return true;
         }
     }
@@ -73,23 +73,20 @@ bool TSymbolTable::reverseFind(const std::string &name, int &index) {
 
 void TSymbolTable::storeSymbolToTable(int index, int ivalue) {
     checkForExistingData(index);
-    size_t index_t = static_cast<size_t>(index);
-    symbols_[index_t].type_ = TSymbolElementType::symInteger;
-    symbols_[index_t].setValue(ivalue);
+    symbols_[index - 1].type_ = TSymbolElementType::symInteger;
+    symbols_[index - 1].setValue(ivalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, bool bvalue) {
     checkForExistingData(index);
-    size_t index_t = static_cast<size_t>(index);
-    symbols_[index_t].type_ = TSymbolElementType::symBoolean;
-    symbols_[index_t].setValue(bvalue);
+    symbols_[index - 1].type_ = TSymbolElementType::symBoolean;
+    symbols_[index - 1].setValue(bvalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, double dvalue) {
     checkForExistingData(index);
-    size_t index_t = static_cast<size_t>(index);
-    symbols_[index_t].type_ = TSymbolElementType::symDouble;
-    symbols_[index_t].setValue(dvalue);
+    symbols_[index - 1].type_ = TSymbolElementType::symDouble;
+    symbols_[index - 1].setValue(dvalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, TStringObject *svalue) {
@@ -102,9 +99,8 @@ void TSymbolTable::storeSymbolToTable(int index, TStringObject *svalue) {
         entry = svalue;
     }
     entry->setType(TBlockType::btBound);
-    size_t index_t = static_cast<size_t>(index);
-    symbols_[index_t].setValue(entry);
-    symbols_[index_t].setType(TSymbolElementType::symString);
+    symbols_[index - 1].setValue(entry);
+    symbols_[index - 1].setType(TSymbolElementType::symString);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, TListObject *lvalue) {
@@ -117,8 +113,8 @@ void TSymbolTable::storeSymbolToTable(int index, TListObject *lvalue) {
     }
     entry->setType(TBlockType::btBound);
     size_t index_t = static_cast<size_t>(index);
-    symbols_[index_t].setValue(entry);
-    symbols_[index_t].setType(TSymbolElementType::symList);
+    symbols_[index - 1].setValue(entry);
+    symbols_[index - 1].setType(TSymbolElementType::symList);
 }
 
 void TSymbolTable::checkForExistingData(int index) {

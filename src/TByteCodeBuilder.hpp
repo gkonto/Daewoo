@@ -38,6 +38,7 @@ private:
     void term(TProgram &program);
     void power(TProgram &program);
     void factor(TProgram &program);
+    void parseIdentifier(TProgram &program);
 
     TokensTable &sc_;
     TModule *module_ = nullptr;

@@ -196,6 +196,8 @@ void TByteCodeBuilder::factor(TProgram &program) {
         nextToken();
         expression(program);
         expect(TokenCode::tRightParenthesis);
+    } else if (code() == TokenCode::tIdentifier) {
+        parseIdentifier(program);
     } else if (code() == TokenCode::tString) {
         program.addByteCode(OpCode::Pushs, token().tString());
         nextToken();
@@ -210,6 +212,38 @@ void TByteCodeBuilder::factor(TProgram &program) {
         program.addByteCode(OpCode::Pushb, true);
         nextToken();
     } else {
-        throw std::runtime_error("expecting scalar, identifier or left parenthesis");
+        throw std::runtime_error(
+            "TByteCodeBuilder> expecting scalar, identifier or left parenthesis");
+    }
+}
+
+// There are a number of places where we will find identifiers:
+// 1. As a function call, eg func (a,b)
+// 2. As an indexed variable, eg x[i]
+// 3. An ordinary variable, eg x
+void TByteCodeBuilder::parseIdentifier(TProgram &program) {
+    // bool globalVariable = false;
+    auto identifier = token().tString();
+    nextToken();
+    if (code() == TokenCode::tLeftParenthesis) {
+        // It's the start of a function call, eg func (1,2)
+        // Check that the function already exists in the main symbol table
+        // We do a reverse search, look for most recent declared functions
+        throw std::runtime_error("TByteCodeBuilder> Not yet implemented");
+    }
+
+    if (inUserFunctionScope()) {
+        throw std::runtime_error("TByteCodeBuilder> Not yet implemented");
+    } else {
+        int index = 0;
+        if (not module_->symboltable().find(identifier, index)) {
+            index = module_->symboltable().addSymbol(identifier);
+        }
+
+        if (code() == TokenCode::tLeftBracket) {
+            throw std::runtime_error("TByteCodeBuilder> Not yet implemented");
+        } else {
+            program.addByteCode(OpCode::Load, index);
+        }
     }
 }
