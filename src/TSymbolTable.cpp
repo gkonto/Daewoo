@@ -112,7 +112,6 @@ void TSymbolTable::storeSymbolToTable(int index, TListObject *lvalue) {
         entry = lvalue;
     }
     entry->setType(TBlockType::btBound);
-    size_t index_t = static_cast<size_t>(index);
     symbols_[index - 1].setValue(entry);
     symbols_[index - 1].setType(TSymbolElementType::symList);
 }

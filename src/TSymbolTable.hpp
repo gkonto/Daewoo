@@ -46,6 +46,7 @@ public:
     TProgram() = default;
     TByteCode &operator[](size_t index) { return code_[index]; }
     const TByteCode &operator[](size_t index) const { return code_[index]; }
+    TByteCode &last() { return code_[actualLength_ - 1]; }
 
     size_t size() const { return actualLength_; }
     void clear();

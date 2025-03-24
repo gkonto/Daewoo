@@ -5,7 +5,7 @@
 
 void TByteCodeBuilder::expect(TokenCode tcode) {
     if (code() != tcode) {
-        // TODO this is an error but i do not want to raise exception
+        throw std::runtime_error("TByteCodeBuilder> unexpected token");
     } else {
         nextToken();
     }
@@ -55,8 +55,8 @@ void TByteCodeBuilder::statement(TProgram &program) {
         //     return returnStmt();
         // case TokenCode::tFunction:
         //     return parseUserDefinedFunction();
-        // case TokenCode::tLet:
-        //     return letStatement();
+        case TokenCode::tLet:
+            return letStatement(program);
         default:
             return exprStatement(program);
     }
@@ -84,13 +84,38 @@ void TByteCodeBuilder::exprStatement(TProgram &program) {
     TProgram progFragment;
     expression(progFragment);
     if (code() == TokenCode::tAssign) {
-        assert(false);
+        nextToken();
+        expression(program);
+        auto &bytecode = progFragment.last();
+        if (bytecode.opCode == OpCode::Load) {
+            bytecode.opCode = OpCode::Store;
+        } else {
+            throw std::runtime_error("Left-hand side cannot be assigned to");
+        }
+        program.appendProgram(progFragment);
     } else {
         if (inUserFunctionParsing_) {
             progFragment.addByteCode(OpCode::Pop);
         }
         program.appendProgram(progFragment);
     }
+}
+
+// letStatement = "let" identifier '=' expression
+void TByteCodeBuilder::letStatement(TProgram &program) {
+    expect(TokenCode::tLet);
+
+    auto identifier = token().tString();
+    int index = -1;
+    if (not module_->symboltable().find(identifier, index)) {
+        index = module_->symboltable().addSymbol(identifier);
+    } else {
+        throw std::runtime_error("TByteCodeBuilder> undefined variable");
+    }
+    nextToken();
+    expect(TokenCode::tAssign);
+    expression(program);
+    program.addByteCode(OpCode::Store, index);
 }
 
 void TByteCodeBuilder::expression(TProgram &program) {
@@ -237,7 +262,8 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     } else {
         int index = 0;
         if (not module_->symboltable().find(identifier, index)) {
-            index = module_->symboltable().addSymbol(identifier);
+            throw std::runtime_error("TByteCodeBuilder> undefined variable");
+            // index = module_->symboltable().addSymbol(identifier);
         }
 
         if (code() == TokenCode::tLeftBracket) {

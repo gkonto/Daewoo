@@ -678,8 +678,10 @@ static TProgram relational_operators_7() {
 }
 
 static TProgram relational_operators_8() {
-    // "x < x and x > x;"
+    // "let x = 1; x < x and x > x;"
     TProgram program;
+    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Store, 1);
     program.addByteCode(OpCode::Load, 1);
     program.addByteCode(OpCode::Load, 1);
     program.addByteCode(OpCode::IsLt);
@@ -692,21 +694,6 @@ static TProgram relational_operators_8() {
 }
 
 static TProgram relational_operators_9() {
-    // "((x >= y1) and not (w <= v);"
-    TProgram program;
-    program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 2);
-    program.addByteCode(OpCode::IsGte);
-    program.addByteCode(OpCode::Load, 3);
-    program.addByteCode(OpCode::Load, 4);
-    program.addByteCode(OpCode::IsLte);
-    program.addByteCode(OpCode::Not);
-    program.addByteCode(OpCode::And);
-    program.addByteCode(OpCode::Halt);
-    return program;
-}
-
-static TProgram relational_operators_10() {
     // "not (1 > 2);"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 1);
@@ -717,19 +704,151 @@ static TProgram relational_operators_10() {
     return program;
 }
 
-static TProgram relational_operators_11() {
-    // "((x >= y1) and not (w <= v)) == False)"
+static TProgram relational_operators_10() {
+    // "let x = 15; let y = 10; (x >= y) and not (x<= y);"
     TProgram program;
+    program.addByteCode(OpCode::Pushi, 15);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushi, 10);
+    program.addByteCode(OpCode::Store, 2);
     program.addByteCode(OpCode::Load, 1);
     program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::IsGte);
-    program.addByteCode(OpCode::Load, 3);
-    program.addByteCode(OpCode::Load, 4);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::IsLte);
+    program.addByteCode(OpCode::Not);
+    program.addByteCode(OpCode::And);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram relational_operators_11() {
+    // "let x = 15; let y = 10; ((x >= y) and not (y <= y)) == false"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 15);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushi, 10);
+    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::IsGte);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::IsLte);
     program.addByteCode(OpCode::Not);
     program.addByteCode(OpCode::And);
     program.addByteCode(OpCode::Pushb, false);
     program.addByteCode(OpCode::IsEq);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram expression_1() {
+    // "not (false or true);"
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::Or);
+    program.addByteCode(OpCode::Not);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_1() {
+    // "let x = 5;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_2() {
+    // "let x = 5.0;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_3() {
+    // "let x = 5; let y = x + 5;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_4() {
+    // "let x = 5; let y = 2*x;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Mult);
+    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram assignment_1() {
+    // "let x = 5; x = 10;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushi, 10);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram assignment_2() {
+    // "let x = 5; x = x + 10;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Pushi, 10);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_5() {
+    // "let x = false and true;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::And);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram let_statement_6() {
+    //"let x = 5 + 14 - 32 + 3 * (25 + 2);"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Pushi, 14);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Pushi, 32);
+    program.addByteCode(OpCode::Sub);
+    program.addByteCode(OpCode::Pushi, 3);
+    program.addByteCode(OpCode::Pushi, 25);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Mult);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Store, 1);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -895,19 +1014,44 @@ TEST_CASE("Test_ParsingByteCode") {
         }
     }
 
+    SECTION("LetStatement") {
+        std::vector<std::tuple<std::string, TProgram>> tests = {
+            {"let x = 5;",                          let_statement_1()},
+            {"let x = 5.0;",                        let_statement_2()},
+            {"let x = 5; let y = x + 5;",           let_statement_3()},
+            {"let x = 5; let y = 2*x;",             let_statement_4()},
+            {"let x = false and true;",             let_statement_5()},
+            {"let x = 5 + 14 - 32 + 3 * (25 + 2);", let_statement_6()},
+        };
+        for (const auto &[input, expected]: tests) {
+            testByteCodeCore(input, expected);
+        }
+    }
+
+    SECTION("Assignment") {
+        std::vector<std::tuple<std::string, TProgram>> tests = {
+            {"let x = 5; x = 10;",     assignment_1()},
+            {"let x = 5; x = x + 10;", assignment_2()},
+        };
+        for (const auto &[input, expected]: tests) {
+            testByteCodeCore(input, expected);
+        }
+    }
+
     SECTION("Relational Operators") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
-            {"2 < 3;",                                relational_operators_1() },
-            {"2 > 3;",                                relational_operators_2() },
-            {"2 <= 3;",                               relational_operators_3() },
-            {"2 >= 3;",                               relational_operators_4() },
-            {"2 == 3;",                               relational_operators_5() },
-            {"2 != 3;",                               relational_operators_6() },
-            {"2 + 3 == 5;",                           relational_operators_7() },
-            {"x < x and x > x;",                      relational_operators_8() },
-            {"((x >= y1) and not (w <= v);",          relational_operators_9() },
-            {"not (1 > 2);",                          relational_operators_10()},
-            {"((x >= y1) and not (w <= v)) == false", relational_operators_11()}
+            {"2 < 3;",                                                       relational_operators_1() },
+            {"2 > 3;",                                                       relational_operators_2() },
+            {"2 <= 3;",                                                      relational_operators_3() },
+            {"2 >= 3;",                                                      relational_operators_4() },
+            {"2 == 3;",                                                      relational_operators_5() },
+            {"2 != 3;",                                                      relational_operators_6() },
+            {"2 + 3 == 5;",                                                  relational_operators_7() },
+            {"let x = 1; x < x and x > x;",                                  relational_operators_8() },
+            {"not (1 > 2);",                                                 relational_operators_9() },
+            {"let x = 15; let y = 10; ((x >= y) and not (y <= x));",         relational_operators_10()},
+            {"let x = 15; let y = 10; ((x >= y) and not (y <= y)) == false",
+             relational_operators_11()                                                                }
         };
 
         for (const auto &[input, expected]: tests) {
@@ -917,7 +1061,7 @@ TEST_CASE("Test_ParsingByteCode") {
 
     SECTION("Expression") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
-            //{"not (false or true);", expression_1()},
+            {"not (false or true);", expression_1()},
         };
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
