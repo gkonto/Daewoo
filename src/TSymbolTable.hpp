@@ -16,7 +16,8 @@ class TStringObject;
 class TSymbol;
 class TUserFunction;
 
-// using TSymbolValue = std::variant<int, double, bool, //TStringObject *, TListObject *, TUserFunction *>;
+// using TSymbolValue = std::variant<int, double, bool, //TStringObject *,
+// TListObject *, TUserFunction *>;
 
 enum class TSymbolElementType : std::uint8_t {
     symNonExistant,
@@ -31,8 +32,11 @@ enum class TSymbolElementType : std::uint8_t {
 
 struct TByteCode {
     int index = 0;
-    OpCodes opCode = OpCodes::Nop;  // TODO what is the size of this ?
+    OpCode opCode = OpCode::Nop;  // TODO what is the size of this ?
 };
+
+bool operator==(const TByteCode &lhs, const TByteCode &rhs);
+bool operator!=(const TByteCode &lhs, const TByteCode &rhs);
 
 using TCode = std::vector<TByteCode>;
 
@@ -43,25 +47,27 @@ public:
     TByteCode &operator[](size_t index) { return code_[index]; }
     const TByteCode &operator[](size_t index) const { return code_[index]; }
 
-    int count() const { return actualLength_; }
+    size_t size() const { return actualLength_; }
     void clear();
     void append(TByteCode bytecode);
     void compactCode() { code_.resize(actualLength_); }
-    int addByteCode(OpCodes opCode);
-    void addByteCode(OpCodes opCode, int ivalue);
-    void addByteCode(OpCodes opCode, double dvalue);
-    void addByteCode(OpCodes opCode, bool bvalue);
-    void addByteCode(OpCodes opCode, std::string svalue);  // FIXME passed by value
+    size_t addByteCode(OpCode opCode);
+    void addByteCode(OpCode opCode, int ivalue);
+    void addByteCode(OpCode opCode, double dvalue);
+    void addByteCode(OpCode opCode, bool bvalue);
+    void addByteCode(OpCode opCode, std::string svalue);  // FIXME passed by value
 
     void appendProgram(TProgram program);  // FIXME passed by value
-    int getCurrentInstructionPointer() const { return actualLength_; }
-    int createInstructionSpace();
+    size_t getCurrentInstructionPointer() const { return actualLength_; }
+    size_t createInstructionSpace();
     void setGotoLabel(int location, int value) { code_[location].index = value; }
+    std::string string() const;
+    bool operator==(const TProgram &other) const;
 
 private:
     void checkSpace();
     TCode code_;
-    int actualLength_ = 0;
+    size_t actualLength_ = 0;
 
     static constexpr int ALLOC_BY = 512;
 };
@@ -107,8 +113,8 @@ private:
 
 class TSymbolTable {
 public:
-    int addSymbol(const std::string &name) { symbols_.emplace_back(name); }
-    int addSymbol(TUserFunction *fvalue) { symbols_.emplace_back(fvalue); }
+    int addSymbol(const std::string &name);
+    int addSymbol(TUserFunction *fvalue);
     bool find(const std::string &name, int &index);  // TODO refactor
     bool reverseFind(const std::string &name, int &index);
 

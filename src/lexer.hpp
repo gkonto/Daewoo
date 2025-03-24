@@ -13,7 +13,9 @@ class ScannerError {
 public:
     ScannerError() = default;
     ScannerError(const std::string &errorMsg, int lineNumber, int columnNumber)
-        : errorMsg_(errorMsg), lineNumber_(lineNumber), columnNumber_(columnNumber) {}
+        : errorMsg_(errorMsg),
+          lineNumber_(lineNumber),
+          columnNumber_(columnNumber) {}
 
     template <typename T>
     void setError(T &&msg, int lineNumber, int columnNumber) {
@@ -35,7 +37,7 @@ class Scanner {
 public:
     Scanner(std::istream &input);
     void nextToken();
-    TokenRecord token() const { return tokenRecord_; }
+    const TokenRecord &token() const { return tokenRecord_; }
 
     std::string tokenToString(TokenCode code);
 

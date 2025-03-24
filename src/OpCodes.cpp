@@ -2,79 +2,79 @@
 #include "OpCodes.hpp"
 #include <string>
 
-std::string OpCodeToName(OpCodes code) {
+std::string OpCodeToString(OpCode code) {
     switch (code) {
-        case OpCodes::Nop:
+        case OpCode::Nop:
             return "nop";
-        case OpCodes::Halt:
+        case OpCode::Halt:
             return "halt";
-        case OpCodes::Add:
+        case OpCode::Add:
             return "add";
-        case OpCodes::Sub:
+        case OpCode::Sub:
             return "sub";
-        case OpCodes::Mult:
+        case OpCode::Mult:
             return "mult";
-        case OpCodes::Divide:
+        case OpCode::Divide:
             return "divide";
-        case OpCodes::Mod:
+        case OpCode::Mod:
             return "mod";
-        case OpCodes::Umi:
+        case OpCode::Umi:
             return "umi";
-        case OpCodes::Power:
+        case OpCode::Power:
             return "power";
-        case OpCodes::Inc:
+        case OpCode::Inc:
             return "inc";
-        case OpCodes::LocalInc:
+        case OpCode::LocalInc:
             return "localInc";
-        case OpCodes::Dec:
+        case OpCode::Dec:
             return "dec";
-        case OpCodes::LocalDec:
+        case OpCode::LocalDec:
             return "localDec";
-        case OpCodes::Load:
+        case OpCode::Load:
             return "load";
-        case OpCodes::Store:
+        case OpCode::Store:
             return "store";
-        case OpCodes::LoadLocal:
+        case OpCode::LoadLocal:
             return "loadLocal";
-        case OpCodes::StoreLocal:
+        case OpCode::StoreLocal:
             return "storeLocal";
-        case OpCodes::And:
+        case OpCode::And:
             return "and";
-        case OpCodes::Or:
+        case OpCode::Or:
             return "or";
-        case OpCodes::Not:
+        case OpCode::Not:
             return "not";
-        case OpCodes::Xor:
+        case OpCode::Xor:
             return "xor";
-        case OpCodes::Pushi:
+        case OpCode::Pushi:
             return "pushi";
-        case OpCodes::Pushb:
+        case OpCode::Pushb:
             return "pushb";
-        case OpCodes::Pushd:
+        case OpCode::Pushd:
             return "pushd";
-        case OpCodes::Pushs:
+        case OpCode::Pushs:
             return "pushs";
-        case OpCodes::PushNone:
+        case OpCode::PushNone:
             return "pushNone";
-        case OpCodes::Pop:
+        case OpCode::Pop:
             return "pop";
-        case OpCodes::IsEq:
+        case OpCode::IsEq:
             return "isEq";
-        case OpCodes::IsGt:
+        case OpCode::IsGt:
             return "isGt";
-        case OpCodes::IsGte:
+        case OpCode::IsGte:
             return "isGte";
-        case OpCodes::IsLt:
+        case OpCode::IsLt:
             return "isLt";
-        case OpCodes::IsLte:
+        case OpCode::IsLte:
             return "isLte";
-        case OpCodes::IsNotEq:
+        case OpCode::IsNotEq:
             return "isNotEq";
-        case OpCodes::Jmp:
+        case OpCode::Jmp:
             return "jmp";
-        case OpCodes::JmpIfTrue:
+        case OpCode::JmpIfTrue:
             return "jmpIfTrue";
-        case OpCodes::JmpIfFalse:
+        case OpCode::JmpIfFalse:
             return "jmpIfFalse";
             // case OpCodes::LvecIdx:
             //     return "lvecIdx";
@@ -84,11 +84,11 @@ std::string OpCodeToName(OpCodes code) {
             //     return "locallvecIdx";
             // case OpCodes::LocalSvecIdx:
             return "localsvecIdx";
-        case OpCodes::Call:
+        case OpCode::Call:
             return "call";
         // case OpCodes::BuiltIn:
         //     return "builtin";
-        case OpCodes::Ret:
+        case OpCode::Ret:
             return "ret";
             // case OpCodes::CreateList:
             //     return "createList";

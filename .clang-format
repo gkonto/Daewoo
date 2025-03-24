@@ -19,10 +19,11 @@ AllowShortFunctionsOnASingleLine: Inline # Allow small functions to be inline
 AllowShortEnumsOnASingleLine: false
 
 # Column and Wrapping Rules
-ColumnLimit: 120 # Maximum line width (increase for wide monitors)
+ColumnLimit: 100 # Maximum line width (increase for wide monitors)
 PenaltyExcessCharacter: 5000 # Higher penalty for exceeding column limit
 PenaltyBreakBeforeFirstCallParameter: 50 # Lower penalty for breaking function calls
 PenaltyBreakString: 100 # Prefer keeping long strings on one line
+BreakBeforeBinaryOperators: None
 
 # Function Formatting
 AlwaysBreakAfterReturnType: None # Keep return type and function name on the same line
@@ -31,7 +32,7 @@ BreakConstructorInitializersBeforeComma: false # Keep initializers compact
 
 # Pointer and Reference Formatting
 PointerAlignment: Right # Align '*' and '&' with variable name (e.g., `int* ptr;`)
-SpaceAfterCStyleCast: true # Add space after C-style casts
+SpaceAfterCStyleCast: false # Add space after C-style casts
 
 # Namespace and Class Formatting
 NamespaceIndentation: None # No extra indentation inside namespaces
@@ -75,3 +76,7 @@ AlwaysBreakTemplateDeclarations: Yes
 # Miscellaneous
 DerivePointerAlignment: false # Do not override PointerAlignment
 SpacesBeforeTrailingComments: 2 # Two spaces before inline comments
+BinPackArguments: false
+BinPackParameters: false
+AlignArrayOfStructures: Left
+AllowShortBlocksOnASingleLine: false

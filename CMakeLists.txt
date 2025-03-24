@@ -53,6 +53,8 @@ set(MONKEY_SRC_FILES
     src/MemoryManager.cpp
     src/TListObject.hpp
     src/TListObject.cpp
+    src/TByteCodeBuilder.hpp
+    src/TByteCodeBuilder.cpp
 )
 
 # Define compilation flags for different compilers
@@ -71,7 +73,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wunused # Warn on unused variables, functions, etc.
         -Woverloaded-virtual # Warn if a function in a derived class hides a virtual function in a base class
         -Wconversion # Warn on implicit type conversions
-        -Wsign-conversion # Warn on signed/unsigned conversions
+        # -Wsign-conversion # Warn on signed/unsigned conversions
         -Wformat=2 # Warn on format strings and make warnings more strict
         -Wmissing-declarations # Warn if functions are declared without previous declaration
     )
@@ -106,6 +108,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
             tests/lexer.t.cpp
             tests/parser.t.cpp
             tests/evaluation.t.cpp
+            tests/program.t.cpp
         )
 
         # Add an executable for the tests

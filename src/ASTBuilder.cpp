@@ -6,20 +6,15 @@
 #include "ASTNodeTypes.hpp"
 
 ASTBuilder::ASTBuilder(TokensTable &ttable)
-    : sc_(ttable)
-{
-}
+    : sc_(ttable) {}
 
 // program = statementList
-std::unique_ptr<ASTProgram>
-ASTBuilder::build()
-{
+std::unique_ptr<ASTProgram> ASTBuilder::build() {
     sc_.reset();
     sc_.setMode(TokensTable::Mode::Reading);
     nextToken();
 
-    if (code() != TokenCode::tEndofStream)
-    {
+    if (code() != TokenCode::tEndofStream) {
         return std::make_unique<ASTProgram>(statementList());
     }
 
@@ -27,21 +22,14 @@ ASTBuilder::build()
 }
 
 // statementList = statement { [ ';' ] statement }
-std::unique_ptr<ASTNodeList>
-ASTBuilder::statementList()
-{
+std::unique_ptr<ASTNodeList> ASTBuilder::statementList() {
     auto stat = std::make_unique<ASTNodeList>(ASTNodeType::ntStatementList);
     stat->add(statement());
 
-    while (true)
-    {
-        if (code() == TokenCode::tSemicolon)
-            expect(TokenCode::tSemicolon);
+    while (true) {
+        if (code() == TokenCode::tSemicolon) expect(TokenCode::tSemicolon);
 
-        if (code() == TokenCode::tEnd ||
-            code() == TokenCode::tElse ||
-            code() == TokenCode::tEndofStream)
-        {
+        if (code() == TokenCode::tEnd || code() == TokenCode::tElse || code() == TokenCode::tEndofStream) {
             return stat;
         }
         stat->add(statement());
@@ -58,40 +46,32 @@ ASTBuilder::statementList()
 // to the next caller. This means that the error node will get inserted into the ast tree
 // At compilation, if an error node is encountered the compiler can report the error at
 // that point in time.
-std::unique_ptr<ASTNode>
-ASTBuilder::expect(TokenCode tc)
-{
-    if (code() != tc)
-    {
+std::unique_ptr<ASTNode> ASTBuilder::expect(TokenCode tc) {
+    if (code() != tc) {
         return std::make_unique<ASTErrorNode>("expecting " + tokenToString(tc), lineNumber(), columnNumber());
-    }
-    else
-    {
+    } else {
         nextToken();
     }
     return nullptr;
 }
 
 // statement = assignment | endOfStream | exprStatement | ifStatement | returnStatement | function | letStatement
-std::unique_ptr<ASTNode>
-ASTBuilder::statement()
-{
-    switch (code())
-    {
-    case TokenCode::tIf:
-        return ifStatement();
-    case TokenCode::tReturn:
-        return returnStmt();
-    case TokenCode::tFunction:
-        return parseUserDefinedFunction();
-    case TokenCode::tEnd:
-        return nullptr;
-    case TokenCode::tEndofStream:
-        return nullptr;
-    case TokenCode::tLet:
-        return letStatement();
-    default:
-        return exprStatement();
+std::unique_ptr<ASTNode> ASTBuilder::statement() {
+    switch (code()) {
+        case TokenCode::tIf:
+            return ifStatement();
+        case TokenCode::tReturn:
+            return returnStmt();
+        case TokenCode::tFunction:
+            return parseUserDefinedFunction();
+        case TokenCode::tEnd:
+            return nullptr;
+        case TokenCode::tEndofStream:
+            return nullptr;
+        case TokenCode::tLet:
+            return letStatement();
+        default:
+            return exprStatement();
     }
 }
 
@@ -116,25 +96,20 @@ ASTBuilder::statement()
 // AST:
 // (exprStatement) -> (identifier) and (expression)
 // OR (exprStatement) -> (expression)
-std::unique_ptr<ASTNode>
-ASTBuilder::exprStatement()
-{
+std::unique_ptr<ASTNode> ASTBuilder::exprStatement() {
     auto node = expression();
-    if (code() == TokenCode::tAssign)
-    {
+    if (code() == TokenCode::tAssign) {
         nextToken();
         auto expressionNode = std::make_unique<ASTExpression>(expression(), lineNumber());
         // if node.nodeType <> ntPrimary then
-        if (node->type() != ASTNodeType::ntPrimary)
-        {
-            return std::make_unique<ASTErrorNode>("Expecting an identifier on the left-hand side", lineNumber(), columnNumber());
+        if (node->type() != ASTNodeType::ntPrimary) {
+            return std::make_unique<ASTErrorNode>("Expecting an identifier on the left-hand side", lineNumber(),
+                                                  columnNumber());
         }
 
-        return nullptr; // temp
+        return nullptr;  // temp
         // return std::make_unique<ASTAssignment>(std::move(node), std::move(expressionNode), lineNumber());
-    }
-    else
-    {
+    } else {
         return std::make_unique<ASTExpressionStatement>(std::move(node), lineNumber());
     }
 }
@@ -143,75 +118,51 @@ ASTBuilder::exprStatement()
 // ifEnd = END | ELSE statementList END
 // AST:
 // (if) -> (condition) and (thenStatementList) and (elseStatementList)
-std::unique_ptr<ASTNode>
-ASTBuilder::ifStatement()
-{
+std::unique_ptr<ASTNode> ASTBuilder::ifStatement() {
     expect(TokenCode::tIf);
     auto condition = expression();
     expect(TokenCode::tThen);
     auto listOfStatements = statementList();
 
-    if (code() == TokenCode::tElse)
-    {
+    if (code() == TokenCode::tElse) {
         nextToken();
         auto listOfElseStatements = statementList();
         expect(TokenCode::tEnd);
-        return std::make_unique<ASTIf>(std::move(condition),
-                                       std::move(listOfStatements),
-                                       std::move(listOfElseStatements),
-                                       lineNumber());
-    }
-    else
-    {
+        return std::make_unique<ASTIf>(std::move(condition), std::move(listOfStatements),
+                                       std::move(listOfElseStatements), lineNumber());
+    } else {
         expect(TokenCode::tEnd);
-        return std::make_unique<ASTIf>(std::move(condition),
-                                       std::move(listOfStatements),
-                                       nullptr,
-                                       lineNumber());
+        return std::make_unique<ASTIf>(std::move(condition), std::move(listOfStatements), nullptr, lineNumber());
     }
 }
 
 // letStatement = "let" identifier '=' expression
-std::unique_ptr<ASTNode>
-ASTBuilder::letStatement()
-{
+std::unique_ptr<ASTNode> ASTBuilder::letStatement() {
     expect(TokenCode::tLet);
     auto lhs = variable();
     expect(TokenCode::tAssign);
     auto rhs = expression();
 
-    return std::make_unique<ASTLetStatement>(std::move(lhs),
-                                             std::move(rhs),
-                                             lineNumber());
+    return std::make_unique<ASTLetStatement>(std::move(lhs), std::move(rhs), lineNumber());
 }
 
-std::unique_ptr<ASTNode>
-ASTBuilder::returnStmt()
-{
-    if (!inUserFunctionParsing)
-    {
-        return std::make_unique<ASTErrorNode>("You cannot use a return statement outside a user function", lineNumber(), columnNumber());
+std::unique_ptr<ASTNode> ASTBuilder::returnStmt() {
+    if (!inUserFunctionParsing) {
+        return std::make_unique<ASTErrorNode>("You cannot use a return statement outside a user function", lineNumber(),
+                                              columnNumber());
     }
     expect(TokenCode::tReturn);
-    return std::make_unique<ASTReturn>(
-        std::make_unique<ASTExpression>(expression(), lineNumber()),
-        lineNumber());
+    return std::make_unique<ASTReturn>(std::make_unique<ASTExpression>(expression(), lineNumber()), lineNumber());
 }
 
 // function = function identifier '(' argumentList ')' statementList
-std::unique_ptr<ASTNode>
-ASTBuilder::parseUserDefinedFunction()
-{
+std::unique_ptr<ASTNode> ASTBuilder::parseUserDefinedFunction() {
     std::string functionName;
     nextToken();
-    if (code() == TokenCode::tIdentifier)
-    {
+    if (code() == TokenCode::tIdentifier) {
         functionName = sc_.token().tString();
-    }
-    else
-    {
-        return std::make_unique<ASTErrorNode>(
-            "expecting function name", lineNumber(), columnNumber());
+    } else {
+        return std::make_unique<ASTErrorNode>("expecting function name", lineNumber(), columnNumber());
     }
 
     globalVariableList.clear();
@@ -219,8 +170,7 @@ ASTBuilder::parseUserDefinedFunction()
     nextToken();
     std::unique_ptr<ASTNodeList> argList;
 
-    if (code() == TokenCode::tLeftParenthesis)
-    {
+    if (code() == TokenCode::tLeftParenthesis) {
         nextToken();
         argList = functionArgumentList();
         expect(TokenCode::tRightParenthesis);
@@ -231,34 +181,23 @@ ASTBuilder::parseUserDefinedFunction()
     globalVariableList.clear();
     expect(TokenCode::tEnd);
 
-    return std::make_unique<ASTUserFunction>(
-        std::string(""),
-        functionName,
-        std::move(argList),
-        std::move(statementListNode),
-        lineNumber());
+    return std::make_unique<ASTUserFunction>(std::string(""), functionName, std::move(argList),
+                                             std::move(statementListNode), lineNumber());
 }
 
 // expression = simpleExpression | simpleExpression relationalOp simpleExpression
-std::unique_ptr<ASTNode>
-ASTBuilder::expression()
-{
+std::unique_ptr<ASTNode> ASTBuilder::expression() {
     auto leftNode = relationalOperators();
-    while (code() == TokenCode::tOr ||
-           code() == TokenCode::tAnd)
-    {
+    while (code() == TokenCode::tOr || code() == TokenCode::tAnd) {
         TokenCode op = code();
         nextToken();
         auto rightNode = relationalOperators();
-        if (op == TokenCode::tOr)
-        {
-            leftNode = std::make_unique<ASTBinOp>(
-                std::move(leftNode), std::move(rightNode), ASTNodeType::ntOR, lineNumber());
-        }
-        else if (op == TokenCode::tAnd)
-        {
-            leftNode = std::make_unique<ASTBinOp>(
-                std::move(leftNode), std::move(rightNode), ASTNodeType::ntAND, lineNumber());
+        if (op == TokenCode::tOr) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntOR,
+                                                  lineNumber());
+        } else if (op == TokenCode::tAnd) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntAND,
+                                                  lineNumber());
         }
     }
     return leftNode;
@@ -267,17 +206,13 @@ ASTBuilder::expression()
 // argumentList = argument { ',' argument }
 // AST:
 // nodeList -> (arg) and (arg) and (arg) and ....
-std::unique_ptr<ASTNodeList>
-ASTBuilder::functionArgumentList()
-{
+std::unique_ptr<ASTNodeList> ASTBuilder::functionArgumentList() {
     auto alist = std::make_unique<ASTNodeList>(ASTNodeType::ntNodeList);
-    if (code() == TokenCode::tIdentifier)
-    {
+    if (code() == TokenCode::tIdentifier) {
         alist->add(functionArgument());
     }
 
-    while (code() == TokenCode::tComma)
-    {
+    while (code() == TokenCode::tComma) {
         nextToken();
         alist->add(functionArgument());
     }
@@ -286,123 +221,92 @@ ASTBuilder::functionArgumentList()
 }
 
 // argument = identifier | REF identifier
-std::unique_ptr<ASTNode>
-ASTBuilder::functionArgument()
-{
+std::unique_ptr<ASTNode> ASTBuilder::functionArgument() {
     return variable();
 }
 
 // Parse a function argument in a function definition
-std::unique_ptr<ASTIdentifier>
-ASTBuilder::variable()
-{
-    auto ret = std::make_unique<ASTIdentifier>(sc_.token().tString(),
-                                               lineNumber());
+std::unique_ptr<ASTIdentifier> ASTBuilder::variable() {
+    auto ret = std::make_unique<ASTIdentifier>(sc_.token().tString(), lineNumber());
     nextToken();
     return ret;
 }
 
 // expression = simpleExpression | simpleExpression relationalOp simpleExpression
-std::unique_ptr<ASTNode>
-ASTBuilder::relationalOperators()
-{
+std::unique_ptr<ASTNode> ASTBuilder::relationalOperators() {
     auto leftNode = simpleExpression();
-    while (code() == TokenCode::tLessThan ||
-           code() == TokenCode::tLessThanOrEqual ||
-           code() == TokenCode::tMoreThan ||
-           code() == TokenCode::tMoreThanOrEqual ||
-           code() == TokenCode::tNotEqual ||
-           code() == TokenCode::tEquivalence)
-    {
+    while (code() == TokenCode::tLessThan || code() == TokenCode::tLessThanOrEqual || code() == TokenCode::tMoreThan
+           || code() == TokenCode::tMoreThanOrEqual || code() == TokenCode::tNotEqual
+           || code() == TokenCode::tEquivalence) {
         auto op = code();
         nextToken();
         auto rightNode = simpleExpression();
 
-        if (op == TokenCode::tEquivalence)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntEQ, lineNumber());
-        }
-        else if (op == TokenCode::tLessThan)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntLT, lineNumber());
-        }
-        else if (op == TokenCode::tMoreThan)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntGT, lineNumber());
-        }
-        else if (op == TokenCode::tMoreThanOrEqual)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntGE, lineNumber());
-        }
-        else if (op == TokenCode::tLessThanOrEqual)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntLE, lineNumber());
-        }
-        else if (op == TokenCode::tNotEqual)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntNE, lineNumber());
+        if (op == TokenCode::tEquivalence) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntEQ,
+                                                  lineNumber());
+        } else if (op == TokenCode::tLessThan) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntLT,
+                                                  lineNumber());
+        } else if (op == TokenCode::tMoreThan) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntGT,
+                                                  lineNumber());
+        } else if (op == TokenCode::tMoreThanOrEqual) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntGE,
+                                                  lineNumber());
+        } else if (op == TokenCode::tLessThanOrEqual) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntLE,
+                                                  lineNumber());
+        } else if (op == TokenCode::tNotEqual) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntNE,
+                                                  lineNumber());
         }
     }
     return leftNode;
 }
 
 // expression = term { ('+' | '-' | MOD | DIV) power }
-std::unique_ptr<ASTNode>
-ASTBuilder::simpleExpression()
-{
+std::unique_ptr<ASTNode> ASTBuilder::simpleExpression() {
     auto leftNode = term();
-    while (code() == TokenCode::tPlus ||
-           code() == TokenCode::tMinus)
-    {
+    while (code() == TokenCode::tPlus || code() == TokenCode::tMinus) {
         auto op = code();
         nextToken();
         auto rightNode = term();
-        if (op == TokenCode::tPlus)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntAdd, lineNumber());
-        }
-        else
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntSub, lineNumber());
+        if (op == TokenCode::tPlus) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntAdd,
+                                                  lineNumber());
+        } else {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntSub,
+                                                  lineNumber());
         }
     }
     return leftNode;
 }
 
 // term = power { ('*', '/', MOD, DIV) power }
-std::unique_ptr<ASTNode>
-ASTBuilder::term()
-{
+std::unique_ptr<ASTNode> ASTBuilder::term() {
     auto leftNode = power();
-    while (code() == TokenCode::tMult ||
-           code() == TokenCode::tDivide)
-    {
+    while (code() == TokenCode::tMult || code() == TokenCode::tDivide) {
         auto op = code();
         nextToken();
         auto rightNode = power();
 
-        if (op == TokenCode::tMult)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntMult, lineNumber());
-        }
-        else if (op == TokenCode::tDivide)
-        {
-            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntDiv, lineNumber());
+        if (op == TokenCode::tMult) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntMult,
+                                                  lineNumber());
+        } else if (op == TokenCode::tDivide) {
+            leftNode = std::make_unique<ASTBinOp>(std::move(leftNode), std::move(rightNode), ASTNodeType::ntDiv,
+                                                  lineNumber());
         }
     }
     return leftNode;
 }
 
 // power = {'+' | '-'} factor [ '^' power ]
-std::unique_ptr<ASTNode>
-ASTBuilder::power()
-{
+std::unique_ptr<ASTNode> ASTBuilder::power() {
     int unaryMinus_count = 0;
-    while (code() == TokenCode::tMinus ||
-           code() == TokenCode::tPlus)
-    {
-        if (code() == TokenCode::tMinus)
-        {
+    while (code() == TokenCode::tMinus || code() == TokenCode::tPlus) {
+        if (code() == TokenCode::tMinus) {
             ++unaryMinus_count;
         }
         nextToken();
@@ -410,135 +314,94 @@ ASTBuilder::power()
 
     auto leftNode = primary();
 
-    if (code() == TokenCode::tPower)
-    {
+    if (code() == TokenCode::tPower) {
         nextToken();
         auto rightNode = power();
         leftNode = std::make_unique<ASTPowerOp>(std::move(leftNode), std::move(rightNode), lineNumber());
     }
 
-    for (int i = 0; i < unaryMinus_count; ++i)
-    {
+    for (int i = 0; i < unaryMinus_count; ++i) {
         leftNode = std::make_unique<ASTUniOp>(std::move(leftNode), ASTNodeType::ntUnaryMinus, lineNumber());
     }
     return leftNode;
 }
 
 // primary => factor primaryPlus
-std::unique_ptr<ASTNode>
-ASTBuilder::primary()
-{
+std::unique_ptr<ASTNode> ASTBuilder::primary() {
     return std::make_unique<ASTPrimary>(factor(), primaryPlus(), lineNumber());
 }
 
 // factor = '(' expression ')' | variable | number | string | NOT factor | functionCall
-std::unique_ptr<ASTNode>
-ASTBuilder::factor()
-{
-    if (code() == TokenCode::tInteger)
-    {
+std::unique_ptr<ASTNode> ASTBuilder::factor() {
+    if (code() == TokenCode::tInteger) {
         auto result = std::make_unique<ASTInteger>(token().tInt(), lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tFloat)
-    {
+    } else if (code() == TokenCode::tFloat) {
         auto result = std::make_unique<ASTFloat>(token().tFloat(), lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tIdentifier)
-    {
+    } else if (code() == TokenCode::tIdentifier) {
         auto result = std::make_unique<ASTIdentifier>(token().tString(), lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tString)
-    {
+    } else if (code() == TokenCode::tString) {
         auto result = std::make_unique<ASTString>(token().tString(), lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tNot)
-    {
+    } else if (code() == TokenCode::tNot) {
         nextToken();
         auto node = expression();
-        if (node->type() == ASTNodeType::ntError)
-        {
+        if (node->type() == ASTNodeType::ntError) {
             return node;
         }
         return std::make_unique<ASTNotOp>(std::move(node), lineNumber());
-    }
-    else if (code() == TokenCode::tFalse)
-    {
+    } else if (code() == TokenCode::tFalse) {
         auto result = std::make_unique<ASTBoolean>(false, lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tTrue)
-    {
+    } else if (code() == TokenCode::tTrue) {
         auto result = std::make_unique<ASTBoolean>(true, lineNumber());
         nextToken();
         return result;
-    }
-    else if (code() == TokenCode::tNot)
-    {
+    } else if (code() == TokenCode::tNot) {
         nextToken();
         auto node = expression();
-        if (node->type() == ASTNodeType::ntError)
-        {
+        if (node->type() == ASTNodeType::ntError) {
             return node;
         }
         return std::make_unique<ASTNotOp>(std::move(node), lineNumber());
-    }
-    else if (code() == TokenCode::tLeftParenthesis)
-    {
+    } else if (code() == TokenCode::tLeftParenthesis) {
         nextToken();
         auto result = expression();
         expect(TokenCode::tRightParenthesis);
         return result;
-    }
-    else if (code() == TokenCode::tLeftCurleyBracket)
-    {
+    } else if (code() == TokenCode::tLeftCurleyBracket) {
         throw std::runtime_error("Not implemented");
-    }
-    else if (code() == TokenCode::tError)
-    {
+    } else if (code() == TokenCode::tError) {
         return std::make_unique<ASTErrorNode>("Expecting a factor...", lineNumber(), columnNumber());
-    }
-    else
-    {
+    } else {
         return std::make_unique<ASTErrorNode>("Expecting a factor...", lineNumber(), columnNumber());
     }
 }
 
-std::unique_ptr<ASTNode>
-ASTBuilder::primaryPlus()
-{
-    if (code() == TokenCode::tLeftParenthesis)
-    {
+std::unique_ptr<ASTNode> ASTBuilder::primaryPlus() {
+    if (code() == TokenCode::tLeftParenthesis) {
         nextToken();
-        return std::make_unique<ASTPrimaryFunction>(
-            parseFunctionCall(), primaryPlus(), lineNumber());
-    }
-    else
-    {
+        return std::make_unique<ASTPrimaryFunction>(parseFunctionCall(), primaryPlus(), lineNumber());
+    } else {
         return std::make_unique<ASTNull>();
     }
 }
 
-std::unique_ptr<ASTNodeList>
-ASTBuilder::parseFunctionCall()
-{
+std::unique_ptr<ASTNodeList> ASTBuilder::parseFunctionCall() {
     std::unique_ptr<ASTNodeList> result = nullptr;
-    if (code() != TokenCode::tRightParenthesis)
-    {
+    if (code() != TokenCode::tRightParenthesis) {
         result = expressionList();
     }
 
     expect(TokenCode::tRightParenthesis);
-    if (result == nullptr)
-    {
+    if (result == nullptr) {
         result = std::make_unique<ASTNodeList>(ASTNodeType::ntNodeList);
     }
     return result;
@@ -546,14 +409,11 @@ ASTBuilder::parseFunctionCall()
 
 // argumentList = expression { ',' expression }
 // Returns the number of expressions that were parsed
-std::unique_ptr<ASTNodeList>
-ASTBuilder::expressionList()
-{
+std::unique_ptr<ASTNodeList> ASTBuilder::expressionList() {
     auto nodeList = std::make_unique<ASTNodeList>(ASTNodeType::ntNodeList);
     nodeList->add(expression());
 
-    while (code() == TokenCode::tComma)
-    {
+    while (code() == TokenCode::tComma) {
         nextToken();
         nodeList->add(expression());
     }

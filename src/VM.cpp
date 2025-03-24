@@ -9,9 +9,12 @@
 #include "macros.hpp"
 #include "ConstantTable.hpp"
 
-void VM::error(const std::string &arg, const TMachineStackRecord &st1, const TMachineStackRecord &st2) {
-    throw std::runtime_error(TStackRecordTypeToStr(st1.type()) + " and " + TStackRecordTypeToStr(st2.type()) +
-                             " cannot be used with the " + arg + " operation");
+void VM::error(const std::string &arg,
+               const TMachineStackRecord &st1,
+               const TMachineStackRecord &st2) {
+    throw std::runtime_error(TStackRecordTypeToStr(st1.type()) + " and " +
+                             TStackRecordTypeToStr(st2.type()) + " cannot be used with the " + arg +
+                             " operation");
 }
 
 void VM::runModule(std::shared_ptr<TModule> module) {
@@ -25,99 +28,99 @@ void VM::run(const TProgram &code) {
     while (true) {
         const auto &byteCode = code[ip];
         switch (byteCode.opCode) {
-            case OpCodes::Nop:
+            case OpCode::Nop:
                 break;
-            case OpCodes::Halt:
+            case OpCode::Halt:
                 break;
-            case OpCodes::Add:
+            case OpCode::Add:
                 addOp();
                 break;
-            case OpCodes::Sub:
+            case OpCode::Sub:
                 subOp();
                 break;
-            case OpCodes::Mult:
+            case OpCode::Mult:
                 multOp();
                 break;
-            case OpCodes::Divide:
+            case OpCode::Divide:
                 divOp();
                 break;
-            case OpCodes::Power:
+            case OpCode::Power:
                 powerOp();
                 break;
-            case OpCodes::Umi:
+            case OpCode::Umi:
                 unaryMinusOp();
                 break;
-            case OpCodes::Inc:
+            case OpCode::Inc:
                 incOp(byteCode.index);
                 break;
-            case OpCodes::Dec:
+            case OpCode::Dec:
                 decOp(byteCode.index);
                 break;
-            case OpCodes::And:
+            case OpCode::And:
                 andOp();
                 break;
-            case OpCodes::Or:
+            case OpCode::Or:
                 orOp();
                 break;
-            case OpCodes::Not:
+            case OpCode::Not:
                 notOp();
                 break;
-            case OpCodes::Xor:
+            case OpCode::Xor:
                 xorOp();
                 break;
-            case OpCodes::IsLt:
+            case OpCode::IsLt:
                 isLt();
                 break;
-            case OpCodes::IsGt:
+            case OpCode::IsGt:
                 isGt();
                 break;
-            case OpCodes::IsGte:
+            case OpCode::IsGte:
                 isGte();
                 break;
-            case OpCodes::IsLte:
+            case OpCode::IsLte:
                 isLte();
                 break;
-            case OpCodes::Mod:
+            case OpCode::Mod:
                 modOp();
                 break;
-            case OpCodes::IsEq:
+            case OpCode::IsEq:
                 isEq();
                 break;
-            case OpCodes::IsNotEq:
+            case OpCode::IsNotEq:
                 isNotEq();
                 break;
-            case OpCodes::Pushi:
+            case OpCode::Pushi:
                 push(byteCode.index);
                 break;
-            case OpCodes::Pushb:
+            case OpCode::Pushb:
                 push(static_cast<bool>(byteCode.index));
                 break;
-            case OpCodes::Pushd:
+            case OpCode::Pushd:
                 push(constantValueTable[byteCode.index].dvalue());
                 break;
-            case OpCodes::Pushs:
+            case OpCode::Pushs:
                 push(constantValueTable[byteCode.index].svalue());
                 break;
-            case OpCodes::PushNone:
+            case OpCode::PushNone:
                 push();
                 break;
             // case OpCodes::Load:
             //     loadSymbol(byteCode.index);
             //     break;
-            case OpCodes::Jmp:
+            case OpCode::Jmp:
                 ip += byteCode.index - 1;
                 break;
-            case OpCodes::JmpIfTrue:
+            case OpCode::JmpIfTrue:
                 if (stack_.pop().bvalue()) {
                     ip += byteCode.index - 1;
                 }
                 break;
-            case OpCodes::JmpIfFalse:
+            case OpCode::JmpIfFalse:
                 if (!stack_.pop().bvalue()) {
                     ip += byteCode.index - 1;
                 }
                 break;
-            case OpCodes::Load:
+            case OpCode::Load:
                 loadSymbol(byteCode.index);
                 break;
         }
@@ -421,7 +424,8 @@ void VM::incOp(int index) {
             st.store(index, symbol.dvalue() + 1);
             break;
         default:
-            throw std::runtime_error("Internal error: Illegal use of incBy on a non-integer/double type");
+            throw std::runtime_error(
+                "Internal error: Illegal use of incBy on a non-integer/double type");
     }
 }
 

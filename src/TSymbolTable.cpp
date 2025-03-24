@@ -1,59 +1,70 @@
 #include <stdexcept>
+#include <assert.h>
 #include "TSymbolTable.hpp"
 #include "TListObject.hpp"
 #include "ConstantTable.hpp"
 /* DONE */
-static TByteCode createByteCode(OpCodes opcode, int ivalue) {
+static TByteCode createByteCode(OpCode opcode, int ivalue) {
     TByteCode bcode;
     bcode.opCode = opcode;
-    bcode.index = ivalue;
+    bcode.index = static_cast<int>(ivalue);
     return bcode;
 }
 
-static TByteCode createByteCode(OpCodes opcode, double dvalue) {
+static TByteCode createByteCode(OpCode opcode, double dvalue) {
     TByteCode bcode;
     bcode.opCode = opcode;
     TConstantValueElement elem(dvalue);
     constantValueTable.emplace_back(std::move(elem));
-    bcode.index = constantValueTable.size();
+    bcode.index = static_cast<int>(constantValueTable.size());
     return bcode;
 }
 
-static TByteCode createByteCode(OpCodes opcode, bool bvalue) {
+static TByteCode createByteCode(OpCode opcode, bool bvalue) {
     TByteCode bcode;
     bcode.opCode = opcode;
     bcode.index = bvalue;
     return bcode;
 }
 
-static TByteCode createByteCode(OpCodes opcode) {
+static TByteCode createByteCode(OpCode opcode) {
     TByteCode bcode;
     bcode.opCode = opcode;
     return bcode;
 }
 
-static TByteCode createByteCode(OpCodes opcode, const std::string &svalue) {
+static TByteCode createByteCode(OpCode opcode, const std::string &svalue) {
     TByteCode bcode;
     bcode.opCode = opcode;
     constantValueTable.emplace_back(svalue);
-    bcode.index = constantValueTable.size();
+    bcode.index = static_cast<int>(constantValueTable.size());
     return bcode;
 }
 
 bool TSymbolTable::find(const std::string &name, int &index) {
     for (size_t i = 0; i < symbols_.size(); ++i) {
         if (symbols_[i].name() == name) {
-            index = i;
+            index = static_cast<int>(i);
             return true;
         }
     }
     return false;
 }
 
+int TSymbolTable::addSymbol(const std::string &name) {
+    symbols_.emplace_back(name);
+    return static_cast<int>(symbols_.size() - 1);
+}
+
+int TSymbolTable::addSymbol(TUserFunction *fvalue) {
+    symbols_.emplace_back(fvalue);
+    return static_cast<int>(symbols_.size() - 1);
+}
+
 bool TSymbolTable::reverseFind(const std::string &name, int &index) {
-    for (int i = symbols_.size() - 1; i = 0; --i) {
+    for (size_t i = symbols_.size() - 1; i == 0; --i) {
         if (symbols_[i].name() == name) {
-            index = i;
+            index = static_cast<int>(i);
             return true;
         }
     }
@@ -62,20 +73,23 @@ bool TSymbolTable::reverseFind(const std::string &name, int &index) {
 
 void TSymbolTable::storeSymbolToTable(int index, int ivalue) {
     checkForExistingData(index);
-    symbols_[index].type_ = TSymbolElementType::symInteger;
-    symbols_[index].setValue(ivalue);
+    size_t index_t = static_cast<size_t>(index);
+    symbols_[index_t].type_ = TSymbolElementType::symInteger;
+    symbols_[index_t].setValue(ivalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, bool bvalue) {
     checkForExistingData(index);
-    symbols_[index].type_ = TSymbolElementType::symBoolean;
-    symbols_[index].setValue(bvalue);
+    size_t index_t = static_cast<size_t>(index);
+    symbols_[index_t].type_ = TSymbolElementType::symBoolean;
+    symbols_[index_t].setValue(bvalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, double dvalue) {
     checkForExistingData(index);
-    symbols_[index].type_ = TSymbolElementType::symDouble;
-    symbols_[index].setValue(dvalue);
+    size_t index_t = static_cast<size_t>(index);
+    symbols_[index_t].type_ = TSymbolElementType::symDouble;
+    symbols_[index_t].setValue(dvalue);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, TStringObject *svalue) {
@@ -88,9 +102,9 @@ void TSymbolTable::storeSymbolToTable(int index, TStringObject *svalue) {
         entry = svalue;
     }
     entry->setType(TBlockType::btBound);
-
-    symbols_[index].setValue(entry);
-    symbols_[index].setType(TSymbolElementType::symString);
+    size_t index_t = static_cast<size_t>(index);
+    symbols_[index_t].setValue(entry);
+    symbols_[index_t].setType(TSymbolElementType::symString);
 }
 
 void TSymbolTable::storeSymbolToTable(int index, TListObject *lvalue) {
@@ -102,12 +116,15 @@ void TSymbolTable::storeSymbolToTable(int index, TListObject *lvalue) {
         entry = lvalue;
     }
     entry->setType(TBlockType::btBound);
-
-    symbols_[index].setValue(entry);
-    symbols_[index].setType(TSymbolElementType::symList);
+    size_t index_t = static_cast<size_t>(index);
+    symbols_[index_t].setValue(entry);
+    symbols_[index_t].setType(TSymbolElementType::symList);
 }
 
-void TSymbolTable::checkForExistingData(int index) {}
+void TSymbolTable::checkForExistingData(int index) {
+    assert(false);
+    assert(index == 0);
+}
 
 void TProgram::clear() {
     actualLength_ = 0;
@@ -119,43 +136,42 @@ void TProgram::append(TByteCode bytecode) {
     code_[actualLength_++] = bytecode;
 }
 
-int TProgram::addByteCode(OpCodes opCode) {
+size_t TProgram::addByteCode(OpCode opCode) {
     checkSpace();
-    int ret = actualLength_;
+    size_t ret = actualLength_;
     code_[actualLength_++].opCode = opCode;
     return ret;
 }
 
-void TProgram::addByteCode(OpCodes opcode, int val) {
+void TProgram::addByteCode(OpCode opcode, int val) {
     checkSpace();
     code_[actualLength_++] = createByteCode(opcode, val);
 }
 
-void TProgram::addByteCode(OpCodes opcode, double val) {
+void TProgram::addByteCode(OpCode opcode, double val) {
     checkSpace();
     code_[actualLength_++] = createByteCode(opcode, val);
 }
 
-void TProgram::addByteCode(OpCodes opcode, bool val) {
+void TProgram::addByteCode(OpCode opcode, bool val) {
     checkSpace();
     code_[actualLength_++] = createByteCode(opcode, val);
 }
 
-void TProgram::addByteCode(OpCodes opcode, std::string val) {
+void TProgram::addByteCode(OpCode opcode, std::string val) {
     checkSpace();
     code_[actualLength_++] = createByteCode(opcode, val);
 }
 
 void TProgram::appendProgram(TProgram program) {
-    for (size_t i = 0; i < program.count(); ++i) {
+    for (size_t i = 0; i < program.size(); ++i) {
         append(program[i]);
     }
 }
 
-int TProgram::createInstructionSpace() {
+size_t TProgram::createInstructionSpace() {
     checkSpace();
-    int ret = actualLength_++;
-    return ret;
+    return ++actualLength_;
 }
 
 void TProgram::checkSpace() {
@@ -164,8 +180,35 @@ void TProgram::checkSpace() {
     }
 }
 
+bool TProgram::operator==(const TProgram &other) const {
+    if (actualLength_ != other.actualLength_) return false;
+    if (code_ != other.code_) return false;
+    return true;
+}
+
+std::string TProgram::string() const {
+    std::string msg;
+    int i = static_cast<int>(actualLength_);
+    while (--i >= 0) {
+        msg += OpCodeToString(code_[i].opCode);
+        if (code_[i].index != 0) {
+            msg += " " + std::to_string(code_[i].index);
+        }
+        msg += "\n";
+    }
+    return msg;
+}
+
 TSymbol::TSymbol(const std::string &name)
-    : name_(name), type_(TSymbolElementType::symUndefined) {}
+    : type_(TSymbolElementType::symUndefined), name_(name) {}
 
 TSymbol::TSymbol(TUserFunction *fvalue)
-    : fValue(fvalue), name_(fvalue->name()), type_(TSymbolElementType::symUserFunc) {}
+    : type_(TSymbolElementType::symUserFunc), name_(fvalue->name()), fValue(fvalue) {}
+
+bool operator==(const TByteCode &lhs, const TByteCode &rhs) {
+    return lhs.index == rhs.index && lhs.opCode == rhs.opCode;
+}
+
+bool operator!=(const TByteCode &lhs, const TByteCode &rhs) {
+    return !(lhs == rhs);
+}

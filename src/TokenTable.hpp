@@ -6,12 +6,15 @@
 
 class TokensTable {
 public:
-    enum class Mode { Saving, Reading };
+    enum class Mode {
+        Saving,
+        Reading
+    };
 
 public:
     template <typename T>
     void add(T &&entry) {
-        tokens_.emplace_back(std::forward<TokenRecord>(entry));
+        tokens_.emplace_back(std::forward<T>(entry));
         tokenRecord_ = tokens_.back();
     }
 

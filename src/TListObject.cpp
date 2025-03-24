@@ -25,6 +25,7 @@ TListObject *TListObject::clone() const {
             }
         }
     }
+    return ret;
 }
 
 TListObject *TListObject::addLists(TListObject *l1, TListObject *l2) {
@@ -49,7 +50,7 @@ TListObject *TListObject::multiply(int multiplier, const TListObject *aList) {
         if (nContents == 0) {
             result->list_.push_back(TListItem(0));
         } else {
-            for (int j = 0; j < nContents; ++j) {
+            for (size_t j = 0; j < nContents; ++j) {
                 result->list_.push_back(TListItem(workingCopy->list_[j]));
             }
         }

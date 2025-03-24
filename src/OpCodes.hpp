@@ -4,7 +4,7 @@
 
 #include <string>
 
-enum class OpCodes {
+enum class OpCode {
     Nop,
     Halt,
     // Arithmetic
@@ -22,10 +22,12 @@ enum class OpCodes {
     LocalDec,
 
     // Load and store values to symbol table
-    Load,        // Load symbol argument onto stack, operand contains index to the symbol table
-    Store,       // Save item on stack to symbol table, operand contains index to the symbol table
-    LoadLocal,   // Load local symbol argument onto stack, operand contains index to the local symbol table
-    StoreLocal,  // Save item on stack to local symbol table, operand contains index to the symbol table
+    Load,       // Load symbol argument onto stack, operand contains index to the symbol table
+    Store,      // Save item on stack to symbol table, operand contains index to the symbol table
+    LoadLocal,  // Load local symbol argument onto stack, operand contains index to the local symbol
+                // table
+    StoreLocal,  // Save item on stack to local symbol table, operand contains index to the symbol
+                 // table
 
     // Logical
     And,
@@ -75,6 +77,6 @@ enum class OpCodes {
     // PopAndSend  // Debug opcode
 };
 
-std::string OpCodeToName(OpCodes code);
+std::string OpCodeToString(OpCode code);
 
 #endif

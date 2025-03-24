@@ -49,13 +49,14 @@ private:
 
 class TListObject : public TRhodusObject {
 public:
+    using const_iterator = std::vector<TListItem>::const_iterator;
     void append(int value);
     void append(double value);
     void append(bool value);
     void append(TStringObject *value);
     TListObject *clone() const;
-    const auto &begin() const { return list_.begin(); }
-    const auto &end() const { return list_.end(); }
+    const_iterator begin() const { return list_.begin(); }
+    const_iterator end() const { return list_.end(); }
 
     static TListObject *createObject();
     static TListObject *addLists(TListObject *l1, TListObject *l2);

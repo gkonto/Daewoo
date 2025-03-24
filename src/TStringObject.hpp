@@ -11,7 +11,7 @@ public:
     explicit TStringObject(T &&value)
         : value_(std::forward<T>(value)) {}
 
-        template <typename T>
+    template <typename T>
     static TStringObject *createConstantObject(T &&value) {
         auto *ret = new TStringObject(std::forward<T>(value));
         ret->setType(TBlockType::btConstant);

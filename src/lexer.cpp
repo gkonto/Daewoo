@@ -118,7 +118,8 @@ void Scanner::getNumber() {
                 tokenRecord_.setInt(10 * tokenRecord_.tInt() + singleDigit);
                 ch_ = nextChar();
             } else {
-                error_.setError("integer overflow, constant value too large to read", lineNumber_, columnNumber_);
+                error_.setError("integer overflow, constant value too large to read", lineNumber_,
+                                columnNumber_);
                 return;
             }
 
@@ -150,7 +151,8 @@ void Scanner::getNumber() {
             ch_ = nextChar();
         }
         if (!isdigit(ch_)) {
-            error_.setError("syntax error: number expected in exponent", lineNumber_, columnNumber_);
+            error_.setError("syntax error: number expected in exponent", lineNumber_,
+                            columnNumber_);
             return;
         }
 
@@ -161,7 +163,8 @@ void Scanner::getNumber() {
                 evalue = 10 * evalue + singleDigit;
                 ch_ = nextChar();
             } else {
-                error_.setError("exponent overflow maximum value for exponent is " + std::to_string(MAX_EXPONENT),
+                error_.setError("exponent overflow maximum value for exponent is " +
+                                    std::to_string(MAX_EXPONENT),
                                 lineNumber_, columnNumber_);
                 return;
             }
@@ -220,7 +223,8 @@ void Scanner::getString() {
             ch_ = readRawChar();
         }
     }
-    error_.setError("String without terminating quotation mark at line " + std::to_string(lineNumber_) + ", column ",
+    error_.setError("String without terminating quotation mark at line " +
+                        std::to_string(lineNumber_) + ", column ",
                     lineNumber_, columnNumber_);
 }
 
@@ -256,7 +260,8 @@ void Scanner::getSpecial() {
                 ch_ = nextChar();
                 tokenRecord_.setCode(TokenCode::tNotEqual);
             } else {
-                error_.setError("unexpecting '=' character after explanation point: " + std::to_string(ch_),
+                error_.setError("unexpecting '=' character after explanation point: " +
+                                    std::to_string(ch_),
                                 lineNumber_, columnNumber_);
             }
             break;
@@ -313,8 +318,8 @@ void Scanner::getSpecial() {
             tokenRecord_.setCode(TokenCode::tDotproduct);
             break;
         default:
-            tokenRecord_.setCode(TokenCode::tError);
-            break;
+            throw std::runtime_error("unexpected character: " + std::string(1, ch_));
+            // tokenRecord_.setCode(TokenCode::tError);
     }
     ch_ = nextChar();
 }
@@ -336,7 +341,8 @@ void Scanner::nextToken() {
         tokenRecord_.setCode(TokenCode::tEndofStream);
         if (inMultiLineComment_) {
             inMultiLineComment_ = false;
-            error_.setError("detected unterminated comment, expecting '*/'", lineNumber_, columnNumber_);
+            error_.setError("detected unterminated comment, expecting '*/'", lineNumber_,
+                            columnNumber_);
         }
     } else {
         getSpecial();
