@@ -48,6 +48,71 @@ static TProgram simple_4() {
     return program;
 }
 
+static TProgram simple_5() {
+    // "1E2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_6() {
+    // "1e2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_7() {
+    // "1e-2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_8() {
+    // "1e+2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_9() {
+    // "-1E-2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Umi);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_10() {
+    // "1.2E2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_11() {
+    // "0.1E2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static TProgram simple_12() {
+    // "1.2E-2;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushd, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static TProgram addition_1() {
     TProgram program;
     program.addByteCode(OpCode::Pushi, 1);
@@ -571,6 +636,18 @@ static TProgram relational_operators_6() {
     return program;
 }
 
+static TProgram relational_operators_7() {
+    //"2 + 3 == 5;"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Pushi, 3);
+    program.addByteCode(OpCode::Add);
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::IsEq);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static void testByteCodeCore(const std::string &input, const TProgram &expected) {
     std::istringstream iss(input);
     Scanner sc(iss);
@@ -597,10 +674,18 @@ static void testByteCodeCore(const std::string &input, const TProgram &expected)
 TEST_CASE("Test_ParsingByteCode") {
     SECTION("Simple") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
-            {"15;",   simple_1()},
-            {"+15;",  simple_2()},
-            {"15.0",  simple_3()},
-            {"-15.0", simple_4()},
+            {"15;",    simple_1() },
+            {"+15;",   simple_2() },
+            {"15.0",   simple_3() },
+            {"-15.0",  simple_4() },
+            {"1E2",    simple_5() },
+            {"1e2",    simple_6() },
+            {"1e-2",   simple_7() },
+            {"1e+2",   simple_8() },
+            {"-1E-2",  simple_9() },
+            {"1.2E2",  simple_10()},
+            {"0.1E2",  simple_11()},
+            {"1.2E-2", simple_12()},
         };
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
@@ -723,12 +808,13 @@ TEST_CASE("Test_ParsingByteCode") {
 
     SECTION("Relational Operators") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
-            {"2 < 3;",  relational_operators_1()},
-            {"2 > 3;",  relational_operators_2()},
-            {"2 <= 3;", relational_operators_3()},
-            {"2 >= 3;", relational_operators_4()},
-            {"2 == 3;", relational_operators_5()},
-            {"2 != 3;", relational_operators_6()},
+            {"2 < 3;",      relational_operators_1()},
+            {"2 > 3;",      relational_operators_2()},
+            {"2 <= 3;",     relational_operators_3()},
+            {"2 >= 3;",     relational_operators_4()},
+            {"2 == 3;",     relational_operators_5()},
+            {"2 != 3;",     relational_operators_6()},
+            {"2 + 3 == 5;", relational_operators_7()}
         };
 
         for (const auto &[input, expected]: tests) {
