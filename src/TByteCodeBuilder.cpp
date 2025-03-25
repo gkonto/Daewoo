@@ -1,11 +1,15 @@
 #include <assert.h>
+#include <sstream>
 #include "TByteCodeBuilder.hpp"
 #include "TModule.hpp"
 #include "lexer.hpp"
 
 void TByteCodeBuilder::expect(TokenCode tcode) {
     if (code() != tcode) {
-        throw std::runtime_error("TByteCodeBuilder> unexpected token");
+        std::stringstream ss;
+        ss << "TByteCodeBuilder> expected variable: " << tokenToString(tcode)
+           << " got: " << tokenToString(code());
+        throw std::runtime_error(ss.str());
     } else {
         nextToken();
     }
@@ -49,8 +53,8 @@ void TByteCodeBuilder::statementList(TProgram &program) {
 // leftHandSide = identifier ( '[' expression ']' )
 void TByteCodeBuilder::statement(TProgram &program) {
     switch (code()) {
-        // case TokenCode::tIf:
-        //     return ifStatement();
+        case TokenCode::tIf:
+            return ifStatement(program);
         // case TokenCode::tReturn:
         //     return returnStmt();
         // case TokenCode::tFunction:
@@ -110,12 +114,41 @@ void TByteCodeBuilder::letStatement(TProgram &program) {
     if (not module_->symboltable().find(identifier, index)) {
         index = module_->symboltable().addSymbol(identifier);
     } else {
-        throw std::runtime_error("TByteCodeBuilder> undefined variable");
+        std::stringstream ss;
+        ss << "TByteCodeBuilder> undefined variable: " << identifier;
+        throw std::runtime_error(ss.str());
     }
     nextToken();
     expect(TokenCode::tAssign);
     expression(program);
     program.addByteCode(OpCode::Store, index);
+}
+
+// ifStatement = IF expression THEN statement ifEnd
+// ifEnd = END | ELSE statementList END
+void TByteCodeBuilder::ifStatement(TProgram &program) {
+    expect(TokenCode::tIf);
+    expression(program);
+    int jmpLocation_1 = static_cast<int>(program.addByteCode(OpCode::JmpIfFalse));
+    expect(TokenCode::tThen);
+    statementList(program);
+    if (code() == TokenCode::tElse) {
+        int jmpLocation_2 = static_cast<int>(program.addByteCode(OpCode::Jmp));
+        program.setGotoLabel(jmpLocation_1,
+                             static_cast<int>(program.getCurrentInstructionPointer()) -
+                                 jmpLocation_1);
+        nextToken();
+        statementList(program);
+        program.setGotoLabel(jmpLocation_2,
+                             static_cast<int>(program.getCurrentInstructionPointer()) -
+                                 jmpLocation_2);
+        expect(TokenCode::tEnd);
+    } else {
+        expect(TokenCode::tEnd);
+        program.setGotoLabel(jmpLocation_1,
+                             static_cast<int>(program.getCurrentInstructionPointer()) -
+                                 jmpLocation_1);
+    }
 }
 
 void TByteCodeBuilder::expression(TProgram &program) {
@@ -262,7 +295,10 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     } else {
         int index = 0;
         if (not module_->symboltable().find(identifier, index)) {
-            throw std::runtime_error("TByteCodeBuilder> undefined variable");
+
+            std::stringstream ss;
+            ss << "TByteCodeBuilder> undefined variable: " << identifier;
+            throw std::runtime_error(ss.str());
             // index = module_->symboltable().addSymbol(identifier);
         }
 

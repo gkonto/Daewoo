@@ -853,6 +853,146 @@ static TProgram let_statement_6() {
     return program;
 }
 
+static constexpr const char *input_if_1() {
+    return "let a = false;\n"
+           "if true then\n"
+           "a = true;\n"
+           "end;\n";
+}
+
+static TProgram expected_if_1() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::JmpIfFalse, 3);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static constexpr const char *input_if_2() {
+    return "let a = true;\n"
+           "if true then\n"
+           "a = false;\n"
+           "end;\n";
+}
+
+static TProgram expected_if_2() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::JmpIfFalse, 3);
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static constexpr const char *input_if_3() {
+    return "let  x = 5;\n"
+           "let  y = 10;\n"
+           "let a = true;\n"
+           "if x > y then\n"
+           " a = false\n"
+           "else\n"
+           " a = true\n"
+           "end;\n";
+}
+
+static TProgram expected_if_3() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 5);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushi, 10);
+    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::IsGt);
+    program.addByteCode(OpCode::JmpIfFalse, 4);
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Jmp, 3);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static constexpr const char *input_if_4() {
+    return "if true then\n"
+           "let a = 1;\n"
+           "if true then\n"
+           "a = 2;\n"
+           "if false then\n"
+           "a = 3;\n"
+           "end;\n"
+           "end;\n"
+           "end;\n";
+}
+
+static TProgram expected_if_4() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::JmpIfFalse, 11);
+    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushb, true);
+    program.addByteCode(OpCode::JmpIfFalse, 7);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::JmpIfFalse, 3);
+    program.addByteCode(OpCode::Pushi, 3);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static constexpr const char *input_if_5() {
+    // "if False then
+    //      a = 1;
+    // else
+    //      if False then
+    //          a = 2
+    //      else
+    //          a = 3;
+    //      end;
+    // end;
+    // "
+    return "if false then\n"
+           "let a = 1;\n"
+           "else\n"
+           "if false then\n"
+           "a = 2;\n"
+           "else\n"
+           "a = 3;\n"
+           "end;\n"
+           "end;\n";
+}
+
+static TProgram expected_if_5() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::JmpIfFalse, 4);
+    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Jmp, 8);
+    program.addByteCode(OpCode::Pushb, false);
+    program.addByteCode(OpCode::JmpIfFalse, 4);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Jmp, 3);
+    program.addByteCode(OpCode::Pushi, 3);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static void testByteCodeCore(const std::string &input, const TProgram &expected) {
     std::istringstream iss(input);
     Scanner sc(iss);
@@ -876,7 +1016,7 @@ static void testByteCodeCore(const std::string &input, const TProgram &expected)
     REQUIRE(module.code() == expected);
 }
 
-TEST_CASE("Test_ParsingByteCode") {
+TEST_CASE("Test_ParsingByteCodeGeneral") {
     SECTION("Simple") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
             {"15;",    simple_1() },
@@ -1066,5 +1206,19 @@ TEST_CASE("Test_ParsingByteCode") {
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
         }
+    }
+}
+
+TEST_CASE("Test_ParsingByteCodeIfCondition") {
+    std::vector<std::tuple<std::string, TProgram>> tests = {
+        {input_if_1(), expected_if_1()},
+        {input_if_2(), expected_if_2()},
+        {input_if_3(), expected_if_3()},
+        {input_if_4(), expected_if_4()},
+        {input_if_5(), expected_if_5()},
+    };
+
+    for (const auto &[input, expected]: tests) {
+        testByteCodeCore(input, expected);
     }
 }
