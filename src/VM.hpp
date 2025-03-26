@@ -32,14 +32,14 @@ private:
     // void orOp();
     // void notOp();
     // void xorOp();
-    // void isLt();
+    void isLt();
     // void isLte();
     // void isGt();
     // void isGte();
     // void modOp();
-    // void isEq();
+    void isEq();
     // void isNotEq();
-    // void loadSymbol(int index);
+    void loadSymbol(int index);
 
     void push(int value) { stack_.push(value); }
     void push(bool value) { stack_.push(value); }

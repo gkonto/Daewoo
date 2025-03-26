@@ -62,23 +62,31 @@ void VM::run(const TProgram &code) {
                 store(byteCode.index);
                 // TODO garbage collection if size reached.
                 break;
+            case OpCode::Load:
+                loadSymbol(byteCode.index);
+                break;
+            case OpCode::IsEq:
+                isEq();
+                break;
+            case OpCode::Pushb:
+                push(static_cast<bool>(byteCode.index));
+                break;
+            case OpCode::IsLt:
+                isLt();
+                break;
             case OpCode::Inc:
             case OpCode::Dec:
             case OpCode::And:
             case OpCode::Or:
             case OpCode::Not:
             case OpCode::Xor:
-            case OpCode::IsLt:
             case OpCode::IsGt:
             case OpCode::IsGte:
             case OpCode::IsLte:
             case OpCode::Mod:
-            case OpCode::IsEq:
             case OpCode::IsNotEq:
-            case OpCode::Pushb:
             case OpCode::Pushs:
             case OpCode::PushNone:
-            case OpCode::Load:
             case OpCode::Jmp:
             case OpCode::JmpIfTrue:
             case OpCode::JmpIfFalse:
@@ -110,9 +118,7 @@ void VM::run(const TProgram &code) {
                 // case OpCode::Xor:
                 //     xorOp();
                 //     break;
-                // case OpCode::IsLt:
-                //     isLt();
-                //     break;
+
                 // case OpCode::IsGt:
                 //     isGt();
                 //     break;
@@ -125,15 +131,8 @@ void VM::run(const TProgram &code) {
                 // case OpCode::Mod:
                 //     modOp();
                 //     break;
-                // case OpCode::IsEq:
-                //     isEq();
-                //     break;
                 // case OpCode::IsNotEq:
                 //     isNotEq();
-                //     break;
-
-                // case OpCode::Pushb:
-                //     push(static_cast<bool>(byteCode.index));
                 //     break;
 
                 // case OpCode::Pushs:
@@ -142,9 +141,7 @@ void VM::run(const TProgram &code) {
                 // case OpCode::PushNone:
                 //     push();
                 //     break;
-                // case OpCodes::Load:
-                //     loadSymbol(byteCode.index);
-                //     break;
+
                 // case OpCode::Jmp:
                 //     ip += byteCode.index - 1;
                 //     break;
@@ -529,31 +526,31 @@ void VM::unaryMinusOp() {
 //     throw std::runtime_error("Incompatible types in XOR operation");
 // }
 
-// void VM::isLt() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     auto st1_type = st1.type();
-//     auto st2_type = st2.type();
-//     if (st1_type == TStackRecordType::stInteger) {
-//         if (st2.type() == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() < st1.ivalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() < st1.ivalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
-//         }
-//     } else if (st1_type == TStackRecordType::stDouble) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() < st1.dvalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() < st1.dvalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
-//         }
-//     } else {
-//         throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
-//     }
-// }
+void VM::isLt() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger) {
+        if (st2.type() == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() < st1.ivalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() < st1.ivalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+        }
+    } else if (st1_type == TStackRecordType::stDouble) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() < st1.dvalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() < st1.dvalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+        }
+    } else {
+        throw std::runtime_error("Incompatible types in ''Is Less Than'' Operation");
+    }
+}
 
 // void VM::isGt() {
 //     auto st1 = stack_.pop();
@@ -668,45 +665,48 @@ void VM::unaryMinusOp() {
 //     }
 // }
 
-// void VM::isEq() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     auto st1_type = st1.type();
-//     auto st2_type = st2.type();
+void VM::isEq() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
 
-//     if (st1_type == TStackRecordType::stBoolean && st2_type == TStackRecordType::stBoolean) {
-//         stack_.push(st1.bvalue() == st2.bvalue());
-//         return;
-//     }
+    if (st1_type == TStackRecordType::stBoolean && st2_type == TStackRecordType::stBoolean) {
+        stack_.push(st1.bvalue() == st2.bvalue());
+        return;
+    }
 
-//     if (st1_type == TStackRecordType::stInteger) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() == st1.ivalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(std::fabs(st1.ivalue() - st2.dvalue()) < 1e-9);
-//         } else {
-//             throw std::runtime_error("Incompatible types in equality test");
-//         }
-//     } else if (st1_type == TStackRecordType::stDouble) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(std::fabs(st1.ivalue() - st2.dvalue()) < 1e-9);
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(std::fabs(st1.dvalue() - st2.dvalue()) < 1e-9);
-//         } else {
-//             throw std::runtime_error("Incompatible types in equality test");
-//         }
-//     } else if (st1_type == TStackRecordType::stString) {
-//         if (st2_type == TStackRecordType::stString) {
-//             stack_.push(!st1.svalue().compare(st2.svalue()));
-//         } else {
-//             throw std::runtime_error("Incompatible types in equality test");
-//         }
-//     } else if (st1_type == TStackRecordType::stList) {
-//         throw std::runtime_error("Incompatible tpes in equality test");
-//     } else {
-//         throw std::runtime_error("Incompatible tpes in equality test");
-//     }
-// }
+    if (st1_type == TStackRecordType::stInteger) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() == st1.ivalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(std::fabs(st1.ivalue() - st2.dvalue()) < 1e-9);
+        } else {
+            throw std::runtime_error("Incompatible types in equality test");
+        }
+    } else if (st1_type == TStackRecordType::stDouble) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(std::fabs(st1.ivalue() - st2.dvalue()) < 1e-9);
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(std::fabs(st1.dvalue() - st2.dvalue()) < 1e-9);
+        } else {
+            throw std::runtime_error("Incompatible types in equality test");
+        }
+    } else if (st1_type == TStackRecordType::stString) {
+        // TODO
+        throw std::runtime_error("VM::isEq> TODO");
+        // if (st2_type == TStackRecordType::stString) {
+        //     stack_.push(!st1.svalue().compare(st2.svalue()));
+        // } else {
+        //     throw std::runtime_error("Incompatible types in equality test");
+        // }
+    } else if (st1_type == TStackRecordType::stList) {
+        // TODO
+        throw std::runtime_error("VM::isEq> Incompatible types in equality test");
+    } else {
+        throw std::runtime_error("VM::isEq> Incompatible types in equality test");
+    }
+}
 
 // void VM::isNotEq() {
 //     isEq();
@@ -714,27 +714,31 @@ void VM::unaryMinusOp() {
 //     stack_.top().setValue(!value);
 // }
 
-// void VM::loadSymbol(int index) {
-//     auto symbol = symboltable().get(index);
-//     switch (symbol.type()) {
-//         case TSymbolElementType::Undefined:
-//             throw std::runtime_error("Undefined variable" + symbol.name());
-//         case TSymbolElementType::Integer:
-//             stack_.push(symbol.ivalue());
-//             break;
-//         case TSymbolElementType::Boolean:
-//             stack_.push(symbol.bvalue());
-//             break;
-//         case TSymbolElementType::Double:
-//             stack_.push(symbol.dvalue());
-//             break;
-//         case TSymbolElementType::String:
-//             stack_.push(symbol.svalue());
-//             break;
-//         case TSymbolElementType::List:
-//             stack_.push(symbol.lvalue());
-//             break;
-//         case TSymbolElementType::UserFunc:
-//             throw std::runtime_error("User function");
-//     }
-// }
+void VM::loadSymbol(int index) {
+    auto symbol = symboltable().get(index);
+    switch (symbol.type()) {
+        case TSymbolElementType::symUndefined:
+            throw std::runtime_error("Undefined variable" + symbol.name());
+        case TSymbolElementType::symInteger:
+            stack_.push(symbol.ivalue());
+            break;
+        case TSymbolElementType::symBoolean:
+            stack_.push(symbol.bvalue());
+            break;
+        case TSymbolElementType::symDouble:
+            stack_.push(symbol.dvalue());
+            break;
+        case TSymbolElementType::symString:
+            stack_.push(symbol.svalue());
+            break;
+        case TSymbolElementType::symList:
+            stack_.push(symbol.lvalue());
+            break;
+        case TSymbolElementType::symUserFunc:
+            // TODO
+            throw std::runtime_error("VM::loadSymbol:: User function");
+        case TSymbolElementType::symNonExistant:
+            throw std::runtime_error("VM::nonExistant");
+            break;
+    }
+}

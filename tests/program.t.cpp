@@ -854,6 +854,18 @@ static TProgram let_statement_6() {
     return program;
 }
 
+static TProgram let_statement_7() {
+    // "let a = 2; a == 2"
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::Store, 0);
+    program.addByteCode(OpCode::Load, 0);
+    program.addByteCode(OpCode::Pushi, 2);
+    program.addByteCode(OpCode::IsEq);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
 static constexpr const char *input_if_1() {
     return "let a = false;\n"
            "if true then\n"
@@ -1168,6 +1180,7 @@ TEST_CASE("Test_ParsingByteCodeGeneral") {
             {"let x = 5; let y = 2*x;",             let_statement_4()},
             {"let x = false and true;",             let_statement_5()},
             {"let x = 5 + 14 - 32 + 3 * (25 + 2);", let_statement_6()},
+            {"let a = 2; a == 2",                   let_statement_7()}
         };
         for (const auto &[input, expected]: tests) {
             testByteCodeCore(input, expected);
