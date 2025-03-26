@@ -60,8 +60,8 @@ public:
     explicit TMachineStack(int stackSize)
         : stackSize_(stackSize) {}
     void checkStackOverflow();
-    const TMachineStackRecord &top() const { return stack_.top(); }
-
+    const TMachineStackRecord &ctop() const { return stack_.top(); }
+    TMachineStackRecord &top() { return stack_.top(); }
     TMachineStackRecord pop();
     // int popInteger();
 

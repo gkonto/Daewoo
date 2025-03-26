@@ -149,3 +149,51 @@ TEST_CASE("Test_VM_arithmetic") {
         }
     }
 }
+
+TEST_CASE("Test_VM_Booleans") {
+    SECTION("Precedence") {
+        std::vector<std::tuple<std::string, bool>> tests = {
+            {"true == true",                 true },
+            {"true != false",                true },
+            {"true != true",                 false},
+            {"false != false",               false},
+
+            {"not false",                    true },
+            {"not true",                     false},
+            {"not not true",                 true },
+
+            {"true or true",                 true },
+            {"true or false",                true },
+            {"false or true",                true },
+            {"false and true",               false},
+            {"true and false",               false},
+            {"false and false",              false},
+
+            {"not (false or true);",         false},
+            {"not (false or false);",        true },
+            {"not (false and true);",        true },
+            {"not (true and false);",        true },
+            {"not (false and false);",       true },
+
+            {"let x = 1;x < x and x > x;",   false},
+            {"((1 >= 6) and not (3 <= 4));", false},
+            {"let y1 = 6; y1 != 6;",         false},
+            {"let y1 = 6;y1 == 6;",          true },
+
+            {"1 < 2;",                       true },
+            {"1 <= 2;",                      true },
+            {"not (1 > 2);",                 true },
+            {"not (1 >= 2);",                true },
+            {"not (1 == 2);",                true },
+            {"(1 != 2);",                    true },
+
+            {"1 < 1 and 1 > 1",              false},
+            {"(1 >=6) and not (3 <=4)",      false},
+            {"let y = 6; (y == 6) == true",  true },
+        };
+
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stBoolean, expected_value);
+        }
+    }
+}

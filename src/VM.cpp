@@ -74,17 +74,31 @@ void VM::run(const TProgram &code) {
             case OpCode::IsLt:
                 isLt();
                 break;
+            case OpCode::IsNotEq:
+                isNotEq();
+                break;
+            case OpCode::Not:
+                notOp();
+                break;
+            case OpCode::And:
+                andOp();
+                break;
+            case OpCode::Or:
+                orOp();
+                break;
+            case OpCode::IsGt:
+                isGt();
+                break;
+            case OpCode::IsGte:
+                isGte();
+                break;
+            case OpCode::IsLte:
+                isLte();
+                break;
             case OpCode::Inc:
             case OpCode::Dec:
-            case OpCode::And:
-            case OpCode::Or:
-            case OpCode::Not:
             case OpCode::Xor:
-            case OpCode::IsGt:
-            case OpCode::IsGte:
-            case OpCode::IsLte:
             case OpCode::Mod:
-            case OpCode::IsNotEq:
             case OpCode::Pushs:
             case OpCode::PushNone:
             case OpCode::Jmp:
@@ -106,33 +120,13 @@ void VM::run(const TProgram &code) {
                 // case OpCode::Dec:
                 //     decOp(byteCode.index);
                 //     break;
-                // case OpCode::And:
-                //     andOp();
-                //     break;
-                // case OpCode::Or:
-                //     orOp();
-                //     break;
-                // case OpCode::Not:
-                //     notOp();
-                //     break;
+
                 // case OpCode::Xor:
                 //     xorOp();
                 //     break;
 
-                // case OpCode::IsGt:
-                //     isGt();
-                //     break;
-                // case OpCode::IsGte:
-                //     isGte();
-                //     break;
-                // case OpCode::IsLte:
-                //     isLte();
-                //     break;
                 // case OpCode::Mod:
                 //     modOp();
-                //     break;
-                // case OpCode::IsNotEq:
-                //     isNotEq();
                 //     break;
 
                 // case OpCode::Pushs:
@@ -487,34 +481,34 @@ void VM::unaryMinusOp() {
 //     }
 // }
 
-// void VM::andOp() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
-//         stack_.push(st1.bvalue() && st2.bvalue());
-//         return;
-//     }
-//     throw std::runtime_error("Incompatible types in AND operation");
-// }
+void VM::andOp() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
+        stack_.push(st1.bvalue() && st2.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible types in AND operation");
+}
 
-// void VM::orOp() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
-//         stack_.push(st1.bvalue() || st2.bvalue());
-//         return;
-//     }
-//     throw std::runtime_error("Incompatible types in OR operation");
-// }
+void VM::orOp() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
+        stack_.push(st1.bvalue() || st2.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible types in OR operation");
+}
 
-// void VM::notOp() {
-//     auto st = stack_.pop();
-//     if (st.type() == TStackRecordType::stBoolean) {
-//         stack_.push(!st.bvalue());
-//         return;
-//     }
-//     throw std::runtime_error("Incompatible type in NOT operation");
-// }
+void VM::notOp() {
+    auto st = stack_.pop();
+    if (st.type() == TStackRecordType::stBoolean) {
+        stack_.push(!st.bvalue());
+        return;
+    }
+    throw std::runtime_error("Incompatible type in NOT operation");
+}
 
 // void VM::xorOp() {
 //     auto st1 = stack_.pop();
@@ -552,87 +546,83 @@ void VM::isLt() {
     }
 }
 
-// void VM::isGt() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     auto st1_type = st1.type();
-//     auto st2_type = st2.type();
-//     if (st1_type == TStackRecordType::stInteger) {
-//         if (st2.type() == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() > st1.ivalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() > st1.ivalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
-//         }
-//     } else if (st1_type == TStackRecordType::stDouble) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() > st1.dvalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() > st1.dvalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
-//         }
-//     } else {
-//         throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
-//     }
-// }
+void VM::isGt() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger) {
+        if (st2.type() == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() > st1.ivalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() > st1.ivalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+        }
+    } else if (st1_type == TStackRecordType::stDouble) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() > st1.dvalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() > st1.dvalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+        }
+    } else {
+        throw std::runtime_error("Incompatible types in ''Is Greater Than'' Operation");
+    }
+}
 
-// void VM::isGte() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     auto st1_type = st1.type();
-//     auto st2_type = st2.type();
-//     if (st1_type == TStackRecordType::stInteger) {
-//         if (st2.type() == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() >= st1.ivalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() >= st1.ivalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than''
-//             Operation");
-//         }
-//     } else if (st1_type == TStackRecordType::stDouble) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() >= st1.dvalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() >= st1.dvalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than''
-//             Operation");
-//         }
-//     } else {
-//         throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
-//     }
-// }
+void VM::isGte() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger) {
+        if (st2.type() == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() >= st1.ivalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() >= st1.ivalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+        }
+    } else if (st1_type == TStackRecordType::stDouble) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() >= st1.dvalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() >= st1.dvalue());
+        } else {
+            throw std::runtime_error("Incompatible types in 'Is Greater-Equal Than' Operation");
+        }
+    } else {
+        throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+    }
+}
 
-// void VM::isLte() {
-//     auto st1 = stack_.pop();
-//     auto st2 = stack_.pop();
-//     auto st1_type = st1.type();
-//     auto st2_type = st2.type();
-//     if (st1_type == TStackRecordType::stInteger) {
-//         if (st2.type() == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() <= st1.ivalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() <= st1.ivalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than''
-//             Operation");
-//         }
-//     } else if (st1_type == TStackRecordType::stDouble) {
-//         if (st2_type == TStackRecordType::stInteger) {
-//             stack_.push(st2.ivalue() <= st1.dvalue());
-//         } else if (st2_type == TStackRecordType::stDouble) {
-//             stack_.push(st2.dvalue() <= st1.dvalue());
-//         } else {
-//             throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than''
-//             Operation");
-//         }
-//     } else {
-//         throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
-//     }
-// }
+void VM::isLte() {
+    auto st1 = stack_.pop();
+    auto st2 = stack_.pop();
+    auto st1_type = st1.type();
+    auto st2_type = st2.type();
+    if (st1_type == TStackRecordType::stInteger) {
+        if (st2.type() == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() <= st1.ivalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() <= st1.ivalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+        }
+    } else if (st1_type == TStackRecordType::stDouble) {
+        if (st2_type == TStackRecordType::stInteger) {
+            stack_.push(st2.ivalue() <= st1.dvalue());
+        } else if (st2_type == TStackRecordType::stDouble) {
+            stack_.push(st2.dvalue() <= st1.dvalue());
+        } else {
+            throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+        }
+    } else {
+        throw std::runtime_error("Incompatible types in ''Is Greater-Equal Than'' Operation");
+    }
+}
 
 // void VM::modOp() {
 //     auto st1 = stack_.pop();
@@ -708,11 +698,11 @@ void VM::isEq() {
     }
 }
 
-// void VM::isNotEq() {
-//     isEq();
-//     auto value = stack_.top().bvalue();
-//     stack_.top().setValue(!value);
-// }
+void VM::isNotEq() {
+    isEq();
+    auto value = stack_.ctop().bvalue();
+    stack_.top().setValue(!value);
+}
 
 void VM::loadSymbol(int index) {
     auto symbol = symboltable().get(index);

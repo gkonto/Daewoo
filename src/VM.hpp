@@ -15,7 +15,7 @@ public:
         : stack_(stackSize) {}
     void runModule(std::shared_ptr<TModule> module);
     void run(const TProgram &code);
-    const TMachineStackRecord &top() const { return stack_.top(); }
+    const TMachineStackRecord &top() const { return stack_.ctop(); }
 
 private:
     void store(int symTableIndex);
@@ -28,17 +28,17 @@ private:
     void powerOp();
     // void incOp(int index);
     // void decOp(int index);
-    // void andOp();
-    // void orOp();
-    // void notOp();
+    void andOp();
+    void orOp();
+    void notOp();
     // void xorOp();
     void isLt();
-    // void isLte();
-    // void isGt();
-    // void isGte();
+    void isLte();
+    void isGt();
+    void isGte();
     // void modOp();
     void isEq();
-    // void isNotEq();
+    void isNotEq();
     void loadSymbol(int index);
 
     void push(int value) { stack_.push(value); }
