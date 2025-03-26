@@ -3,10 +3,12 @@
 
 #include "lexer.hpp"
 #include "TokenTable.hpp"
+#include "TModule.hpp"
 
 class Scanner;
-class TModule;
 class TProgram;
+class TUserFunction;
+class TSymbolTable;
 
 /*
  * The TByteCodeBuilder assumes that the code is valid.
@@ -41,10 +43,19 @@ private:
     void parseIdentifier(TProgram &program);
     void letStatement(TProgram &program);
     void ifStatement(TProgram &program);
+    void functionDef(TProgram &program);
+    int argumentList(TProgram &program);
+    void argument(TProgram &program);
+    void returnStmt(TProgram &program);
+    void parseFunctionCall(TProgram &program, int expectedArguments);
+    int expressionList(TProgram &program);
+
+    TSymbolTable &symboltable() { return module_->symboltable(); }
 
     TokensTable &sc_;
     TModule *module_ = nullptr;
     bool inUserFunctionParsing_ = false;
+    TUserFunction *currentUserFunction = nullptr;
 };
 
 #endif

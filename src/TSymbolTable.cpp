@@ -58,6 +58,8 @@ int TSymbolTable::addSymbol(const std::string &name) {
 
 int TSymbolTable::addSymbol(TUserFunction *fvalue) {
     symbols_.emplace_back(fvalue);
+    symbols_.back().setName(fvalue->name());
+    symbols_.back().setType(TSymbolElementType::symUserFunc);
     return static_cast<int>(symbols_.size());
 }
 
@@ -198,7 +200,7 @@ TSymbol::TSymbol(const std::string &name)
     : type_(TSymbolElementType::symUndefined), name_(name) {}
 
 TSymbol::TSymbol(TUserFunction *fvalue)
-    : type_(TSymbolElementType::symUserFunc), name_(fvalue->name()), fValue(fvalue) {}
+    : type_(TSymbolElementType::symUserFunc), name_(fvalue->name()), fValue_(fvalue) {}
 
 bool operator==(const TByteCode &lhs, const TByteCode &rhs) {
     return lhs.index == rhs.index && lhs.opCode == rhs.opCode;

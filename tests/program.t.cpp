@@ -954,24 +954,14 @@ static TProgram expected_if_4() {
 }
 
 static constexpr const char *input_if_5() {
-    // "if False then
-    //      a = 1;
-    // else
-    //      if False then
-    //          a = 2
-    //      else
-    //          a = 3;
-    //      end;
-    // end;
-    // "
     return "if false then\n"
-           "let a = 1;\n"
+           "    let a = 1;\n"
            "else\n"
-           "if false then\n"
-           "a = 2;\n"
-           "else\n"
-           "a = 3;\n"
-           "end;\n"
+           "    if false then\n"
+           "        a = 2;\n"
+           "    else\n"
+           "        a = 3;\n"
+           "    end;\n"
            "end;\n";
 }
 
@@ -989,6 +979,21 @@ static TProgram expected_if_5() {
     program.addByteCode(OpCode::Jmp, 3);
     program.addByteCode(OpCode::Pushi, 3);
     program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Halt);
+    return program;
+}
+
+static constexpr const char *input_funcall_1() {
+    return "fn rint()\n"
+           "    return 3\n"
+           "end\n"
+           "rint();\n";
+}
+
+static TProgram expected_funcall_1() {
+    TProgram program;
+    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Call);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -1216,6 +1221,16 @@ TEST_CASE("Test_ParsingByteCodeIfCondition") {
         {input_if_3(), expected_if_3()},
         {input_if_4(), expected_if_4()},
         {input_if_5(), expected_if_5()},
+    };
+
+    for (const auto &[input, expected]: tests) {
+        testByteCodeCore(input, expected);
+    }
+}
+
+TEST_CASE("Test_ParsingByteCodeFunctionCall") {
+    std::vector<std::tuple<std::string, TProgram>> tests = {
+        {input_funcall_1(), expected_funcall_1()},
     };
 
     for (const auto &[input, expected]: tests) {

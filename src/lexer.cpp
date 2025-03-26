@@ -118,7 +118,8 @@ void Scanner::getNumber() {
                 tokenRecord_.setInt(10 * tokenRecord_.tInt() + singleDigit);
                 ch_ = nextChar();
             } else {
-                error_.setError("integer overflow, constant value too large to read", lineNumber_,
+                error_.setError("integer overflow, constant value too large to read",
+                                lineNumber_,
                                 columnNumber_);
                 return;
             }
@@ -151,7 +152,8 @@ void Scanner::getNumber() {
             ch_ = nextChar();
         }
         if (!isdigit(ch_)) {
-            error_.setError("syntax error: number expected in exponent", lineNumber_,
+            error_.setError("syntax error: number expected in exponent",
+                            lineNumber_,
                             columnNumber_);
             return;
         }
@@ -165,7 +167,8 @@ void Scanner::getNumber() {
             } else {
                 error_.setError("exponent overflow maximum value for exponent is " +
                                     std::to_string(MAX_EXPONENT),
-                                lineNumber_, columnNumber_);
+                                lineNumber_,
+                                columnNumber_);
                 return;
             }
             if (!isdigit(ch_)) break;
@@ -225,7 +228,8 @@ void Scanner::getString() {
     }
     error_.setError("String without terminating quotation mark at line " +
                         std::to_string(lineNumber_) + ", column ",
-                    lineNumber_, columnNumber_);
+                    lineNumber_,
+                    columnNumber_);
 }
 
 void Scanner::getSpecial() {
@@ -262,7 +266,8 @@ void Scanner::getSpecial() {
             } else {
                 error_.setError("unexpecting '=' character after explanation point: " +
                                     std::to_string(ch_),
-                                lineNumber_, columnNumber_);
+                                lineNumber_,
+                                columnNumber_);
             }
             break;
         }
@@ -341,7 +346,8 @@ void Scanner::nextToken() {
         tokenRecord_.setCode(TokenCode::tEndofStream);
         if (inMultiLineComment_) {
             inMultiLineComment_ = false;
-            error_.setError("detected unterminated comment, expecting '*/'", lineNumber_,
+            error_.setError("detected unterminated comment, expecting '*/'",
+                            lineNumber_,
                             columnNumber_);
         }
     } else {
@@ -476,9 +482,14 @@ std::string Scanner::tokenToString(TokenCode code) {
 /* ------------------------------------------------ */
 
 std::unordered_map<std::string, Token::Type> Lexer::keywords_ = {
-    {"fn", Token::Type::Function},  {"let", Token::Type::Let}, {"true", Token::Type::True},
-    {"false", Token::Type::False},  {"if", Token::Type::If},   {"else", Token::Type::Else},
-    {"return", Token::Type::Return}};
+    {"fn",     Token::Type::Function},
+    {"let",    Token::Type::Let     },
+    {"true",   Token::Type::True    },
+    {"false",  Token::Type::False   },
+    {"if",     Token::Type::If      },
+    {"else",   Token::Type::Else    },
+    {"return", Token::Type::Return  }
+};
 
 static bool isLetter(char ch) {
     return isalpha(ch) || ch == '_';

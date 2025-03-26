@@ -78,7 +78,7 @@ std::string OpCodeToString(OpCode code) {
             return "jmpIfFalse";
         case OpCode::Call:
             return "call";
-        case OpCode::Ret:
+        case OpCode::Return:
             return "ret";
     }
     return "";

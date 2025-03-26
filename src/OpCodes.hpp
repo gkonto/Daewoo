@@ -65,7 +65,7 @@ enum class OpCode {
     // Calling routines
     Call,  // Call a user defined function
     // BuiltIn,  // Call a builin function
-    Ret,  // Return from a function
+    Return,  // Return from a function
 
     // Print,       // Pop the stack and write the item to stdout
     // Println,     // Pop the stack and write a newline stdout

@@ -81,35 +81,33 @@ public:
     explicit TSymbol(TUserFunction *fvalue);
 
     TSymbolElementType type() const { return type_; }
-    void setType(TSymbolElementType type) { type_ = type; }
-
     const std::string &name() const { return name_; }
+    TStringObject *svalue() const { return sValue_; }
+    TListObject *lvalue() const { return lValue_; }
+    TUserFunction *fvalue() const { return fValue_; }
+    double dvalue() const { return dValue_; }
+    bool bvalue() const { return bValue_; }
+    int ivalue() const { return iValue_; }
 
-    int ivalue() const { return iValue; }
-    void setValue(int val) { iValue = val; }
-
-    double dvalue() const { return dValue; }
-    void setValue(double val) { dValue = val; }
-
-    bool bvalue() const { return bValue; }
-    void setValue(bool val) { bValue = val; }
-
-    TStringObject *svalue() const { return sValue; }
-    void setValue(TStringObject *val) { sValue = val; }
-
-    TListObject *lvalue() const { return lValue; }
-    void setValue(TListObject *val) { lValue = val; }
+    void setType(TSymbolElementType type) { type_ = type; }
+    void setValue(int val) { iValue_ = val; }
+    void setValue(double val) { dValue_ = val; }
+    void setValue(bool val) { bValue_ = val; }
+    void setValue(TStringObject *val) { sValue_ = val; }
+    void setValue(TListObject *val) { lValue_ = val; }
+    void setName(const std::string &name) { name_ = name; }
+    void setValue(TUserFunction *val) { fValue_ = val; }
 
 private:
     TSymbolElementType type_ = TSymbolElementType::symUndefined;
-    std::string name_ = "";
+    std::string name_ = "";  // FIXME Do i need this ?
 
-    int iValue = 0;
-    double dValue = 0.;
-    bool bValue = false;
-    TStringObject *sValue = nullptr;
-    TListObject *lValue = nullptr;
-    TUserFunction *fValue = nullptr;
+    int iValue_ = 0;
+    double dValue_ = 0.;
+    bool bValue_ = false;
+    TStringObject *sValue_ = nullptr;
+    TListObject *lValue_ = nullptr;
+    TUserFunction *fValue_ = nullptr;
 };
 
 class TSymbolTable {
@@ -125,7 +123,7 @@ public:
     void storeSymbolToTable(int index, TListObject *lvalue);
     void storeSymbolToTable(int index, TStringObject *svalue);  // FIXME possible mem leak...
 
-    const TSymbol &getFromSymbolTable(size_t index) const { return symbols_[index]; }
+    const TSymbol &get(size_t index) const { return symbols_[index - 1]; }
 
 private:
     void checkForExistingData(int index);
@@ -137,6 +135,10 @@ public:
     explicit TUserFunction(const std::string &name)
         : name_(name) {}
     const std::string &name() const { return name_; }
+    TProgram &funcCode() { return funcCode_; }
+    void setNumberOfArguments(int n) { nArgs_ = n; }
+    int numberOfArguments() const { return nArgs_; }
+    TSymbolTable &symboltable() { return symboltable_; }
 
 private:
     std::string name_;
@@ -144,7 +146,7 @@ private:
     TSymbolTable symboltable_;
     TConstantValueTable constanttable_;
     std::vector<std::string> globalVariableList_;
-    TProgram funcCode;
+    TProgram funcCode_;
 };
 
 #endif
