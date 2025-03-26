@@ -9,6 +9,7 @@
 #include "ASTNode.hpp"
 #include "TByteCodeBuilder.hpp"
 #include "TModule.hpp"
+#include "ConstantTable.hpp"
 
 static void checkSyntaxParserErrors(std::optional<SyntaxError> error) {
     INFO("SyntaxError found: " << (error.has_value() ? error.value().msg() : ""));
@@ -681,12 +682,12 @@ static TProgram relational_operators_8() {
     // "let x = 1; x < x and x > x;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 1);
-    program.addByteCode(OpCode::Store, 1);
-    program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Store, 0);
+    program.addByteCode(OpCode::Load, 0);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::IsLt);
-    program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 0);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::IsGt);
     program.addByteCode(OpCode::And);
     program.addByteCode(OpCode::Halt);
@@ -708,14 +709,14 @@ static TProgram relational_operators_10() {
     // "let x = 15; let y = 10; (x >= y) and not (x<= y);"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 15);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushi, 10);
-    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::IsGte);
-    program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::IsLte);
     program.addByteCode(OpCode::Not);
     program.addByteCode(OpCode::And);
@@ -727,14 +728,14 @@ static TProgram relational_operators_11() {
     // "let x = 15; let y = 10; ((x >= y) and not (y <= y)) == false"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 15);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushi, 10);
-    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::IsGte);
-    program.addByteCode(OpCode::Load, 2);
-    program.addByteCode(OpCode::Load, 2);
+    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 1);
     program.addByteCode(OpCode::IsLte);
     program.addByteCode(OpCode::Not);
     program.addByteCode(OpCode::And);
@@ -759,7 +760,7 @@ static TProgram let_statement_1() {
     // "let x = 5;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -768,7 +769,7 @@ static TProgram let_statement_2() {
     // "let x = 5.0;"
     TProgram program;
     program.addByteCode(OpCode::Pushd, 1);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -777,11 +778,11 @@ static TProgram let_statement_3() {
     // "let x = 5; let y = x + 5;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
-    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Store, 0);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Pushi, 5);
     program.addByteCode(OpCode::Add);
-    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Store, 1);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -790,11 +791,11 @@ static TProgram let_statement_4() {
     // "let x = 5; let y = 2*x;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushi, 2);
-    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Mult);
-    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Store, 1);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -803,9 +804,9 @@ static TProgram assignment_1() {
     // "let x = 5; x = 10;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushi, 10);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -814,11 +815,11 @@ static TProgram assignment_2() {
     // "let x = 5; x = x + 10;"
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
-    program.addByteCode(OpCode::Load, 1);
+    program.addByteCode(OpCode::Store, 0);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Pushi, 10);
     program.addByteCode(OpCode::Add);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -829,7 +830,7 @@ static TProgram let_statement_5() {
     program.addByteCode(OpCode::Pushb, false);
     program.addByteCode(OpCode::Pushb, true);
     program.addByteCode(OpCode::And);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -848,7 +849,7 @@ static TProgram let_statement_6() {
     program.addByteCode(OpCode::Add);
     program.addByteCode(OpCode::Mult);
     program.addByteCode(OpCode::Add);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -863,11 +864,11 @@ static constexpr const char *input_if_1() {
 static TProgram expected_if_1() {
     TProgram program;
     program.addByteCode(OpCode::Pushb, false);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushb, true);
     program.addByteCode(OpCode::JmpIfFalse, 3);
     program.addByteCode(OpCode::Pushb, true);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -882,11 +883,11 @@ static constexpr const char *input_if_2() {
 static TProgram expected_if_2() {
     TProgram program;
     program.addByteCode(OpCode::Pushb, true);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushb, true);
     program.addByteCode(OpCode::JmpIfFalse, 3);
     program.addByteCode(OpCode::Pushb, false);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -905,20 +906,20 @@ static constexpr const char *input_if_3() {
 static TProgram expected_if_3() {
     TProgram program;
     program.addByteCode(OpCode::Pushi, 5);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushi, 10);
-    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Store, 1);
     program.addByteCode(OpCode::Pushb, true);
-    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Store, 2);
+    program.addByteCode(OpCode::Load, 0);
     program.addByteCode(OpCode::Load, 1);
-    program.addByteCode(OpCode::Load, 2);
     program.addByteCode(OpCode::IsGt);
     program.addByteCode(OpCode::JmpIfFalse, 4);
     program.addByteCode(OpCode::Pushb, false);
-    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Store, 2);
     program.addByteCode(OpCode::Jmp, 3);
     program.addByteCode(OpCode::Pushb, true);
-    program.addByteCode(OpCode::Store, 3);
+    program.addByteCode(OpCode::Store, 2);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -940,15 +941,15 @@ static TProgram expected_if_4() {
     program.addByteCode(OpCode::Pushb, true);
     program.addByteCode(OpCode::JmpIfFalse, 11);
     program.addByteCode(OpCode::Pushi, 1);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushb, true);
     program.addByteCode(OpCode::JmpIfFalse, 7);
     program.addByteCode(OpCode::Pushi, 2);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Pushb, false);
     program.addByteCode(OpCode::JmpIfFalse, 3);
     program.addByteCode(OpCode::Pushi, 3);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -970,15 +971,15 @@ static TProgram expected_if_5() {
     program.addByteCode(OpCode::Pushb, false);
     program.addByteCode(OpCode::JmpIfFalse, 4);
     program.addByteCode(OpCode::Pushi, 1);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Jmp, 8);
     program.addByteCode(OpCode::Pushb, false);
     program.addByteCode(OpCode::JmpIfFalse, 4);
     program.addByteCode(OpCode::Pushi, 2);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Jmp, 3);
     program.addByteCode(OpCode::Pushi, 3);
-    program.addByteCode(OpCode::Store, 1);
+    program.addByteCode(OpCode::Store, 0);
     program.addByteCode(OpCode::Halt);
     return program;
 }
@@ -992,7 +993,7 @@ static constexpr const char *input_funcall_1() {
 
 static TProgram expected_funcall_1() {
     TProgram program;
-    program.addByteCode(OpCode::Pushi, 1);
+    program.addByteCode(OpCode::Pushi, 0);
     program.addByteCode(OpCode::Call);
     program.addByteCode(OpCode::Halt);
     return program;

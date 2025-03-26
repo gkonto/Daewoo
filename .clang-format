@@ -42,7 +42,7 @@ EmptyLineBeforeAccessModifier: LogicalBlock # Add space before public/private/pr
 PackConstructorInitializers: NextLineOnly
 
 # Operator Formatting
-SpacesInAngles: false # No spaces inside '<' and '>' in templates
+TemplateArgumentSpacing: None
 SpacesInSquareBrackets: false # No spaces inside '[ ]'
 SpaceBeforeParens: ControlStatements # Add space before '(' in 'if', 'for', 'while', etc.
 SpaceBeforeRangeBasedForLoopColon: false # Add space before ':' in range-based loops

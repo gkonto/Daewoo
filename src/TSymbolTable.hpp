@@ -31,7 +31,7 @@ enum class TSymbolElementType : std::uint8_t {
 };
 
 struct TByteCode {
-    int index = 0;
+    int index = -1;
     OpCode opCode = OpCode::Nop;  // TODO what is the size of this ?
 };
 
@@ -115,7 +115,6 @@ public:
     int addSymbol(const std::string &name);
     int addSymbol(TUserFunction *fvalue);
     bool find(const std::string &name, int &index);  // TODO refactor
-    bool reverseFind(const std::string &name, int &index);
 
     void storeSymbolToTable(int index, int ivalue);
     void storeSymbolToTable(int index, bool bvalue);
@@ -123,7 +122,7 @@ public:
     void storeSymbolToTable(int index, TListObject *lvalue);
     void storeSymbolToTable(int index, TStringObject *svalue);  // FIXME possible mem leak...
 
-    const TSymbol &get(size_t index) const { return symbols_[index - 1]; }
+    const TSymbol &get(size_t index) const { return symbols_[index]; }
 
 private:
     void checkForExistingData(int index);

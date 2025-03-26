@@ -24,7 +24,8 @@ enum class TStackRecordType {
 // Define the structure using std::variant for type safety
 class TMachineStackRecord {
 public:
-    using TStackRecordValue = std::variant<std::monostate, int, bool, double, TStringObject *, TListObject *>;
+    using TStackRecordValue =
+        std::variant<std::monostate, int, bool, double, TStringObject *, TListObject *>;
 
     explicit TMachineStackRecord()
         : stackType_(TStackRecordType::stNone), value_(std::monostate{}) {}
@@ -59,18 +60,18 @@ public:
     explicit TMachineStack(int stackSize)
         : stackSize_(stackSize) {}
     void checkStackOverflow();
-    TMachineStackRecord &top() { return stack_.top(); }
+    const TMachineStackRecord &top() const { return stack_.top(); }
 
     TMachineStackRecord pop();
-    int popInteger();
+    // int popInteger();
 
     // void push(TMachineStackRecord value);
     void push();
     void push(int value);
     void push(bool value);
     void push(double value);
-    void push(const std::string &value);
-    void push(const std::vector<TMachineStackRecord> &value);
+    void push(TStringObject *value);
+    // void push(const std::vector<TMachineStackRecord> &value);
 
 private:
     // maybe struct ?

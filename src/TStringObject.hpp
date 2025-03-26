@@ -28,7 +28,7 @@ public:
     bool isEqualTo(const TStringObject &other) const { return !value_.compare(other.value_); }
 
     // FIXME whoever calls this function, must free the returned object.
-    TStringObject *add(const TStringObject &first, const TStringObject &second) {
+    static TStringObject *add(const TStringObject &first, const TStringObject &second) {
         return createStringObject(first.value_ + second.value_);
     }
 

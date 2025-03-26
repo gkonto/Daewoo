@@ -38,14 +38,14 @@ set(MONKEY_SRC_FILES
     src/ASTNode.cpp
     src/ASTNode.hpp
     src/ASTNodeTypes.hpp
-    #src/VM.hpp
-    #src/VM.cpp
+    src/VM.hpp
+    src/VM.cpp
     src/TSymbolTable.hpp
     src/TSymbolTable.cpp
     src/OpCodes.hpp
     src/OpCodes.cpp
-    #src/MachineStack.hpp
-    #src/MachineStack.cpp
+    src/MachineStack.hpp
+    src/MachineStack.cpp
     src/ConstantTable.hpp
     src/ConstantTable.cpp
     src/TStringObject.hpp
@@ -109,6 +109,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
             tests/parser.t.cpp
             tests/evaluation.t.cpp
             tests/program.t.cpp
+            tests/vm.t.cpp
         )
 
         # Add an executable for the tests

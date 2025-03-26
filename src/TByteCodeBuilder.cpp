@@ -404,7 +404,7 @@ void TByteCodeBuilder::functionDef(TProgram &program) {
         functionName = sc_.token().tString();
     }
     currentUserFunction = new TUserFunction(functionName);
-    auto index = module_->symboltable().addSymbol(currentUserFunction);
+    module_->symboltable().addSymbol(currentUserFunction);
 
     enterUserFunctionScope();
     nextToken();

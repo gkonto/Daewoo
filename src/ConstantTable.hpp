@@ -31,7 +31,21 @@ private:
     double dvalue_;
 };
 
-using TConstantValueTable = std::vector<TConstantValueElement>;
+class TConstantValueTable {
+public:
+    TConstantValueElement &get(int index);
+    void clear() { table_.clear(); }
+    template <typename T>
+    void emplace_back(T &&entry) {
+        table_.emplace_back(std::forward<T>(entry));
+    }
+
+    size_t size() const { return table_.size(); }
+
+private:
+    std::vector<TConstantValueElement> table_;
+};
+
 extern TConstantValueTable constantValueTable;
 
 #endif

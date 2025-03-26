@@ -54,6 +54,7 @@ public:
     void append(double value);
     void append(bool value);
     void append(TStringObject *value);
+    void insert(const_iterator begin, const_iterator end) { list_.insert(list_.end(), begin, end); }
     TListObject *clone() const;
     const_iterator begin() const { return list_.begin(); }
     const_iterator end() const { return list_.end(); }

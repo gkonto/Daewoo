@@ -36,13 +36,13 @@ TMachineStackRecord TMachineStack::pop() {
     }
 }
 
-int TMachineStack::popInteger() {
-    auto entry = pop();
-    if (entry.type() != TStackRecordType::stInteger) {
-        throw std::runtime_error("Expecting integer type");
-    }
-    return entry.ivalue();
-}
+// int TMachineStack::popInteger() {
+//     auto entry = pop();
+//     if (entry.type() != TStackRecordType::stInteger) {
+//         throw std::runtime_error("Expecting integer type");
+//     }
+//     return entry.ivalue();
+// }
 
 void TMachineStack::push() {
     ++stackTop_;
@@ -68,14 +68,14 @@ void TMachineStack::push(bool value) {
     stack_.emplace(value);
 }
 
-void TMachineStack::push(const std::string &value) {
+void TMachineStack::push(TStringObject *value) {
     ++stackTop_;
     checkStackOverflow();
     stack_.emplace(value);
 }
 
-void TMachineStack::push(const std::vector<TMachineStackRecord> &value) {
-    ++stackTop_;
-    checkStackOverflow();
-    stack_.emplace(value);
-}
+// void TMachineStack::push(const std::vector<TMachineStackRecord> &value) {
+//     ++stackTop_;
+//     checkStackOverflow();
+//     stack_.emplace(value);
+// }
