@@ -95,15 +95,21 @@ void VM::run(const TProgram &code) {
             case OpCode::IsLte:
                 isLte();
                 break;
+            case OpCode::JmpIfFalse:
+                if (!stack_.pop().bvalue()) {
+                    ip += byteCode.index - 1;
+                }
+                break;
+            case OpCode::Jmp:
+                ip += byteCode.index - 1;
+                break;
             case OpCode::Inc:
             case OpCode::Dec:
             case OpCode::Xor:
             case OpCode::Mod:
             case OpCode::Pushs:
             case OpCode::PushNone:
-            case OpCode::Jmp:
             case OpCode::JmpIfTrue:
-            case OpCode::JmpIfFalse:
             case OpCode::LocalInc:
             case OpCode::LocalDec:
             case OpCode::LoadLocal:
@@ -135,20 +141,12 @@ void VM::run(const TProgram &code) {
                 // case OpCode::PushNone:
                 //     push();
                 //     break;
-
-                // case OpCode::Jmp:
-                //     ip += byteCode.index - 1;
-                //     break;
                 // case OpCode::JmpIfTrue:
                 //     if (stack_.pop().bvalue()) {
                 //         ip += byteCode.index - 1;
                 //     }
                 //     break;
-                // case OpCode::JmpIfFalse:
-                //     if (!stack_.pop().bvalue()) {
-                //         ip += byteCode.index - 1;
-                //     }
-                //     break;
+
                 // case OpCode::Load:
                 //     loadSymbol(byteCode.index);
                 //     break;

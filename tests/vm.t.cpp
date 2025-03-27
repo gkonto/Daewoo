@@ -197,3 +197,238 @@ TEST_CASE("Test_VM_Booleans") {
         }
     }
 }
+
+static std::string input_conditionals_1() {
+    return "let a = false;\n"
+           "if true then\n"
+           "   a = true;\n"
+           "end\n"
+           "a == true;";
+}
+
+static std::string input_conditionals_2() {
+    return "let a = true;\n"
+           "if true then\n"
+           "    a = false\n"
+           "end;\n"
+           "a == false;";
+}
+
+static std::string input_conditionals_3() {
+    return "let a = true;\n"
+           "if false then\n"
+           "    a = false;\n"
+           "else\n"
+           "    a = true;\n"
+           "end;\n"
+           "a";
+}
+
+static std::string input_conditionals_4() {
+    return "let x = 5;\n"
+           "let y = 10;\n"
+           "let a = false;\n"
+           "if x > y then\n"
+           "    a = false;\n"
+           "else\n"
+           "    a = true;\n"
+           "end;\n"
+           "a";
+}
+
+static std::string input_conditionals_5() {
+    return "let x = 5;\n"
+           "let y = 10;\n"
+           "let a = false;\n"
+           "if x < y then\n"
+           "    a = true;\n"
+           "else\n"
+           "    a = false;\n"
+           "end;\n"
+           "a";
+}
+
+static std::string input_conditionals_6() {
+    return "let x = 10; \n"
+           "let y = 5;  \n"
+           "let a = false;\n"
+           "\n"
+           "if x > y then \n"
+           "   a = true\n"
+           "else   \n"
+           "   a = false\n"
+           "end;\n"
+           "a;\n"
+           "\n";
+}
+
+static std::string input_conditionals_7() {
+    return "let x = 10; \n"
+           "let y = 5;  \n"
+           "let a = false;\n"
+           "if x < y then\n"
+           "   a = false\n"
+           "else    \n"
+           "   a = true\n"
+           "end;\n"
+           "a;";
+}
+
+static std::string input_conditionals_8() {
+    return "let a = 10;\n"
+           "if true then\n"
+           "  a = 1;\n"
+           "  if true then\n"
+           "     a = 2;\n"
+           "     if false then\n"
+           "        a = 3;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;";
+}
+
+static std::string input_conditionals_9() {
+    return "let a = 10;\n"
+           "if true then\n"
+           "  a = 1;\n"
+           "  if true then\n"
+           "     a = 2;\n"
+           "     if true then\n"
+           "        a = 3;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;\n";
+}
+
+static std::string input_conditionals_10() {
+    return "let a= 10;\n"
+           "if false then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if true then\n"
+           "     a = 2\n"
+           "  end;\n"
+           "end;\n"
+           "a;    \n";
+}
+
+static std::string input_conditionals_11() {
+    return "let a = 10;\n"
+           "if false then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if false then\n"
+           "     a = 2\n"
+           "  else\n"
+           "     a = 3;\n"
+           "   end;\n"
+           "end;\n"
+           "a;    \n";
+}
+
+static std::string input_conditionals_12() {
+    return "let a = 11;\n"
+           "if true then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if false then\n"
+           "     a = 2\n"
+           "  else\n"
+           "     if false then\n"
+           "        a = 3;\n"
+           "     else\n"
+           "        a = 4;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;\n";
+}
+
+static std::string input_conditionals_13() {
+    return "let a= 44;\n"
+           "if false then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if true then\n"
+           "     a = 2\n"
+           "  else\n"
+           "     if false then\n"
+           "        a = 3;\n"
+           "     else\n"
+           "        a = 4;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;\n";
+}
+
+static std::string input_conditionals_14() {
+    return "let a = 10;\n"
+           "if false then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if false then\n"
+           "     a = 2\n"
+           "  else\n"
+           "     if true then\n"
+           "        a = 3;\n"
+           "     else\n"
+           "        a = 4;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;    \n";
+}
+
+static std::string input_conditionals_15() {
+    return "let a = 645\n"
+           "if false then\n"
+           "   a = 1;\n"
+           "else\n"
+           "  if false then\n"
+           "     a = 2\n"
+           "  else\n"
+           "     if false then\n"
+           "        a = 3;\n"
+           "     else\n"
+           "        a = 4;\n"
+           "     end;\n"
+           "  end;\n"
+           "end;\n"
+           "a;\n";
+}
+
+TEST_CASE("Test_VM_Conditionals") {
+    SECTION("Boolean") {
+        std::vector<std::tuple<std::string, bool>> tests = {
+            {input_conditionals_1(), true},
+            {input_conditionals_2(), true},
+            {input_conditionals_3(), true},
+            {input_conditionals_4(), true},
+            {input_conditionals_5(), true},
+            {input_conditionals_6(), true},
+            {input_conditionals_7(), true},
+        };
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stBoolean, expected_value);
+        }
+    }
+
+    SECTION("Integers") {
+        std::vector<std::tuple<std::string, int>> tests = {
+            {input_conditionals_8(),  2},
+            {input_conditionals_9(),  3},
+            {input_conditionals_10(), 2},
+            {input_conditionals_11(), 3},
+            {input_conditionals_12(), 1},
+            {input_conditionals_13(), 2},
+            {input_conditionals_14(), 3},
+            {input_conditionals_15(), 4},
+        };
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stInteger, expected_value);
+        }
+    }
+}
