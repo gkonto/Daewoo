@@ -416,6 +416,7 @@ void TByteCodeBuilder::functionDef(TProgram &program) {
     exitUserFunctionScope();
     inUserFunctionParsing_ = false;
     expect(TokenCode::tEnd);
+    // make sure we return
     currentUserFunction->funcCode().addByteCode(OpCode::PushNone);
     currentUserFunction->funcCode().addByteCode(OpCode::Return);
     exitUserFunctionScope();

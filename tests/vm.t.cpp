@@ -30,11 +30,12 @@ static void testVM(const std::string &input, TStackRecordType expected_type, T e
     constantValueTable.clear();
     builder.build(module.get());
 
-    VM vm(10);
+    VM vm;
     vm.runModule(module);
+    REQUIRE(vm.empty() == false);
     const auto &result = vm.top();
-    INFO(input + " Expected: Type>" + TStackRecordTypeToStr(expected_type) + " Value> " +
-         std::to_string(expected_value));
+    INFO("Input> '" + input + "' Expected: Type>" + TStackRecordTypeToStr(expected_type) +
+         " Value> " + std::to_string(expected_value));
     REQUIRE(result.type() == expected_type);
 
     if (result.type() == TStackRecordType::stInteger) {
@@ -429,6 +430,40 @@ TEST_CASE("Test_VM_Conditionals") {
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stInteger, expected_value);
+        }
+    }
+}
+
+static std::string function_call_1() {
+    return "fn rint()\n"
+           "  return 777;\n"
+           "end;\n"
+           "rint();\n";
+}
+
+static std::string function_call_2() {
+    return "fn rbool()\n"
+           "  return true;\n"
+           "end;\n"
+           "rbool();\n";
+}
+
+TEST_CASE("Test_VM_FunctionCalls") {
+    SECTION("Integers") {
+        std::vector<std::tuple<std::string, int>> tests = {
+            {function_call_1(), 777},
+        };
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stInteger, expected_value);
+        }
+    }
+
+    SECTION("Booleans") {
+        std::vector<std::tuple<std::string, bool>> tests = {
+            {function_call_2(), true}
+        };
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stBoolean, expected_value);
         }
     }
 }

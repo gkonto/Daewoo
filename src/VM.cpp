@@ -103,20 +103,26 @@ void VM::run(const TProgram &code) {
             case OpCode::Jmp:
                 ip += byteCode.index - 1;
                 break;
+            case OpCode::Call:
+                callUserFunction();
+                break;
+            case OpCode::Return:
+                returnOp();
+                return;
+            case OpCode::PushNone:
+                push();
+                break;
+            case OpCode::Mod:
             case OpCode::Inc:
             case OpCode::Dec:
             case OpCode::Xor:
-            case OpCode::Mod:
             case OpCode::Pushs:
-            case OpCode::PushNone:
             case OpCode::JmpIfTrue:
             case OpCode::LocalInc:
             case OpCode::LocalDec:
             case OpCode::LoadLocal:
             case OpCode::StoreLocal:
             case OpCode::Pop:
-            case OpCode::Call:
-            case OpCode::Return:
                 throw std::runtime_error("VM::Unsupported opcode: " +
                                          OpCodeToString(byteCode.opCode));
 
@@ -152,6 +158,32 @@ void VM::run(const TProgram &code) {
                 //     break;
         }
         ++ip;
+    }
+}
+
+void VM::callUserFunction() {
+    int index = stack_.popInteger();
+    if (symboltable().get(index).type() == TSymbolElementType::symUserFunc) {
+        auto *funcRecord = symboltable().get(index).fvalue();
+        frameStack_.increase();
+
+        // Set up the new frame
+        TFrame &frame = frameStack_.top();
+        frame.funcIndex = index;
+        frame.nArgs = funcRecord->numberOfArguments();
+        frame.nlocals = static_cast<int>(funcRecord->symboltable().size());
+        frame.constantTable = funcRecord->constantTable();
+        frame.symbolTable = funcRecord->symboltable();
+        frame.bsp = frameStack_.topIndex() - funcRecord->numberOfArguments() + 1;
+
+        // // Allocate space for local variables
+        int nPureLocals = funcRecord->symboltable().size() - funcRecord->numberOfArguments();
+        stack_.increaseBy(nPureLocals);
+
+        run(funcRecord->funcCode());
+    } else {
+        throw std::runtime_error("Call to symbol is not a user function: " +
+                                 symboltable().get(index).name());
     }
 }
 
@@ -508,6 +540,20 @@ void VM::notOp() {
     throw std::runtime_error("Incompatible type in NOT operation");
 }
 
+void VM::returnOp() {
+    auto value = pop();
+    if (value.type() == TStackRecordType::stString) {
+        // value.setValue(value.svalue().clone());
+        throw std::runtime_error("VM::returnOp> return string");
+    } else if (value.type() == TStackRecordType::stList) {
+        //  value.setValue(value.lvalue().clone());
+        throw std::runtime_error("VM::returnOp> return list");
+    }
+    stack_.decreaseBy(frameStack_.top().nlocals);
+    frameStack_.decrease();
+    push(value);
+}
+
 // void VM::xorOp() {
 //     auto st1 = stack_.pop();
 //     auto st2 = stack_.pop();
@@ -729,4 +775,13 @@ void VM::loadSymbol(int index) {
             throw std::runtime_error("VM::nonExistant");
             break;
     }
+}
+
+TFrame &TFrameStack::top() {
+    if (topIndex_ >= static_cast<int>(frameStack_.size())) {
+        throw std::runtime_error("Exceeded recursion depth for functions");
+    } else if (topIndex_ < 0) {
+        throw std::runtime_error("Error> Underflow frame stack!");
+    }
+    return frameStack_[topIndex_];
 }

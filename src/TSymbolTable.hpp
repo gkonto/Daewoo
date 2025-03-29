@@ -115,6 +115,7 @@ public:
     int addSymbol(const std::string &name);
     int addSymbol(TUserFunction *fvalue);
     bool find(const std::string &name, int &index);  // TODO refactor
+    size_t size() const { return symbols_.size(); }
 
     void storeSymbolToTable(int index, int ivalue);
     void storeSymbolToTable(int index, bool bvalue);
@@ -136,14 +137,15 @@ public:
     const std::string &name() const { return name_; }
     TProgram &funcCode() { return funcCode_; }
     void setNumberOfArguments(int n) { nArgs_ = n; }
-    int numberOfArguments() const { return nArgs_; }
+    int numberOfArguments() const { return nArgs_; }  // TODO rename
     TSymbolTable &symboltable() { return symboltable_; }
+    TConstantValueTable &constantTable() { return constantTable_; }
 
 private:
     std::string name_;
     int nArgs_;
     TSymbolTable symboltable_;
-    TConstantValueTable constanttable_;
+    TConstantValueTable constantTable_;  // FIXME is this a global reference ?
     std::vector<std::string> globalVariableList_;
     TProgram funcCode_;
 };

@@ -28,56 +28,79 @@ public:
         std::variant<std::monostate, int, bool, double, TStringObject *, TListObject *>;
 
     explicit TMachineStackRecord()
-        : stackType_(TStackRecordType::stNone), value_(std::monostate{}) {}
+        : type_(TStackRecordType::stNone), value_(std::monostate{}) {}
     explicit TMachineStackRecord(int i)
-        : stackType_(TStackRecordType::stInteger), value_(i) {}
+        : type_(TStackRecordType::stInteger), value_(i) {}
     explicit TMachineStackRecord(bool b)
-        : stackType_(TStackRecordType::stBoolean), value_(b) {}
+        : type_(TStackRecordType::stBoolean), value_(b) {}
     explicit TMachineStackRecord(double d)
-        : stackType_(TStackRecordType::stDouble), value_(d) {}
+        : type_(TStackRecordType::stDouble), value_(d) {}
     explicit TMachineStackRecord(TListObject *lobj)
-        : stackType_(TStackRecordType::stList), value_(lobj) {}
+        : type_(TStackRecordType::stList), value_(lobj) {}
     explicit TMachineStackRecord(TStringObject *sobj)
-        : stackType_(TStackRecordType::stString), value_(sobj) {}
+        : type_(TStackRecordType::stString), value_(sobj) {}
 
     const TStackRecordValue &value() const { return value_; }
     int ivalue() const { return std::get<int>(value_); }
     bool bvalue() const { return std::get<bool>(value_); }
-    void setValue(bool val) { value_ = val; }
     double dvalue() const { return std::get<double>(value_); }
     TStringObject *svalue() const { return std::get<TStringObject *>(value_); }
     TListObject *lvalue() const { return std::get<TListObject *>(value_); }
+    TStackRecordType type() const { return type_; }
 
-    TStackRecordType type() const { return stackType_; }
+    // TODO template
+    void setValue(int val) {
+        value_ = val;
+        type_ = TStackRecordType::stInteger;
+    }
+    void setValue(bool val) {
+        value_ = val;
+        type_ = TStackRecordType::stBoolean;
+    }
+    void setValue(double val) {
+        value_ = val;
+        type_ = TStackRecordType::stDouble;
+    }
+    void setValue(TListObject *val) {
+        value_ = val;
+        type_ = TStackRecordType::stList;
+    }
+    void setValue(TStringObject *val) {
+        value_ = val;
+        type_ = TStackRecordType::stString;
+    }
+    void setType(TStackRecordType type) { type_ = type; }
 
 private:
-    TStackRecordType stackType_;
+    TStackRecordType type_;
     TStackRecordValue value_;
 };
 
 class TMachineStack {
 public:
-    explicit TMachineStack(int stackSize)
-        : stackSize_(stackSize) {}
     void checkStackOverflow();
-    const TMachineStackRecord &ctop() const { return stack_.top(); }
-    TMachineStackRecord &top() { return stack_.top(); }
+    const TMachineStackRecord &ctop() const { return stack_[stackTop_]; }
+    bool empty() const { return stack_.empty(); }
+    TMachineStackRecord &top() { return stack_[stackTop_]; }
     TMachineStackRecord pop();
-    // int popInteger();
+    int popInteger();
 
-    // void push(TMachineStackRecord value);
+    void increaseBy(int val);
+    void decreaseBy(int val);
+
     void push();
+    // TODO template ?
     void push(int value);
     void push(bool value);
     void push(double value);
     void push(TStringObject *value);
+    void push(TMachineStackRecord value);
     // void push(const std::vector<TMachineStackRecord> &value);
 
 private:
     // maybe struct ?
     int stackTop_ = -1;  // is this needed?
-    int stackSize_;
-    std::stack<TMachineStackRecord> stack_;
+    std::array<TMachineStackRecord, 4000> stack_;
 };
 
 std::string TStackRecordTypeToStr(TStackRecordType type);
