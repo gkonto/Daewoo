@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstddef>
 #include <variant>
+#include <unordered_map>
 
 #include "OpCodes.hpp"
 #include "ConstantTable.hpp"
@@ -130,6 +131,16 @@ private:
     std::vector<TSymbol> symbols_;
 };
 
+class TGlobalVariableList {
+public:
+    bool find(const std::string &identifier, int &index) const;
+    const std::string &operator[](int index) const { return variables_[index]; }
+
+private:
+    std::unordered_map<std::string, int> table_;
+    std::vector<std::string> variables_;
+};
+
 class TUserFunction {
 public:
     explicit TUserFunction(const std::string &name)
@@ -140,13 +151,14 @@ public:
     int numberOfArguments() const { return nArgs_; }  // TODO rename
     TSymbolTable &symboltable() { return symboltable_; }
     TConstantValueTable &constantTable() { return constantTable_; }
+    const TGlobalVariableList &globalVariableList() const { return globalVariableList_; }
 
 private:
     std::string name_;
     int nArgs_;
     TSymbolTable symboltable_;
     TConstantValueTable constantTable_;  // FIXME is this a global reference ?
-    std::vector<std::string> globalVariableList_;
+    TGlobalVariableList globalVariableList_;
     TProgram funcCode_;
 };
 

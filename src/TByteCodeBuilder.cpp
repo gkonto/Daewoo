@@ -95,6 +95,8 @@ void TByteCodeBuilder::exprStatement(TProgram &program) {
         auto &bytecode = progFragment.last();
         if (bytecode.opCode == OpCode::Load) {
             bytecode.opCode = OpCode::Store;
+        } else if (bytecode.opCode == OpCode::LoadLocal) {
+            bytecode.opCode = OpCode::StoreLocal;
         } else {
             throw std::runtime_error("Left-hand side cannot be assigned to");
         }
@@ -113,7 +115,7 @@ void TByteCodeBuilder::letStatement(TProgram &program) {
 
     auto identifier = token().tString();
     int index = -1;
-    if (not module_->symboltable().find(identifier, index)) {
+    if (!module_->symboltable().find(identifier, index)) {
         index = module_->symboltable().addSymbol(identifier);
     } else {
         std::stringstream ss;
@@ -313,11 +315,12 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     // bool globalVariable = false;
     auto identifier = token().tString();
     nextToken();
+    int index = 0;
+
     if (code() == TokenCode::tLeftParenthesis) {
         // It's the start of a function call, eg func (1,2)
         // Check that the function already exists in the main symbol table
         // We do a reverse search, look for most recent declared functions
-        int index = 0;
         if (symboltable().find(identifier, index)) {
             if (symboltable().get(index).type() == TSymbolElementType::symUserFunc) {
                 parseFunctionCall(program, symboltable().get(index).fvalue()->numberOfArguments());
@@ -342,10 +345,29 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     // module variable level. If we're in a user function then is the local variable
     // already declared? If its not, add the symbol to the user function symbol table
     // We also issue either a oLoad or oLoadLocal depending on the scope
+    bool globalVariable = false;
     if (inUserFunctionScope()) {
-        throw std::runtime_error("TByteCodeBuilder> Not yet implemented");
+        if (!currentUserFunction->symboltable().find(identifier, index)) {
+            // It could be a globally declared variable
+            if (currentUserFunction->globalVariableList().find(identifier, index)) {
+                globalVariable = true;
+            } else {
+                // Then its a new local variable, add it to local symbol table
+                index = currentUserFunction->symboltable().addSymbol(identifier);
+            }
+
+            if (code() == TokenCode::tLeftBracket) {
+                throw std::runtime_error("Implementation missing");
+            } else {
+                if (globalVariable) {
+                    program.addByteCode(OpCode::Load,
+                                        currentUserFunction->globalVariableList()[index]);
+                } else {
+                    program.addByteCode(OpCode::LoadLocal, index);
+                }
+            }
+        }
     } else {
-        int index = 0;
         if (not module_->symboltable().find(identifier, index)) {
 
             std::stringstream ss;

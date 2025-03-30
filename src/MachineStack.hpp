@@ -84,6 +84,7 @@ public:
     TMachineStackRecord &top() { return stack_[stackTop_]; }
     TMachineStackRecord pop();
     int popInteger();
+    TMachineStackRecord &operator[](int index) { return stack_[index]; }
 
     void increaseBy(int val);
     void decreaseBy(int val);

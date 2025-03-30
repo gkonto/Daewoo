@@ -200,3 +200,13 @@ bool operator==(const TByteCode &lhs, const TByteCode &rhs) {
 bool operator!=(const TByteCode &lhs, const TByteCode &rhs) {
     return !(lhs == rhs);
 }
+
+bool TGlobalVariableList::find(const std::string &identifier, int &index) const {
+    auto it = table_.find(identifier);
+    if (it == table_.end()) {
+        return false;
+    } else {
+        index = it->second;
+        return true;
+    }
+}

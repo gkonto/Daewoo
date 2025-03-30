@@ -112,6 +112,13 @@ void VM::run(const TProgram &code) {
             case OpCode::PushNone:
                 push();
                 break;
+            case OpCode::StoreLocal:
+                storeLocalSymbol(byteCode.index);
+                // TODO collectGarbage
+                break;
+            case OpCode::LoadLocal:
+                loadLocalSymbol(byteCode.index);
+                break;
             case OpCode::Mod:
             case OpCode::Inc:
             case OpCode::Dec:
@@ -120,8 +127,6 @@ void VM::run(const TProgram &code) {
             case OpCode::JmpIfTrue:
             case OpCode::LocalInc:
             case OpCode::LocalDec:
-            case OpCode::LoadLocal:
-            case OpCode::StoreLocal:
             case OpCode::Pop:
                 throw std::runtime_error("VM::Unsupported opcode: " +
                                          OpCodeToString(byteCode.opCode));
@@ -773,6 +778,77 @@ void VM::loadSymbol(int index) {
             throw std::runtime_error("VM::loadSymbol:: User function");
         case TSymbolElementType::symNonExistant:
             throw std::runtime_error("VM::nonExistant");
+            break;
+    }
+}
+
+void VM::storeLocalSymbol(int index) {
+    // Store local variables on to the stack relative to bsp
+    // index represents the offset from bsp where the variable is stored
+    auto bsp = frameStack_.top().bsp;
+    auto value = pop();  // This is the value we will store
+    auto &record = stack_[bsp + index];
+    if (record.type() == TStackRecordType::stString && record.svalue() != nullptr) {
+        record.svalue()->setType(TBlockType::btGarbage);  // mark as garbage
+    }
+    if (record.type() == TStackRecordType::stList && record.lvalue() != nullptr) {
+        record.lvalue()->setType(TBlockType::btGarbage);
+    }
+
+    // TODO switch case
+    if (value.type() == TStackRecordType::stInteger) {
+        record.setValue(value.ivalue());
+        record.setType(TStackRecordType::stInteger);
+    } else if (value.type() == TStackRecordType::stBoolean) {
+        record.setValue(value.bvalue());
+        record.setType(TStackRecordType::stBoolean);
+    } else if (value.type() == TStackRecordType::stDouble) {
+        record.setValue(value.dvalue());
+        record.setType(TStackRecordType::stDouble);
+    } else if (value.type() == TStackRecordType::stString) {
+        record.setValue(value.svalue());
+        record.setType(TStackRecordType::stString);
+    } else if (value.type() == TStackRecordType::stList) {
+        record.setValue(value.lvalue());
+        record.setType(TStackRecordType::stList);
+    } else {
+        throw std::runtime_error("unknown symbol type in storeLocalValue");
+    }
+}
+
+void VM::loadLocalSymbol(int index) {
+    // Obtain the base of the local stack area from the current activation frame
+    auto bsp = frameStack_.top().bsp;
+    // Push the element at index + bsp onto the stack, note the
+    // stack only holds pointers, hence we pass across a pointer.
+    copyToStack(stack_[index + bsp], index, frameStack_.top());
+}
+
+void VM::copyToStack(TMachineStackRecord &stackelem, int index, TFrame &frame) {
+    stack_.push();
+    switch (stackelem.type()) {
+        case TStackRecordType::stInteger:
+            stack_.top().setType(TStackRecordType::stInteger);
+            stack_.top().setValue(stackelem.ivalue());
+            break;
+        case TStackRecordType::stBoolean:
+            stack_.top().setType(TStackRecordType::stBoolean);
+            stack_.top().setValue(stackelem.bvalue());
+            break;
+        case TStackRecordType::stDouble:
+            stack_.top().setType(TStackRecordType::stDouble);
+            stack_.top().setValue(stackelem.dvalue());
+            break;
+        case TStackRecordType::stString:
+            stack_.top().setType(TStackRecordType::stString);
+            stack_.top().setValue(stackelem.svalue());
+            break;
+        case TStackRecordType::stList:
+            stack_.top().setType(TStackRecordType::stList);
+            stack_.top().setValue(stackelem.lvalue());
+            break;
+        case TStackRecordType::stNone:
+            throw std::runtime_error("copyToStack> Undefined variable");
             break;
     }
 }

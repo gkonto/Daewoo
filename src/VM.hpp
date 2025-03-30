@@ -71,6 +71,10 @@ private:
     TMachineStackRecord pop() { return stack_.pop(); }
     void callUserFunction();
     void returnOp();
+    void storeLocalSymbol(int index);
+    void loadLocalSymbol(int index);
+    void copyToStack(TMachineStackRecord &stackelem, int index, TFrame &frame);
+
     //  void push(const std::string &value) { stack_.push(value); }
 
     static void

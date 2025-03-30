@@ -52,27 +52,28 @@ static void testVM(const std::string &input, TStackRecordType expected_type, T e
 TEST_CASE("Test_VM_arithmetic") {
     SECTION("Simple") {
         std::vector<std::tuple<std::string, TStackRecordType, double>> tests = {
-            {"1E2",                 TStackRecordType::stDouble,  100     },
-            {"1.2E2",               TStackRecordType::stDouble,  120     },
-            {"0.1E2 ",              TStackRecordType::stDouble,  10      },
-            {"1E-2 ",               TStackRecordType::stDouble,  0.01    },
-            {"1.2E-2 ",             TStackRecordType::stDouble,  0.012   },
-            {"-1E-2 ",              TStackRecordType::stDouble,  -0.01   },
-            {"2 + 3 ",              TStackRecordType::stInteger, 5       },
-            {"2 + 3.0 ",            TStackRecordType::stDouble,  5       },
-            {"2 - 3 ",              TStackRecordType::stInteger, -1      },
-            {"3 - 2 ",              TStackRecordType::stInteger, 1       },
-            {"3 - 2.0 ",            TStackRecordType::stDouble,  1       },
-            {"2 * 3 ",              TStackRecordType::stInteger, 6       },
-            {"2 * 3.0 ",            TStackRecordType::stDouble,  6       },
-            {"10 / 2 ",             TStackRecordType::stInteger, 5       },
-            {"10 / 2.0",            TStackRecordType::stDouble,  5       },
-            {"2 ^ 4 ",              TStackRecordType::stDouble,  16      },
-            {"let a = 123.456; a",  TStackRecordType::stDouble,  123.456 },
-            {"let a = 0.00001; a",  TStackRecordType::stDouble,  0.00001 },
-            {"let a = -0.00001; a", TStackRecordType::stDouble,  -0.00001},
-            {"let a = 123.; a",     TStackRecordType::stDouble,  123     },
-            {"let a = .987; a",     TStackRecordType::stDouble,  0.987   },
+            {"1E2",                    TStackRecordType::stDouble,  100     },
+            {"1.2E2",                  TStackRecordType::stDouble,  120     },
+            {"0.1E2 ",                 TStackRecordType::stDouble,  10      },
+            {"1E-2 ",                  TStackRecordType::stDouble,  0.01    },
+            {"1.2E-2 ",                TStackRecordType::stDouble,  0.012   },
+            {"-1E-2 ",                 TStackRecordType::stDouble,  -0.01   },
+            {"2 + 3 ",                 TStackRecordType::stInteger, 5       },
+            {"2 + 3.0 ",               TStackRecordType::stDouble,  5       },
+            {"2 - 3 ",                 TStackRecordType::stInteger, -1      },
+            {"3 - 2 ",                 TStackRecordType::stInteger, 1       },
+            {"3 - 2.0 ",               TStackRecordType::stDouble,  1       },
+            {"2 * 3 ",                 TStackRecordType::stInteger, 6       },
+            {"2 * 3.0 ",               TStackRecordType::stDouble,  6       },
+            {"10 / 2 ",                TStackRecordType::stInteger, 5       },
+            {"10 / 2.0",               TStackRecordType::stDouble,  5       },
+            {"2 ^ 4 ",                 TStackRecordType::stDouble,  16      },
+            {"let a = 123.456; a",     TStackRecordType::stDouble,  123.456 },
+            {"let a = 0.00001; a",     TStackRecordType::stDouble,  0.00001 },
+            {"let a = -0.00001; a",    TStackRecordType::stDouble,  -0.00001},
+            {"let a = 123.; a",        TStackRecordType::stDouble,  123     },
+            {"let a = .987; a",        TStackRecordType::stDouble,  0.987   },
+            {"let x = 1234; x = 9; x", TStackRecordType::stInteger, 9       }
         };
 
         for (const auto &[input, expected_type, expected_value]: tests) {
@@ -434,24 +435,59 @@ TEST_CASE("Test_VM_Conditionals") {
     }
 }
 
-static std::string function_call_1() {
+static std::string fn_call_i1() {
     return "fn rint()\n"
            "  return 777;\n"
            "end;\n"
            "rint();\n";
 }
 
-static std::string function_call_2() {
+static std::string fn_call_i2() {
+    return "fn rint()\n"
+           "let x = 15;\n"
+           "   return x;\n"
+           "end;"
+           "rint();";
+}
+
+static std::string fn_call_i3() {
+    return "fn test_1()\n"
+           "   let x = 1234;\n"
+           "   x = 9;\n"
+           "   return x\n"
+           "end;\n"
+           "test_1();\n";
+}
+
+static std::string fn_call_i4() {
+    return "fn test_i3()\n"
+           "let x = 15;\n"
+           "   return x + 10;\n"
+           "end;\n"
+           "test_i3();\n";
+}
+
+static std::string fn_call_b1() {
     return "fn rbool()\n"
            "  return true;\n"
            "end;\n"
            "rbool();\n";
 }
 
+static std::string fn_call_d1() {
+    return "fn rdouble()\n"
+           "    return 3.1415;\n"
+           "end;\n"
+           "rdouble();\n";
+}
+
 TEST_CASE("Test_VM_FunctionCalls") {
     SECTION("Integers") {
         std::vector<std::tuple<std::string, int>> tests = {
-            {function_call_1(), 777},
+            {fn_call_i1(), 777},
+            {fn_call_i2(), 15 },
+            //{fn_call_i3(), 9  },
+            // {fn_call_i4(), 25 },
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stInteger, expected_value);
@@ -460,10 +496,19 @@ TEST_CASE("Test_VM_FunctionCalls") {
 
     SECTION("Booleans") {
         std::vector<std::tuple<std::string, bool>> tests = {
-            {function_call_2(), true}
+            {fn_call_b1(), true}
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stBoolean, expected_value);
+        }
+    }
+
+    SECTION("Double") {
+        std::vector<std::tuple<std::string, double>> tests = {
+            {fn_call_d1(), 3.1415}
+        };
+        for (const auto &[input, expected_value]: tests) {
+            testVM(input, TStackRecordType::stDouble, expected_value);
         }
     }
 }
