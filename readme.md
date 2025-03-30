@@ -1,3 +1,5 @@
+# [PROJECT UNDER DEVELOPMENT]
+
 # 🐒 Monkey Interpreter
 
 Welcome to the **Monkey Interpreter** project! This repository implements a recursive descent parser for a programming language based on a _top-down operator precedence_ approach, also known as a **Pratt parser**, named after Vaughan Pratt.
