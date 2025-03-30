@@ -477,9 +477,24 @@ static std::string fn_call_b1() {
            "rbool();\n";
 }
 
+static std::string fn_call_b2() {
+    return "fn rbool()\n"
+           "    let x = true;"
+           "  return x;\n"
+           "end;\n"
+           "rbool();\n";
+}
+
 static std::string fn_call_d1() {
     return "fn rdouble()\n"
            "    return 3.1415;\n"
+           "end;\n"
+           "rdouble();\n";
+}
+static std::string fn_call_d2() {
+    return "fn rdouble()\n"
+           "   let x = 2.1;"
+           "    return x;\n"
            "end;\n"
            "rdouble();\n";
 }
@@ -489,8 +504,8 @@ TEST_CASE("Test_VM_FunctionCalls") {
         std::vector<std::tuple<std::string, int>> tests = {
             {fn_call_i1(), 777},
             {fn_call_i2(), 15 },
-            //{fn_call_i3(), 9  },
-            // {fn_call_i4(), 25 },
+            {fn_call_i3(), 9  },
+            {fn_call_i4(), 25 },
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stInteger, expected_value);
@@ -499,7 +514,8 @@ TEST_CASE("Test_VM_FunctionCalls") {
 
     SECTION("Booleans") {
         std::vector<std::tuple<std::string, bool>> tests = {
-            {fn_call_b1(), true}
+            {fn_call_b1(), true},
+            {fn_call_b2(), true},
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stBoolean, expected_value);
@@ -508,7 +524,8 @@ TEST_CASE("Test_VM_FunctionCalls") {
 
     SECTION("Double") {
         std::vector<std::tuple<std::string, double>> tests = {
-            {fn_call_d1(), 3.1415}
+            {fn_call_d1(), 3.1415},
+            {fn_call_d2(), 2.1   },
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stDouble, expected_value);
