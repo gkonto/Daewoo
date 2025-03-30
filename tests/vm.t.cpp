@@ -520,14 +520,171 @@ static std::string fn_call_d3() {
            "test_4();\n";
 }
 
+static std::string fn_call_i6() {
+    return "fn test_6()\n"
+           "    let x = 6; \n"
+           "    if x == 5 then\n"
+           "       x = 0\n"
+           "    else\n"
+           "       return 123456;\n"
+           "    end;\n"
+           " end;\n"
+           " test_6();   \n";
+}
+
+static std::string fn_call_i7() {
+    return "fn mean(x)\n"
+           "    return x;\n"
+           "end;\n"
+           "let x = mean(12);\n"
+           "x\n";
+}
+
+static std::string fn_call_i8() {
+    return "fn mean(x)\n"
+           "    let a = x;"
+           "    return a;\n"
+           "end;\n"
+           "let x = mean(13);\n"
+           "x\n";
+}
+
+static std::string fn_call_i9() {
+    return "let y = 99;\n"
+           "fn mean(x)\n"
+           "    let a = x;"
+           "    return a;\n"
+           "end;\n"
+           "let x = y + mean(13);\n"
+           "x\n";
+}
+
+static std::string fn_call_d4() {
+    return "let x = 1.45678;\n"
+           "fn testGlobal_1 ()\n"
+           "   let x = 4.5;   \n"
+           "end;\n"
+           "testGlobal_1();"
+           "x\n";
+}
+
+static std::string fn_call_i10() {
+    return "fn fac(x)\n"
+           "    if x <= 0 then\n"
+           "        return 1;\n"
+           "    end;\n"
+           "    return (x * fac(x-1));\n"
+           "end;\n"
+           "fac(0);";
+}
+
+static std::string fn_call_i11() {
+    return "fn fac(x)\n"
+           "    if x <= 0 then\n"
+           "        return 1;\n"
+           "    end;\n"
+           "    return (x * fac(x-1));\n"
+           "end;\n"
+           "fac(1);";
+}
+
+static std::string fn_call_i12() {
+    return "fn fac(x)\n"
+           "    if x <= 0 then\n"
+           "        return 1;\n"
+           "    end;\n"
+           "    return (x * fac(x-1));\n"
+           "end;\n"
+           "fac(2);";
+}
+
+static std::string fn_call_i13() {
+    return "fn fac(x)\n"
+           "    if x <= 0 then\n"
+           "        return 1;\n"
+           "    end;\n"
+           "    return (x * fac(x-1));\n"
+           "end;\n"
+           "fac(5);";
+}
+
+static std::string fn_call_i14() {
+    return "fn fac(x)\n"
+           "    if x <= 0 then\n"
+           "        return 1;\n"
+           "    end;\n"
+           "    return (x * fac(x-1));\n"
+           "end;\n"
+           "fac(10);";
+}
+
+static std::string fn_call_i15() {
+    return "fn add(a, b)\n"
+           "   return a + b;\n"
+           "end;\n"
+           "add(15, 10);";
+}
+
+static std::string fn_call_i16() {
+    return "fn add (a, b)\n"
+           "    return a + b\n"
+           "end;\n"
+           "\n"
+           "fn sumOfAdds (a, b)\n"
+           "    return add (a, b) + add (a, b)\n"
+           "end;\n"
+           "sumOfAdds(2, 4)";
+}
+
+static std::string fn_call_i17() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(10);\n";
+}
+
+static std::string fn_call_i18() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(26);\n";
+}
+
 TEST_CASE("Test_VM_FunctionCalls") {
     SECTION("Integers") {
         std::vector<std::tuple<std::string, int>> tests = {
-            {fn_call_i1(), 777},
-            {fn_call_i2(), 15 },
-            {fn_call_i3(), 9  },
-            {fn_call_i4(), 25 },
-            {fn_call_i5(), 35 },
+            {fn_call_i1(),  777    },
+            {fn_call_i2(),  15     },
+            {fn_call_i3(),  9      },
+            {fn_call_i4(),  25     },
+            {fn_call_i5(),  35     },
+            {fn_call_i6(),  123456 },
+            {fn_call_i7(),  12     },
+            {fn_call_i8(),  13     },
+            {fn_call_i9(),  112    },
+            {fn_call_i10(), 1      },
+            {fn_call_i11(), 1      },
+            {fn_call_i12(), 2      },
+            {fn_call_i13(), 120    },
+            {fn_call_i14(), 3628800},
+            {fn_call_i15(), 25     },
+            {fn_call_i16(), 12     },
+            {fn_call_i17(), 55     },
+            {fn_call_i18(), 121393 }
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stInteger, expected_value);
@@ -546,9 +703,10 @@ TEST_CASE("Test_VM_FunctionCalls") {
 
     SECTION("Double") {
         std::vector<std::tuple<std::string, double>> tests = {
-            {fn_call_d1(), 3.1415},
-            {fn_call_d2(), 2.1   },
-            {fn_call_d3(), 1.2   }
+            {fn_call_d1(), 3.1415 },
+            {fn_call_d2(), 2.1    },
+            {fn_call_d3(), 1.2    },
+            {fn_call_d4(), 1.45678}
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stDouble, expected_value);
