@@ -28,8 +28,11 @@ private:
     const TokenRecord &token() const { return sc_.token(); }
 
     void enterUserFunctionScope() { inUserFunctionParsing_ = true; }
+    void enterVariableDefinition() { inVariableDefinition_ = true; }
     void exitUserFunctionScope() { inUserFunctionParsing_ = false; }
+    void exitVariableDefinition() { inVariableDefinition_ = false; }
     bool inUserFunctionScope() const { return inUserFunctionParsing_; }
+    bool inVariableDefinition() const { return inVariableDefinition_; }
 
     void statementList(TProgram &program);
     void statement(TProgram &program);
@@ -55,6 +58,7 @@ private:
     TokensTable &sc_;
     TModule *module_ = nullptr;
     bool inUserFunctionParsing_ = false;
+    bool inVariableDefinition_ = false;
     TUserFunction *currentUserFunction = nullptr;
 };
 

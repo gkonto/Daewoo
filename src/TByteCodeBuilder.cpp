@@ -112,20 +112,22 @@ void TByteCodeBuilder::exprStatement(TProgram &program) {
 // letStatement = "let" identifier '=' expression
 void TByteCodeBuilder::letStatement(TProgram &program) {
     expect(TokenCode::tLet);
-
-    auto identifier = token().tString();
-    int index = -1;
-    if (!module_->symboltable().find(identifier, index)) {
-        index = module_->symboltable().addSymbol(identifier);
-    } else {
-        std::stringstream ss;
-        ss << "TByteCodeBuilder> undefined variable: " << identifier;
-        throw std::runtime_error(ss.str());
-    }
-    nextToken();
-    expect(TokenCode::tAssign);
-    expression(program);
-    program.addByteCode(OpCode::Store, index);
+    enterVariableDefinition();
+    exprStatement(program);
+    exitVariableDefinition();
+    // auto identifier = token().tString();
+    // int index = -1;
+    // if (!module_->symboltable().find(identifier, index)) {
+    //     index = module_->symboltable().addSymbol(identifier);
+    // } else {
+    //     std::stringstream ss;
+    //     ss << "TByteCodeBuilder> undefined variable: " << identifier;
+    //     throw std::runtime_error(ss.str());
+    // }
+    // nextToken();
+    // expect(TokenCode::tAssign);
+    // expression(program);
+    //    program.addByteCode(OpCode::Store, index);
 }
 
 // ifStatement = IF expression THEN statement ifEnd
@@ -346,34 +348,46 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     // already declared? If its not, add the symbol to the user function symbol table
     // We also issue either a oLoad or oLoadLocal depending on the scope
     bool globalVariable = false;
+    bool localVariable = false;
+    int localindex = -1;
+    int globalindex = -1;
     if (inUserFunctionScope()) {
-        if (!currentUserFunction->symboltable().find(identifier, index)) {
-            // It could be a globally declared variable
-            if (currentUserFunction->globalVariableList().find(identifier, index)) {
-                globalVariable = true;
-            } else {
+        bool localfound = currentUserFunction->symboltable().find(identifier, localindex);
+        bool globalfound = currentUserFunction->globalVariableList().find(identifier, globalindex);
+        if (!localfound) {
+            if (inVariableDefinition()) {
                 // Then its a new local variable, add it to local symbol table
-                index = currentUserFunction->symboltable().addSymbol(identifier);
+                localindex = currentUserFunction->symboltable().addSymbol(identifier);
+                localVariable = true;
+            } else if (globalfound) {
+                globalVariable = true;
             }
 
             if (code() == TokenCode::tLeftBracket) {
                 throw std::runtime_error("Implementation missing");
             } else {
-                if (globalVariable) {
+                if (localVariable) {
+                    program.addByteCode(OpCode::LoadLocal, localindex);
+                } else if (globalVariable) {
                     program.addByteCode(OpCode::Load,
-                                        currentUserFunction->globalVariableList()[index]);
+                                        currentUserFunction->globalVariableList()[globalindex]);
                 } else {
-                    program.addByteCode(OpCode::LoadLocal, index);
+                    throw std::runtime_error("Undefined variable");
                 }
             }
+        } else {
+            program.addByteCode(OpCode::LoadLocal, localindex);
         }
     } else {
-        if (not module_->symboltable().find(identifier, index)) {
-
-            std::stringstream ss;
-            ss << "TByteCodeBuilder> undefined variable: " << identifier;
-            throw std::runtime_error(ss.str());
-            // index = module_->symboltable().addSymbol(identifier);
+        bool found = module_->symboltable().find(identifier, index);
+        if (!found) {
+            if (inVariableDefinition()) {
+                index = module_->symboltable().addSymbol(identifier);
+            } else {
+                std::stringstream ss;
+                ss << "TByteCodeBuilder> undefined variable: " << identifier;
+                throw std::runtime_error(ss.str());
+            }
         }
 
         if (code() == TokenCode::tLeftBracket) {
@@ -436,17 +450,15 @@ void TByteCodeBuilder::functionDef(TProgram &program) {
 
     statementList(currentUserFunction->funcCode());
     exitUserFunctionScope();
-    inUserFunctionParsing_ = false;
     expect(TokenCode::tEnd);
     // make sure we return
     currentUserFunction->funcCode().addByteCode(OpCode::PushNone);
     currentUserFunction->funcCode().addByteCode(OpCode::Return);
-    exitUserFunctionScope();
 }
 
 // returnStatement = RETURN expression
 void TByteCodeBuilder::returnStmt(TProgram &program) {
-    if (!inUserFunctionParsing_) {
+    if (!inUserFunctionScope()) {
         throw std::runtime_error("TByteCodeBuilder> return statement outside function");
     }
     expect(TokenCode::tReturn);

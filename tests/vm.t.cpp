@@ -34,8 +34,11 @@ static void testVM(const std::string &input, TStackRecordType expected_type, T e
     vm.runModule(module);
     REQUIRE(vm.empty() == false);
     const auto &result = vm.top();
-    INFO("Input> '" + input + "' Expected: Type>" + TStackRecordTypeToStr(expected_type) +
-         " Value> " + std::to_string(expected_value));
+    INFO(
+        "Input> \n'" + input + "'\nExpected: Type>" + TStackRecordTypeToStr(expected_type) +
+        " Value> " + std::to_string(expected_value)
+        // + "\nGot   : Type>" +  TStackRecordTypeToStr(result.type()) + " Value> " + result.value()
+    );
     REQUIRE(result.type() == expected_type);
 
     if (result.type() == TStackRecordType::stInteger) {
@@ -444,9 +447,9 @@ static std::string fn_call_i1() {
 
 static std::string fn_call_i2() {
     return "fn rint()\n"
-           "let x = 15;\n"
-           "   return x;\n"
-           "end;"
+           "    let x = 15;\n"
+           "    return x;\n"
+           "end;\n"
            "rint();";
 }
 
@@ -461,7 +464,7 @@ static std::string fn_call_i3() {
 
 static std::string fn_call_i4() {
     return "fn test_i3()\n"
-           "let x = 15;\n"
+           "    let x = 15;\n"
            "   return x + 10;\n"
            "end;\n"
            "test_i3();\n";
