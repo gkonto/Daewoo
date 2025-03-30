@@ -130,37 +130,6 @@ void VM::run(const TProgram &code) {
             case OpCode::Pop:
                 throw std::runtime_error("VM::Unsupported opcode: " +
                                          OpCodeToString(byteCode.opCode));
-
-                // case OpCode::Inc:
-                //     incOp(byteCode.index);
-                //     break;
-                // case OpCode::Dec:
-                //     decOp(byteCode.index);
-                //     break;
-
-                // case OpCode::Xor:
-                //     xorOp();
-                //     break;
-
-                // case OpCode::Mod:
-                //     modOp();
-                //     break;
-
-                // case OpCode::Pushs:
-                //     push(constantValueTable[byteCode.index].svalue());
-                //     break;
-                // case OpCode::PushNone:
-                //     push();
-                //     break;
-                // case OpCode::JmpIfTrue:
-                //     if (stack_.pop().bvalue()) {
-                //         ip += byteCode.index - 1;
-                //     }
-                //     break;
-
-                // case OpCode::Load:
-                //     loadSymbol(byteCode.index);
-                //     break;
         }
         ++ip;
     }

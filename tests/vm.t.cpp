@@ -500,12 +500,24 @@ static std::string fn_call_d1() {
            "end;\n"
            "rdouble();\n";
 }
+
 static std::string fn_call_d2() {
     return "fn rdouble()\n"
            "   let x = 2.1;"
            "    return x;\n"
            "end;\n"
            "rdouble();\n";
+}
+
+static std::string fn_call_d3() {
+    return "fn test_4()\n"
+           "   let c = 1.1;\n"
+           "   if true then\n"
+           "     let x = c + 0.1;\n"
+           "     return x\n"
+           "   end;\n"
+           "end;\n"
+           "test_4();\n";
 }
 
 TEST_CASE("Test_VM_FunctionCalls") {
@@ -536,6 +548,7 @@ TEST_CASE("Test_VM_FunctionCalls") {
         std::vector<std::tuple<std::string, double>> tests = {
             {fn_call_d1(), 3.1415},
             {fn_call_d2(), 2.1   },
+            {fn_call_d3(), 1.2   }
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stDouble, expected_value);
