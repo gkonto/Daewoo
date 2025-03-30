@@ -179,7 +179,7 @@ void VM::callUserFunction() {
         frame.nlocals = static_cast<int>(funcRecord->symboltable().size());
         frame.constantTable = funcRecord->constantTable();
         frame.symbolTable = funcRecord->symboltable();
-        frame.bsp = frameStack_.topIndex() - funcRecord->numberOfArguments() + 1;
+        frame.bsp = stack_.topIndex() - funcRecord->numberOfArguments() + 1;
 
         // // Allocate space for local variables
         int nPureLocals = funcRecord->symboltable().size() - funcRecord->numberOfArguments();

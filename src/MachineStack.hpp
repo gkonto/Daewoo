@@ -82,6 +82,7 @@ public:
     const TMachineStackRecord &ctop() const { return stack_[stackTop_]; }
     bool empty() const { return stack_.empty(); }
     TMachineStackRecord &top() { return stack_[stackTop_]; }
+    int topIndex() const { return stackTop_; }
     TMachineStackRecord pop();
     int popInteger();
     TMachineStackRecord &operator[](int index) { return stack_[index]; }

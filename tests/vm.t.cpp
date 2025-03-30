@@ -470,6 +470,15 @@ static std::string fn_call_i4() {
            "test_i3();\n";
 }
 
+static std::string fn_call_i5() {
+    return "fn test_1()\n"
+           "   let x = 10;\n"
+           "    let y = 25;\n"
+           "   return x + y\n"
+           "end;\n"
+           "test_1();\n";
+}
+
 static std::string fn_call_b1() {
     return "fn rbool()\n"
            "  return true;\n"
@@ -506,6 +515,7 @@ TEST_CASE("Test_VM_FunctionCalls") {
             {fn_call_i2(), 15 },
             {fn_call_i3(), 9  },
             {fn_call_i4(), 25 },
+            {fn_call_i5(), 35 },
         };
         for (const auto &[input, expected_value]: tests) {
             testVM(input, TStackRecordType::stInteger, expected_value);
