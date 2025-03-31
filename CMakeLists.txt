@@ -4,8 +4,19 @@ project(Monkey VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
+# Define build directories
+set(BUILD_64, "build_64")
+set(BUILD_64REL, "build_64rel")
+set(BUILD_64RELWITHDEBINFO, "build_64RelWithDebInfo")
+
+# Ensure CMake does not create a default "build" directory
+set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+
+# Enable testing
 enable_testing()
 
+# Collect source files
 include_directories(src)
 
 set(MONKEY_SRC_FILES
@@ -64,8 +75,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wall # Enable all common warnings
         -Wextra # Enable extra warnings
         -pedantic # Enforce strict compliance with the C++ standard
-
-        # -Werror                 # Treat all warnings as errors
         -Wshadow # Warn on variable shadowing
         -Wnon-virtual-dtor # Warn if a class with virtual functions has no virtual destructor
         -Wold-style-cast # Warn on C-style casts
@@ -73,12 +82,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wunused # Warn on unused variables, functions, etc.
         -Woverloaded-virtual # Warn if a function in a derived class hides a virtual function in a base class
         -Wconversion # Warn on implicit type conversions
-        # -Wsign-conversion # Warn on signed/unsigned conversions
         -Wformat=2 # Warn on format strings and make warnings more strict
         -Wmissing-declarations # Warn if functions are declared without previous declaration
     )
-        # Set Debug optimization level to -O1
-        if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+    # Set Debug optimization level to -O1
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_options(-O0 -g)  # Lower optimization for debugging
     endif()
 
@@ -86,8 +95,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         add_compile_options(-O3 -DNDEBUG)  # Full optimization, disable asserts
     endif()
-    #set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type")
-    #set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE STRING "Release flags" FORCE)
     
     # Optionally, build unit tests if enabled
     if(BUILD_TESTS)
@@ -123,30 +130,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         include(Catch)
         catch_discover_tests(monkey_tests)
     endif()
-elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-    # Flags for MSVC
-    add_compile_options(
-        /W4 # Enable the highest level of warnings in MSVC
-
-        # /WX                    # Treat all warnings as errors
-        /permissive- # Enable stricter standards compliance
-        /w14640 # Warn on hidden virtual functions
-        /w14265 # Warn on unreferenced formal parameters
-        /w14242 # Warn on implicit conversions (performance warnings)
-        /w14254 # Warn on signed/unsigned mismatches
-        /w14263 # Warn on potentially dangerous pointer truncation
-        /w14264 # Warn on variable shadowing
-    )
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi /Od")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Zi /O2")
-
-
 endif()
 
 option(BUILD_TESTS "Build unit tests" ON)
 
+# Add main executable
 add_executable(monkey main.cpp ${MONKEY_SRC_FILES})
-
 add_executable(monkey_benchmarks benchmarks.cpp ${MONKEY_SRC_FILES})
 
 # Output build configuration

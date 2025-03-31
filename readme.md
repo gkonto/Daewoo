@@ -2,6 +2,34 @@
 
 # 🐒 Monkey Interpreter
 
+---
+
+## 🛠️ Building the Project
+
+To build and run the project, follow these steps:
+
+### 1. Setup build directories
+
+```bash
+./setup_builds.sh
+```
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup_builds.ps1
+```
+
+### 2. Build the project
+
+cmake --build build_64 # Debug
+cmake --build build_64rel # Release
+cmake --build build_64RelWithDebInfo # Release with debug
+
+Generate the necessary build files using CMake. If you're using Unix Makefiles, run the following command:
+
+# [OLD DOCUMENTATION]
+
+# 🐒 Monkey Interpreter
+
 Welcome to the **Monkey Interpreter** project! This repository implements a recursive descent parser for a programming language based on a _top-down operator precedence_ approach, also known as a **Pratt parser**, named after Vaughan Pratt.
 
 The key difference between top-down and bottom-up parsers is that **top-down parsers** construct the root node of the Abstract Syntax Tree (AST) first, then descend, while **bottom-up parsers** start from the leaves and build upwards.

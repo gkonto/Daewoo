@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_all.hpp>
 #include <vector>
 #include <tuple>
 #include <sstream>
@@ -712,4 +713,109 @@ TEST_CASE("Test_VM_FunctionCalls") {
             testVM(input, TStackRecordType::stDouble, expected_value);
         }
     }
+}
+
+static std::string fn_call_fib25() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(25);\n";
+}
+
+
+static std::string fn_call_fib28() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(28);\n";
+}
+
+static std::string fn_call_fib30() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(28);\n";
+}
+
+static std::string fn_call_fib31() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(31);\n";
+}
+
+static std::string fn_call_fib33() {
+    return "fn fibonacci(n)\n"
+           "    if n == 0 then\n"
+           "        return 0\n"
+           "    end\n"
+           "    if n == 1 then\n"
+           "        return 1\n"
+           "    end\n"
+           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+           "end;\n"
+           "\n"
+           "fibonacci(33);\n";
+}
+
+TEST_CASE("Test_VM_Fibonacci", "[benchmark-fib33]") {
+    BENCHMARK("Fibonacci(33) execution") {
+        testVM(fn_call_fib33(), TStackRecordType::stInteger, 3524578);
+    };
+}
+
+TEST_CASE("Test_VM_Fibonacci", "[benchmark-fib31]") {
+    BENCHMARK("Fibonacci(31) execution") {
+        testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
+    };
+}
+
+TEST_CASE("Test_VM_Fibonacci", "[benchmark-fib30]") {
+    BENCHMARK("Fibonacci(30) execution") {
+        testVM(fn_call_fib30(), TStackRecordType::stInteger, 317811);
+    };
+}
+
+TEST_CASE("Test_VM_Fibonacci", "[benchmark-fib28]") {
+    BENCHMARK("Fibonacci(28) execution") {
+        testVM(fn_call_fib28(), TStackRecordType::stInteger, 317811);
+    };
+}
+
+
+TEST_CASE("Test_VM_Fibonacci(31)", "[slow][fib31]") {
+    testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
+}
+
+
+TEST_CASE("Test_VM_Fibonacci(33)", "[slow][fib33]") {
+    testVM(fn_call_fib33(), TStackRecordType::stInteger, 3524578);
 }
