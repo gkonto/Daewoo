@@ -72,3 +72,4 @@ docs/doxygen/html/
 docs/doxygen/latex/
 
 *.json
+*.data*
