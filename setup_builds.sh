@@ -24,8 +24,8 @@ if [[ "$1" == "--clean" ]]; then
 fi
 
 # Create build directories
-cmake -B build_64 -DCMAKE_BUILD_TYPE=Debug
-cmake -B build_64rel -DCMAKE_BUILD_TYPE=Release
-cmake -B build_64RelWithDebInfo -DCMAKE_BUILD_TYPE=RelWithDebInfo
+cmake -B build_64 -DCMAKE_BUILD_TYPE=Debug -G "Unix Makefiles"
+cmake -B build_64rel -DCMAKE_BUILD_TYPE=Release -G "Unix Makefiles"
+cmake -B build_64RelWithDebInfo -DCMAKE_BUILD_TYPE=RelWithDebInfo -G "Unix Makefiles"
 
 echo "Build directories created successfully!"

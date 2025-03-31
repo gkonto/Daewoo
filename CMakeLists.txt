@@ -15,6 +15,7 @@ set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # Enable testing
 enable_testing()
+option(BUILD_TESTS "Build unit tests" ON)
 
 # Collect source files
 include_directories(src)
@@ -132,7 +133,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     endif()
 endif()
 
-option(BUILD_TESTS "Build unit tests" ON)
 
 # Add main executable
 add_executable(monkey main.cpp ${MONKEY_SRC_FILES})
