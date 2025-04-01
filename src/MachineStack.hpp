@@ -28,17 +28,17 @@ public:
         std::variant<std::monostate, int, bool, double, TStringObject *, TListObject *>;
 
     explicit TMachineStackRecord()
-        : type_(TStackRecordType::stNone), value_(std::monostate{}) {}
+        : value_(std::monostate{}), type_(TStackRecordType::stNone) {}
     explicit TMachineStackRecord(int i)
-        : type_(TStackRecordType::stInteger), value_(i) {}
+        : value_(i), type_(TStackRecordType::stInteger) {}
     explicit TMachineStackRecord(bool b)
-        : type_(TStackRecordType::stBoolean), value_(b) {}
+        : value_(b), type_(TStackRecordType::stBoolean) {}
     explicit TMachineStackRecord(double d)
-        : type_(TStackRecordType::stDouble), value_(d) {}
+        : value_(d), type_(TStackRecordType::stDouble) {}
     explicit TMachineStackRecord(TListObject *lobj)
-        : type_(TStackRecordType::stList), value_(lobj) {}
+        : value_(lobj), type_(TStackRecordType::stList) {}
     explicit TMachineStackRecord(TStringObject *sobj)
-        : type_(TStackRecordType::stString), value_(sobj) {}
+        : value_(sobj), type_(TStackRecordType::stString) {}
 
     const TStackRecordValue &value() const { return value_; }
     int ivalue() const { return std::get<int>(value_); }
@@ -72,8 +72,8 @@ public:
     void setType(TStackRecordType type) { type_ = type; }
 
 private:
-    TStackRecordType type_;
     TStackRecordValue value_;
+    TStackRecordType type_;
 };
 
 class TMachineStack {
@@ -83,7 +83,7 @@ public:
     bool empty() const { return stack_.empty(); }
     TMachineStackRecord &top() { return stack_[stackTop_]; }
     int topIndex() const { return stackTop_; }
-    TMachineStackRecord pop();
+    const TMachineStackRecord &pop();
     int popInteger();
     TMachineStackRecord &operator[](int index) { return stack_[index]; }
 

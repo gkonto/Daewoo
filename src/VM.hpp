@@ -73,7 +73,7 @@ private:
     void returnOp();
     void storeLocalSymbol(int index);
     void loadLocalSymbol(int index);
-    void copyToStack(TMachineStackRecord &stackelem, int index, TFrame &frame);
+    void copyToStack(TMachineStackRecord &stackelem, TFrame &frame);
 
     //  void push(const std::string &value) { stack_.push(value); }
 

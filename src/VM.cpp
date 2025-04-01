@@ -151,7 +151,8 @@ void VM::callUserFunction() {
         frame.bsp = stack_.topIndex() - funcRecord->numberOfArguments() + 1;
 
         // // Allocate space for local variables
-        int nPureLocals = funcRecord->symboltable().size() - funcRecord->numberOfArguments();
+        size_t nArgs = funcRecord->numberOfArguments();
+        int nPureLocals = funcRecord->symboltable().size() - nArgs;
         stack_.increaseBy(nPureLocals);
 
         run(funcRecord->funcCode());
@@ -202,8 +203,8 @@ void VM::store(int symTableIndex) {
 // }
 
 void VM::addOp() {
-    auto st1 = stack_.pop();
-    auto st2 = stack_.pop();
+    const auto &st1 = stack_.pop();
+    const auto &st2 = stack_.pop();
 
     auto st1_typ = st1.type();
     auto st2_typ = st2.type();
@@ -674,8 +675,8 @@ void VM::isLte() {
 // }
 
 void VM::isEq() {
-    auto st1 = stack_.pop();
-    auto st2 = stack_.pop();
+    const auto &st1 = stack_.pop();
+    const auto &st2 = stack_.pop();
     auto st1_type = st1.type();
     auto st2_type = st2.type();
 
@@ -790,10 +791,10 @@ void VM::loadLocalSymbol(int index) {
     auto bsp = frameStack_.top().bsp;
     // Push the element at index + bsp onto the stack, note the
     // stack only holds pointers, hence we pass across a pointer.
-    copyToStack(stack_[index + bsp], index, frameStack_.top());
+    copyToStack(stack_[index + bsp], frameStack_.top());
 }
 
-void VM::copyToStack(TMachineStackRecord &stackelem, int index, TFrame &frame) {
+void VM::copyToStack(TMachineStackRecord &stackelem, TFrame &frame) {
     stack_.push();
     switch (stackelem.type()) {
         case TStackRecordType::stInteger:

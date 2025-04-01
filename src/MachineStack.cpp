@@ -25,9 +25,9 @@ void TMachineStack::checkStackOverflow() {
     }
 }
 
-TMachineStackRecord TMachineStack::pop() {
+const TMachineStackRecord &TMachineStack::pop() {
     if (stackTop_ > -1) {
-        auto entry = stack_[stackTop_];
+        const auto &entry = stack_[stackTop_];
         --stackTop_;
         return entry;
     } else {
