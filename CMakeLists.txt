@@ -5,13 +5,13 @@ project(Monkey VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Define build directories
-set(BUILD_64 "build_64")
-set(BUILD_64REL "build_64rel")
-set(BUILD_64RELWITHDEBINFO "build_64RelWithDebInfo")
+#set(BUILD_64 "build_64")
+#set(BUILD_64REL "build_64rel")
+#set(BUILD_64RELWITHDEBINFO "build_64RelWithDebInfo")
 
 # Prevent in-source builds
-set(CMAKE_DISABLE_SOURCE_CHANGES ON)
-set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
+# set(CMAKE_DISABLE_SOURCE_CHANGES ON)
+# set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
 # Enable testing
 enable_testing()
@@ -70,59 +70,59 @@ set(MONKEY_SRC_FILES
 )
 
 # Compiler settings based on platform
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    # GCC/Clang-specific warnings
-    add_compile_options(
-        -Wall
-        -Wextra
-        -pedantic
-        -Wshadow
-        -Wnon-virtual-dtor
-        -Wold-style-cast
-        -Wcast-align
-        -Wunused
-        -Woverloaded-virtual
-        -Wconversion
-        -Wformat=2
-        -Wmissing-declarations
-    )
-
-    # Debug optimization level
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(-O0 -g)
-    endif()
-
-    # Release optimization level
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_compile_options(-O3 -DNDEBUG)
-    endif()
-
-elseif(MSVC)
-    # MSVC-specific warnings
-    add_compile_options(
-        /W4           # High warning level
-        /permissive-  # Stricter standards compliance
-        /MP           # Enable multiprocessing for faster builds
-        /bigobj       # Prevents object file size limitations
-    )
-
-    # Disable specific warnings
-    add_compile_options(
-        /wd4100  # Unused parameters
-        /wd4201  # Non-standard extension: anonymous structs/unions
-        /wd4505  # Unused functions
-    )
-
-    # Debug optimization level
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(/Od /Zi)  # No optimizations, full debugging
-    endif()
-
-    # Release optimization level
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_compile_options(/O2 /DNDEBUG)  # Optimized build
-    endif()
-endif()
+#if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+#    # GCC/Clang-specific warnings
+#    add_compile_options(
+#        -Wall
+#        -Wextra
+#        -pedantic
+#        -Wshadow
+#        -Wnon-virtual-dtor
+#        -Wold-style-cast
+#        -Wcast-align
+#        -Wunused
+#        -Woverloaded-virtual
+#        -Wconversion
+#        -Wformat=2
+#        -Wmissing-declarations
+#    )
+#
+#    # Debug optimization level
+#    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#        add_compile_options(-O0 -g)
+#    endif()
+#
+#    # Release optimization level
+#    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+#        add_compile_options(-O3 -DNDEBUG)
+#    endif()
+#
+#elseif(MSVC)
+#    # MSVC-specific warnings
+#    add_compile_options(
+#        /W4           # High warning level
+#        /permissive-  # Stricter standards compliance
+#        /MP           # Enable multiprocessing for faster builds
+#        /bigobj       # Prevents object file size limitations
+#    )
+#
+#    # Disable specific warnings
+#    add_compile_options(
+#        /wd4100  # Unused parameters
+#        /wd4201  # Non-standard extension: anonymous structs/unions
+#        /wd4505  # Unused functions
+#    )
+#
+#    # Debug optimization level
+#    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#        add_compile_options(/Od /Zi)  # No optimizations, full debugging
+#    endif()
+#
+#    # Release optimization level
+#    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+#        add_compile_options(/O2 /DNDEBUG)  # Optimized build
+#    endif()
+#endif()
 
 # Optionally, build unit tests if enabled
 if(BUILD_TESTS)

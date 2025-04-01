@@ -7,6 +7,7 @@
 #include <stack>
 #include <vector>
 #include <string>
+#include <array>
 
 class TStringObject;
 class TListObject;
