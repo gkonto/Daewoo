@@ -1034,7 +1034,7 @@ static void testByteCodeCore(const std::string &input, const TProgram &expected)
     REQUIRE(module.code() == expected);
 }
 
-TEST_CASE("Test_ParsingByteCodeGeneral") {
+TEST_CASE("Test_ParsingByteCodeGeneral", "[quick]") {
     SECTION("Simple") {
         std::vector<std::tuple<std::string, TProgram>> tests = {
             {"15;",    simple_1() },
@@ -1228,7 +1228,7 @@ TEST_CASE("Test_ParsingByteCodeGeneral") {
     }
 }
 
-TEST_CASE("Test_ParsingByteCodeIfCondition") {
+TEST_CASE("Test_ParsingByteCodeIfCondition", "[quick]") {
     std::vector<std::tuple<std::string, TProgram>> tests = {
         {input_if_1(), expected_if_1()},
         {input_if_2(), expected_if_2()},
@@ -1242,7 +1242,7 @@ TEST_CASE("Test_ParsingByteCodeIfCondition") {
     }
 }
 
-TEST_CASE("Test_ParsingByteCodeFunctionCall") {
+TEST_CASE("Test_ParsingByteCodeFunctionCall", "[quick]") {
     std::vector<std::tuple<std::string, TProgram>> tests = {
         {input_funcall_1(), expected_funcall_1()},
     };

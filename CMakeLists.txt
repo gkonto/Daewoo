@@ -5,11 +5,11 @@ project(Monkey VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Define build directories
-set(BUILD_64, "build_64")
-set(BUILD_64REL, "build_64rel")
-set(BUILD_64RELWITHDEBINFO, "build_64RelWithDebInfo")
+set(BUILD_64 "build_64")
+set(BUILD_64REL "build_64rel")
+set(BUILD_64RELWITHDEBINFO "build_64RelWithDebInfo")
 
-# Ensure CMake does not create a default "build" directory
+# Prevent in-source builds
 set(CMAKE_DISABLE_SOURCE_CHANGES ON)
 set(CMAKE_DISABLE_IN_SOURCE_BUILD ON)
 
@@ -69,70 +69,95 @@ set(MONKEY_SRC_FILES
     src/TByteCodeBuilder.cpp
 )
 
-# Define compilation flags for different compilers
+# Compiler settings based on platform
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    # Flags for GCC/Clang
+    # GCC/Clang-specific warnings
     add_compile_options(
-        -Wall # Enable all common warnings
-        -Wextra # Enable extra warnings
-        -pedantic # Enforce strict compliance with the C++ standard
-        -Wshadow # Warn on variable shadowing
-        -Wnon-virtual-dtor # Warn if a class with virtual functions has no virtual destructor
-        -Wold-style-cast # Warn on C-style casts
-        -Wcast-align # Warn on potential performance issues with pointer alignment
-        -Wunused # Warn on unused variables, functions, etc.
-        -Woverloaded-virtual # Warn if a function in a derived class hides a virtual function in a base class
-        -Wconversion # Warn on implicit type conversions
-        -Wformat=2 # Warn on format strings and make warnings more strict
-        -Wmissing-declarations # Warn if functions are declared without previous declaration
+        -Wall
+        -Wextra
+        -pedantic
+        -Wshadow
+        -Wnon-virtual-dtor
+        -Wold-style-cast
+        -Wcast-align
+        -Wunused
+        -Woverloaded-virtual
+        -Wconversion
+        -Wformat=2
+        -Wmissing-declarations
     )
 
-    # Set Debug optimization level to -O1
+    # Debug optimization level
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        add_compile_options(-O0 -g)  # Lower optimization for debugging
+        add_compile_options(-O0 -g)
     endif()
 
-    # Set Release optimization level to -O3
+    # Release optimization level
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_compile_options(-O3 -DNDEBUG)  # Full optimization, disable asserts
+        add_compile_options(-O3 -DNDEBUG)
     endif()
-    
-    # Optionally, build unit tests if enabled
-    if(BUILD_TESTS)
-        # Include FetchContent to download Catch2
-        include(FetchContent)
 
-        FetchContent_Declare(
-            catch2
-            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG v3.4.0 # Make sure this is the latest stable release
-        )
+elseif(MSVC)
+    # MSVC-specific warnings
+    add_compile_options(
+        /W4           # High warning level
+        /permissive-  # Stricter standards compliance
+        /MP           # Enable multiprocessing for faster builds
+        /bigobj       # Prevents object file size limitations
+    )
 
-        # Fetch and make Catch2 available
-        FetchContent_MakeAvailable(catch2)
+    # Disable specific warnings
+    add_compile_options(
+        /wd4100  # Unused parameters
+        /wd4201  # Non-standard extension: anonymous structs/unions
+        /wd4505  # Unused functions
+    )
 
-        # Explicitly set the source files for the tests
-        set(MONKEY_TEST_FILES
-            tests/lexer.t.cpp
-            tests/parser.t.cpp
-            tests/evaluation.t.cpp
-            tests/program.t.cpp
-            tests/vm.t.cpp
-        )
+    # Debug optimization level
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(/Od /Zi)  # No optimizations, full debugging
+    endif()
 
-        # Add an executable for the tests
-        add_executable(monkey_tests ${MONKEY_TEST_FILES} ${MONKEY_SRC_FILES})
-
-        # Link Catch2 with the test executable
-        target_link_libraries(monkey_tests PRIVATE Catch2::Catch2WithMain)
-
-        # Automatically discover tests using Catch2
-        include(CTest)
-        include(Catch)
-        catch_discover_tests(monkey_tests)
+    # Release optimization level
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_compile_options(/O2 /DNDEBUG)  # Optimized build
     endif()
 endif()
 
+# Optionally, build unit tests if enabled
+if(BUILD_TESTS)
+    # Include FetchContent to download Catch2
+    include(FetchContent)
+
+    FetchContent_Declare(
+        catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.4.0 # Ensure latest stable release
+    )
+
+    # Fetch and make Catch2 available
+    FetchContent_MakeAvailable(catch2)
+
+    # Test source files
+    set(MONKEY_TEST_FILES
+        tests/lexer.t.cpp
+        tests/parser.t.cpp
+        tests/evaluation.t.cpp
+        tests/program.t.cpp
+        tests/vm.t.cpp
+    )
+
+    # Add test executable
+    add_executable(monkey_tests ${MONKEY_TEST_FILES} ${MONKEY_SRC_FILES})
+
+    # Link Catch2 with the test executable
+    target_link_libraries(monkey_tests PRIVATE Catch2::Catch2WithMain)
+
+    # Automatically discover tests using Catch2
+    include(CTest)
+    include(Catch)
+    catch_discover_tests(monkey_tests)
+endif()
 
 # Add main executable
 add_executable(monkey main.cpp ${MONKEY_SRC_FILES})

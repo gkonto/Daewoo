@@ -116,7 +116,8 @@ static void testLiteralExpression(const ASTNode *exp, bool value) {
 }
 
 template <typename Left, typename Right>
-static void testInfixExpression(const Expression *exp, Left left, const std::string &op, Right right) {
+static void
+testInfixExpression(const Expression *exp, Left left, const std::string &op, Right right) {
     const InfixExpression *opExp = dynamic_cast<const InfixExpression *>(exp);
     REQUIRE(opExp != nullptr);
     testLiteralExpression(opExp->left(), left);
@@ -124,7 +125,7 @@ static void testInfixExpression(const Expression *exp, Left left, const std::str
     testLiteralExpression(opExp->right(), right);
 }
 
-TEST_CASE("Test_LetStatements") {
+TEST_CASE("Test_LetStatements", "[quick]") {
     std::string input(
         "\
     let x = 5;\
@@ -152,7 +153,7 @@ TEST_CASE("Test_LetStatements") {
     }
 }
 
-TEST_CASE("Test_LetStatementsInt") {
+TEST_CASE("Test_LetStatementsInt", "[quick]") {
     std::vector<LetStatementsExpected<int>> expected = {
         {"let x = 5;", "x", 5},
     };
@@ -178,7 +179,7 @@ TEST_CASE("Test_LetStatementsInt") {
     }
 }
 
-TEST_CASE("Test_LetStatementsBool") {
+TEST_CASE("Test_LetStatementsBool", "[quick]") {
     std::vector<LetStatementsExpected<bool>> expected = {
         {"let y = true;", "y", true},
     };
@@ -204,8 +205,10 @@ TEST_CASE("Test_LetStatementsBool") {
     }
 }
 
-TEST_CASE("Test_LetStatementsString") {
-    std::vector<LetStatementsExpected<std::string>> expected = {{"let foobar = y;", "foobar", "y"}};
+TEST_CASE("Test_LetStatementsString", "[quick]") {
+    std::vector<LetStatementsExpected<std::string>> expected = {
+        {"let foobar = y;", "foobar", "y"}
+    };
 
     for (const auto &tt: expected) {
         std::istringstream iss(tt.input);
@@ -229,7 +232,7 @@ TEST_CASE("Test_LetStatementsString") {
     }
 }
 
-TEST_CASE("Test_ReturnStatements") {
+TEST_CASE("Test_ReturnStatements", "[quick]") {
     std::string input(
         " return 5;\
         return 10;\
@@ -245,7 +248,7 @@ TEST_CASE("Test_ReturnStatements") {
     REQUIRE(err.value().msg() == "You cannot use a return statement outside a user function");
 }
 
-TEST_CASE("Test_Identifier") {
+TEST_CASE("Test_Identifier", "[quick]") {
     std::string input("foobar;");
     std::istringstream iss(input);
     Scanner sc(iss);
@@ -274,7 +277,7 @@ TEST_CASE("Test_Identifier") {
     }
 }
 
-TEST_CASE("Test_IntegerLiteralExpression") {
+TEST_CASE("Test_IntegerLiteralExpression", "[quick]") {
     std::string input("5;");
     std::istringstream iss(input);
     Scanner sc(iss);
@@ -302,7 +305,7 @@ TEST_CASE("Test_IntegerLiteralExpression") {
     }
 }
 
-TEST_CASE("Test_ParsingUnaryExpression") {
+TEST_CASE("Test_ParsingUnaryExpression", "[quick]") {
     std::vector<ExpectedPrefix> expected{
         {"-15;", "-", 15},
     };
@@ -347,9 +350,9 @@ TEST_CASE("Test_ParsingUnaryExpression") {
     }
 }
 
-TEST_CASE("Test_ParsingPrefixExpressionsBoolean") {
+TEST_CASE("Test_ParsingPrefixExpressionsBoolean", "[quick]") {
     std::vector<ExpectedPrefixBoolean> expected{
-        {"not true;", "!", true},
+        {"not true;",  "!", true },
         {"not false;", "!", false},
     };
 
@@ -397,12 +400,16 @@ TEST_CASE("Test_ParsingPrefixExpressionsBoolean") {
     }
 }
 
-TEST_CASE("Test_ParsingInfixExpressions") {
+TEST_CASE("Test_ParsingInfixExpressions", "[quick]") {
     std::vector<ExpectedInfix> expected{
-        {"5 + 5;", 5, ASTNodeType::ntAdd, 5},  {"5- 5;", 5, ASTNodeType::ntSub, 5},
-        {"5 * 5;", 5, ASTNodeType::ntMult, 5}, {"5 / 5;", 5, ASTNodeType::ntDiv, 5},
-        {"5 > 5;", 5, ASTNodeType::ntGT, 5},   {"5 < 5;", 5, ASTNodeType::ntLT, 5},
-        {"5 == 5;", 5, ASTNodeType::ntEQ, 5},  {"5 != 6;", 5, ASTNodeType::ntNE, 6},
+        {"5 + 5;",  5, ASTNodeType::ntAdd,  5},
+        {"5- 5;",   5, ASTNodeType::ntSub,  5},
+        {"5 * 5;",  5, ASTNodeType::ntMult, 5},
+        {"5 / 5;",  5, ASTNodeType::ntDiv,  5},
+        {"5 > 5;",  5, ASTNodeType::ntGT,   5},
+        {"5 < 5;",  5, ASTNodeType::ntLT,   5},
+        {"5 == 5;", 5, ASTNodeType::ntEQ,   5},
+        {"5 != 6;", 5, ASTNodeType::ntNE,   6},
     };
 
     for (const auto &[input, lhs_exp, op, rhs_exp]: expected) {
@@ -452,10 +459,10 @@ TEST_CASE("Test_ParsingInfixExpressions") {
     }
 }
 
-TEST_CASE("Test_ParsingInfixExpressionsBoolean") {
+TEST_CASE("Test_ParsingInfixExpressionsBoolean", "[quick]") {
     std::vector<ExpectedInfixBoolean> expected{
-        {"true == true", true, ASTNodeType::ntEQ, true},
-        {"true != false", true, ASTNodeType::ntNE, false},
+        {"true == true",   true,  ASTNodeType::ntEQ, true },
+        {"true != false",  true,  ASTNodeType::ntNE, false},
         {"false == false", false, ASTNodeType::ntEQ, false},
     };
 
