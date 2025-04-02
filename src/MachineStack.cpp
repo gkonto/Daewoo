@@ -26,21 +26,11 @@ void TMachineStack::checkStackOverflow() {
 }
 
 const TMachineStackRecord &TMachineStack::pop() {
-    if (stackTop_ > -1) {
-        const auto &entry = stack_[stackTop_];
-        --stackTop_;
-        return entry;
-    } else {
-        throw std::runtime_error("TMachineStack: Stack underflow error");
-    }
+    return stack_[stackTop_--];
 }
 
 int TMachineStack::popInteger() {
-    auto entry = pop();
-    if (entry.type() != TStackRecordType::stInteger) {
-        throw std::runtime_error("Expecting integer type");
-    }
-    return entry.ivalue();
+    return pop().ivalue();
 }
 
 void TMachineStack::decreaseBy(int value) {
@@ -49,9 +39,6 @@ void TMachineStack::decreaseBy(int value) {
 
 void TMachineStack::increaseBy(int value) {
     stackTop_ += value;
-    for (int i = 0; i < value; ++i) {
-        stack_[stackTop_ - i].setType(TStackRecordType::stNone);
-    }
 }
 
 void TMachineStack::push() {
@@ -59,23 +46,19 @@ void TMachineStack::push() {
 }
 
 void TMachineStack::push(int value) {
-    ++stackTop_;
-    stack_[stackTop_].setValue(value);
+    stack_[++stackTop_].setValue(value);
 }
 
 void TMachineStack::push(double value) {
-    ++stackTop_;
-    stack_[stackTop_].setValue(value);
+    stack_[++stackTop_].setValue(value);
 }
 
 void TMachineStack::push(bool value) {
-    ++stackTop_;
-    stack_[stackTop_].setValue(value);
+    stack_[++stackTop_].setValue(value);
 }
 
 void TMachineStack::push(TStringObject *value) {
-    ++stackTop_;
-    stack_[stackTop_].setValue(value);
+    stack_[++stackTop_].setValue(value);
 }
 
 void TMachineStack::push(TMachineStackRecord value) {
