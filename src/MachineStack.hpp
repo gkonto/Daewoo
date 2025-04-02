@@ -84,21 +84,20 @@ public:
     bool empty() const { return stack_.empty(); }
     TMachineStackRecord &top() { return stack_[stackTop_]; }
     int topIndex() const { return stackTop_; }
-    const TMachineStackRecord &pop();
-    int popInteger();
+    const TMachineStackRecord &pop() { return stack_[stackTop_--]; }
+    int popInteger() { return pop().ivalue(); }
     TMachineStackRecord &operator[](int index) { return stack_[index]; }
 
-    void increaseBy(int val);
-    void decreaseBy(int val);
+    void increaseBy(int val) { stackTop_ += val; }
+    void decreaseBy(int val) { stackTop_ -= val; }
 
-    void push();
+    void push() { ++stackTop_; }
     // TODO template ?
-    void push(int value);
-    void push(bool value);
-    void push(double value);
-    void push(TStringObject *value);
+    void push(int value) { stack_[++stackTop_].setValue(value); }
+    void push(bool value) { stack_[++stackTop_].setValue(value); }
+    void push(double value) { stack_[++stackTop_].setValue(value); }
+    void push(TStringObject *value) { stack_[++stackTop_].setValue(value); }
     void push(TMachineStackRecord value);
-    // void push(const std::vector<TMachineStackRecord> &value);
 
 private:
     // maybe struct ?

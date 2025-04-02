@@ -25,42 +25,6 @@ void TMachineStack::checkStackOverflow() {
     }
 }
 
-const TMachineStackRecord &TMachineStack::pop() {
-    return stack_[stackTop_--];
-}
-
-int TMachineStack::popInteger() {
-    return pop().ivalue();
-}
-
-void TMachineStack::decreaseBy(int value) {
-    stackTop_ -= value;
-}
-
-void TMachineStack::increaseBy(int value) {
-    stackTop_ += value;
-}
-
-void TMachineStack::push() {
-    ++stackTop_;
-}
-
-void TMachineStack::push(int value) {
-    stack_[++stackTop_].setValue(value);
-}
-
-void TMachineStack::push(double value) {
-    stack_[++stackTop_].setValue(value);
-}
-
-void TMachineStack::push(bool value) {
-    stack_[++stackTop_].setValue(value);
-}
-
-void TMachineStack::push(TStringObject *value) {
-    stack_[++stackTop_].setValue(value);
-}
-
 void TMachineStack::push(TMachineStackRecord value) {
     ++stackTop_;
     stack_[stackTop_].setType(value.type());
