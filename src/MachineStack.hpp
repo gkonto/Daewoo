@@ -25,56 +25,48 @@ enum class TStackRecordType {
 // Define the structure using std::variant for type safety
 class TMachineStackRecord {
 public:
-    using TStackRecordValue =
-        std::variant<std::monostate, int, bool, double, TStringObject *, TListObject *>;
+    TMachineStackRecord()
+        : type_(TStackRecordType::stNone) {}
 
-    explicit TMachineStackRecord()
-        : value_(std::monostate{}), type_(TStackRecordType::stNone) {}
-    explicit TMachineStackRecord(int i)
-        : value_(i), type_(TStackRecordType::stInteger) {}
-    explicit TMachineStackRecord(bool b)
-        : value_(b), type_(TStackRecordType::stBoolean) {}
-    explicit TMachineStackRecord(double d)
-        : value_(d), type_(TStackRecordType::stDouble) {}
-    explicit TMachineStackRecord(TListObject *lobj)
-        : value_(lobj), type_(TStackRecordType::stList) {}
-    explicit TMachineStackRecord(TStringObject *sobj)
-        : value_(sobj), type_(TStackRecordType::stString) {}
-
-    const TStackRecordValue &value() const { return value_; }
-    int ivalue() const { return std::get<int>(value_); }
-    bool bvalue() const { return std::get<bool>(value_); }
-    double dvalue() const { return std::get<double>(value_); }
-    TStringObject *svalue() const { return std::get<TStringObject *>(value_); }
-    TListObject *lvalue() const { return std::get<TListObject *>(value_); }
+    int ivalue() const { return v.i; }
+    bool bvalue() const { return v.b;}
+    double dvalue() const { return v.d; }
+    TStringObject *svalue() const { return v.s; }
+    TListObject *lvalue() const { return v.l; }
     TStackRecordType type() const { return type_; }
 
     // TODO template
     void setValue(int val) {
-        value_ = val;
+        v.i = val;
         type_ = TStackRecordType::stInteger;
     }
     void setValue(bool val) {
-        value_ = val;
+        v.b = val;
         type_ = TStackRecordType::stBoolean;
     }
     void setValue(double val) {
-        value_ = val;
+        v.d = val;
         type_ = TStackRecordType::stDouble;
     }
     void setValue(TListObject *val) {
-        value_ = val;
+        v.l = val;
         type_ = TStackRecordType::stList;
     }
     void setValue(TStringObject *val) {
-        value_ = val;
+        v.s = val;
         type_ = TStackRecordType::stString;
     }
     void setType(TStackRecordType type) { type_ = type; }
 
 private:
-    TStackRecordValue value_;
     TStackRecordType type_;
+    union value {
+        TListObject *l;
+        TStringObject *s;
+        double d;
+        int i;
+        bool b;
+    }v;
 };
 
 class TMachineStack {
