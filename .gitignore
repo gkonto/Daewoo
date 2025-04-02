@@ -67,6 +67,7 @@ Thumbs.db
 *.idea/
 *.vscode/
 *.code-workspace
+*.vs/
 
 # Ignore auto-generated documentation
 docs/doxygen/html/

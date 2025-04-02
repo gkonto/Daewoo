@@ -49,7 +49,6 @@ void TMachineStack::decreaseBy(int value) {
 
 void TMachineStack::increaseBy(int value) {
     stackTop_ += value;
-    checkStackOverflow();
     for (int i = 0; i < value; ++i) {
         stack_[stackTop_ - i].setType(TStackRecordType::stNone);
     }
@@ -57,36 +56,30 @@ void TMachineStack::increaseBy(int value) {
 
 void TMachineStack::push() {
     ++stackTop_;
-    checkStackOverflow();
 }
 
 void TMachineStack::push(int value) {
     ++stackTop_;
-    checkStackOverflow();
     stack_[stackTop_].setValue(value);
 }
 
 void TMachineStack::push(double value) {
     ++stackTop_;
-    checkStackOverflow();
     stack_[stackTop_].setValue(value);
 }
 
 void TMachineStack::push(bool value) {
     ++stackTop_;
-    checkStackOverflow();
     stack_[stackTop_].setValue(value);
 }
 
 void TMachineStack::push(TStringObject *value) {
     ++stackTop_;
-    checkStackOverflow();
     stack_[stackTop_].setValue(value);
 }
 
 void TMachineStack::push(TMachineStackRecord value) {
     ++stackTop_;
-    checkStackOverflow();
     stack_[stackTop_].setType(value.type());
     if (value.type() == TStackRecordType::stInteger) {
         stack_[stackTop_].setValue(value.ivalue());
@@ -102,9 +95,3 @@ void TMachineStack::push(TMachineStackRecord value) {
         throw std::runtime_error("TMachineStack::push> Unknown type in push method");
     }
 }
-
-// void TMachineStack::push(const std::vector<TMachineStackRecord> &value) {
-//     ++stackTop_;
-//     checkStackOverflow();
-//     stack_.emplace(value);
-// }

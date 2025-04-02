@@ -123,6 +123,20 @@ static std::string fn_call_fib33() {
            "fibonacci(33);\n";
 }
 
+static std::string fn_call_fib35() {
+    return "fn fibonacci(n)\n"
+        "    if n == 0 then\n"
+        "        return 0\n"
+        "    end\n"
+        "    if n == 1 then\n"
+        "        return 1\n"
+        "    end\n"
+        "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "end;\n"
+        "\n"
+        "fibonacci(35);\n";
+}
+
 static std::string input_conditionals_1() {
     return "let a = false;\n"
            "if true then\n"
@@ -785,34 +799,34 @@ TEST_CASE("Test_VM_FunctionCalls", "[quick]") {
     }
 }
 
-TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib33]") {
-    BENCHMARK("Fibonacci(33) execution") {
-        testVM(fn_call_fib33(), TStackRecordType::stInteger, 3524578);
-    };
-}
+//TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib33]") {
+//    BENCHMARK("Fibonacci(33) execution") {
+//        testVM(fn_call_fib33(), TStackRecordType::stInteger, 3524578);
+//    };
+//}
 
-TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib31]") {
-    BENCHMARK("Fibonacci(31) execution") {
-        testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
-    };
-}
+//TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib31]") {
+//    BENCHMARK("Fibonacci(31) execution") {
+//        testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
+//    };
+//}
 
-TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib30]") {
-    BENCHMARK("Fibonacci(30) execution") {
-        testVM(fn_call_fib30(), TStackRecordType::stInteger, 317811);
-    };
-}
-
-TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib28]") {
-    BENCHMARK("Fibonacci(28) execution") {
-        testVM(fn_call_fib28(), TStackRecordType::stInteger, 317811);
-    };
-}
-
-TEST_CASE("Test_VM_Fibonacci(31)", "[slow][fib31]") {
-    testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
-}
-
-TEST_CASE("Test_VM_Fibonacci(33)", "[slow][fib33]") {
-    testVM(fn_call_fib33(), TStackRecordType::stInteger, 3524578);
+//TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib30]") {
+//    BENCHMARK("Fibonacci(30) execution") {
+//        testVM(fn_call_fib30(), TStackRecordType::stInteger, 317811);
+//    };
+//}
+//
+//TEST_CASE("Test_VM_Fibonacci", "[slow][benchmark-fib28]") {
+//    BENCHMARK("Fibonacci(28) execution") {
+//        testVM(fn_call_fib28(), TStackRecordType::stInteger, 317811);
+//    };
+//}
+//
+//TEST_CASE("Test_VM_Fibonacci(31)", "[slow][fib31]") {
+//    testVM(fn_call_fib31(), TStackRecordType::stInteger, 1346269);
+//}
+//
+TEST_CASE("Test_VM_Fibonacci(35)", "[slow][fib35]") {
+    testVM(fn_call_fib35(), TStackRecordType::stInteger, 9227465);
 }
