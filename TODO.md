@@ -39,8 +39,9 @@ Fibonacci(33) execution 100 1 2.46345 m
 1.47199 s 1.46124 s 1.48487 s
 59.6609 ms 49.2897 ms 82.6196 ms
 
-| Build | Name   | samples | iterations | Estimated | mean      | low mean  | high mean | std dev    | low std dev | high std dev |
-| ----- | ------ | ------- | ---------- | --------- | --------- | --------- | --------- | ---------- | ----------- | ------------ |
-| rel   | fib 33 | 100     | 1          | 2.46345 m | 1.47199 s | 1.46124 s | 1.48487 s | 59.6609 ms | 49.2897 ms  | 82.6196 ms   |
+| Build | Name   | samples | iterations | Estimated | mean       | low mean   | high mean  | std dev    | low std dev | high std dev |
+| ----- | ------ | ------- | ---------- | --------- | ---------- | ---------- | ---------- | ---------- | ----------- | ------------ |
+| rel   | fib 33 | 100     | 1          | 2.46345 m | 1.47199 s  | 1.46124 s  | 1.48487 s  | 59.6609 ms | 49.2897 ms  | 82.6196 ms   |
+| rel   | fib 33 | 100     | 1          | 1.084 m   | 751.571 ms | 740.092 ms | 766.516 ms | 66.5698 ms | 53.7242 ms  | 89.0635 ms   |
 
 ## AST Evaluation
