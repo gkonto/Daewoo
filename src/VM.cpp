@@ -283,8 +283,8 @@ void VM::addOp() {
 }
 
 void VM::multOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 
 	auto st1_typ = st1.type();
 	auto st2_typ = st2.type();
@@ -367,8 +367,8 @@ void VM::multOp() {
 }
 
 void VM::divOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 
 	auto st1_typ = st1.type();
 	auto st2_typ = st2.type();
@@ -405,8 +405,8 @@ void VM::divOp() {
 }
 
 void VM::subOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 
 	auto st1_typ = st1.type();
 	auto st2_typ = st2.type();
@@ -445,8 +445,8 @@ void VM::subOp() {
 }
 
 void VM::powerOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 
 	auto st1_typ = st1.type();
 	auto st2_typ = st2.type();
@@ -483,7 +483,7 @@ void VM::powerOp() {
 }
 
 void VM::unaryMinusOp() {
-	auto st = stack_.pop();
+	auto& st = stack_.pop();
 	switch (st.type()) {
 	case TStackRecordType::stInteger:
 		stack_.push(-st.ivalue());
@@ -530,8 +530,8 @@ void VM::unaryMinusOp() {
 // }
 
 void VM::andOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
 		stack_.push(st1.bvalue() && st2.bvalue());
 		return;
@@ -540,8 +540,8 @@ void VM::andOp() {
 }
 
 void VM::orOp() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	if (st1.type() == TStackRecordType::stBoolean && st2.type() == TStackRecordType::stBoolean) {
 		stack_.push(st1.bvalue() || st2.bvalue());
 		return;
@@ -550,7 +550,7 @@ void VM::orOp() {
 }
 
 void VM::notOp() {
-	auto st = stack_.pop();
+	auto& st = stack_.pop();
 	if (st.type() == TStackRecordType::stBoolean) {
 		stack_.push(!st.bvalue());
 		return;
@@ -584,8 +584,8 @@ void VM::returnOp() {
 // }
 
 void VM::isLt() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	auto st1_type = st1.type();
 	auto st2_type = st2.type();
 	if (st1_type == TStackRecordType::stInteger) {
@@ -616,8 +616,8 @@ void VM::isLt() {
 }
 
 void VM::isGt() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	auto st1_type = st1.type();
 	auto st2_type = st2.type();
 	if (st1_type == TStackRecordType::stInteger) {
@@ -648,8 +648,8 @@ void VM::isGt() {
 }
 
 void VM::isGte() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	auto st1_type = st1.type();
 	auto st2_type = st2.type();
 	if (st1_type == TStackRecordType::stInteger) {
@@ -680,8 +680,8 @@ void VM::isGte() {
 }
 
 void VM::isLte() {
-	auto st1 = stack_.pop();
-	auto st2 = stack_.pop();
+	auto& st1 = stack_.pop();
+	auto& st2 = stack_.pop();
 	auto st1_type = st1.type();
 	auto st2_type = st2.type();
 	if (st1_type == TStackRecordType::stInteger) {

@@ -10,14 +10,14 @@
 class TModule;
 
 struct TFrame {
-	int funcIndex = -1;
-	int bsp = -1;     // stack base of function arguments
-	int nArgs = 0;    // number of arguments
-	int nlocals = 0;  // number of local variables
 	// This is a reference to the global constant table
 	TConstantValueTable constantTable;
 	// This is a reference to the local symbol table
 	TSymbolTable symbolTable;
+	int funcIndex = -1;
+	int bsp = -1;     // stack base of function arguments
+	uint8_t nArgs = 0;    // number of arguments
+	uint8_t nlocals = 0;  // number of local variables
 };
 
 class TFrameStack {

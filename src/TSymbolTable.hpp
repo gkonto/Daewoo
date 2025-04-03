@@ -83,30 +83,33 @@ public:
 
 	TSymbolElementType type() const { return type_; }
 	const std::string& name() const { return name_; }
-	TStringObject* svalue() const { return sValue_; }
-	TListObject* lvalue() const { return lValue_; }
-	TUserFunction* fvalue() const { return fValue_; }
-	double dvalue() const { return dValue_; }
-	bool bvalue() const { return bValue_; }
-	int ivalue() const { return iValue_; }
+	TStringObject* svalue() const { return v.s; }
+	TListObject* lvalue() const { return v.l; }
+	TUserFunction* fvalue() const { return v.f; }
+	double dvalue() const { return v.d; }
+	bool bvalue() const { return v.b; }
+	int ivalue() const { return v.i; }
 
 	void setType(TSymbolElementType type) { type_ = type; }
-	void setValue(int val) { iValue_ = val; }
-	void setValue(double val) { dValue_ = val; }
-	void setValue(bool val) { bValue_ = val; }
-	void setValue(TStringObject* val) { sValue_ = val; }
-	void setValue(TListObject* val) { lValue_ = val; }
+	void setValue(int val) { v.i = val; }
+	void setValue(double val) { v.d = val; }
+	void setValue(bool val) { v.b = val; }
+	void setValue(TStringObject* val) { v.s = val; }
+	void setValue(TListObject* val) { v.l = val; }
 	void setName(const std::string& name) { name_ = name; }
-	void setValue(TUserFunction* val) { fValue_ = val; }
+	void setValue(TUserFunction* val) { v.f = val; }
 
 private:
 	std::string name_ = "";  // FIXME Do i need this ?
-	double dValue_ = 0.;
-	TStringObject* sValue_ = nullptr;
-	TListObject* lValue_ = nullptr;
-	TUserFunction* fValue_ = nullptr;
-	int iValue_ = 0;
-	bool bValue_ = false;
+	union {
+		double d;
+		TStringObject* s;
+		TListObject* l;
+		TUserFunction* f;
+		int i;
+		bool b;
+	} v;
+
 	TSymbolElementType type_ = TSymbolElementType::symUndefined;
 };
 
@@ -153,12 +156,12 @@ public:
 	const TGlobalVariableList& globalVariableList() const { return globalVariableList_; }
 
 private:
-	std::string name_;
-	int nArgs_;
-	TSymbolTable symboltable_;
-	TConstantValueTable constantTable_;  // FIXME is this a global reference ?
 	TGlobalVariableList globalVariableList_;
 	TProgram funcCode_;
+	std::string name_;
+	TConstantValueTable constantTable_;  // FIXME is this a global reference ?
+	TSymbolTable symboltable_;
+	int nArgs_;
 };
 
 #endif
