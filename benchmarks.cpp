@@ -22,11 +22,8 @@ struct BenchmarkCase
 
 static std::string inputFibonacci35() {
     return "fn fibonacci(n)\n"
-        "    if n == 0 then\n"
-        "        return 0\n"
-        "    end\n"
-        "    if n == 1 then\n"
-        "        return 1\n"
+        "    if n < 2 then\n"
+        "        return n\n"
         "    end\n"
         "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
         "end;\n"
@@ -36,11 +33,8 @@ static std::string inputFibonacci35() {
 
 static std::string inputFibonacci33() {
     return "fn fibonacci(n)\n"
-        "    if n == 0 then\n"
-        "        return 0\n"
-        "    end\n"
-        "    if n == 1 then\n"
-        "        return 1\n"
+        "    if n < 2 then\n"
+        "        return n\n"
         "    end\n"
         "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
         "end;\n"

@@ -55,67 +55,52 @@ static void testVM(const std::string &input, TStackRecordType expected_type, T e
 
 static std::string fn_call_fib25() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
-           "    end\n"
-           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
-           "end;\n"
-           "\n"
+        "    if n < 2 then\n"
+        "        return n\n"
+        "    end\n"
+        "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "end;\n"
+        "\n"
            "fibonacci(25);\n";
 }
 
 static std::string fn_call_fib28() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
-           "    end\n"
-           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
-           "end;\n"
-           "\n"
+        "    if n < 2 then\n"
+        "        return n\n"
+        "    end\n"
+        "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "end;\n"
+        "\n"
            "fibonacci(28);\n";
 }
 
 static std::string fn_call_fib30() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
-           "    end\n"
-           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
-           "end;\n"
-           "\n"
+        "    if n < 2 then\n"
+        "        return n\n"
+        "    end\n"
+        "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "end;\n"
+        "\n"
            "fibonacci(28);\n";
 }
 
 static std::string fn_call_fib31() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
-           "    end\n"
-           "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
-           "end;\n"
-           "\n"
+        "    if n < 2 then\n"
+        "        return n\n"
+        "    end\n"
+        "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
+        "end;\n"
+        "\n"
            "fibonacci(31);\n";
 }
 
 static std::string fn_call_fib33() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
+           "    if n < 2 then\n"
+           "        return n\n"
            "    end\n"
            "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
            "end;\n"
@@ -125,11 +110,8 @@ static std::string fn_call_fib33() {
 
 static std::string fn_call_fib35() {
     return "fn fibonacci(n)\n"
-        "    if n == 0 then\n"
-        "        return 0\n"
-        "    end\n"
-        "    if n == 1 then\n"
-        "        return 1\n"
+        "    if n < 2 then\n"
+        "        return n\n"
         "    end\n"
         "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
         "end;\n"
@@ -539,11 +521,8 @@ static std::string fn_call_i16() {
 
 static std::string fn_call_i17() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
+           "    if n < 2 then\n"
+           "        return n\n"
            "    end\n"
            "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
            "end;\n"
@@ -553,11 +532,8 @@ static std::string fn_call_i17() {
 
 static std::string fn_call_i18() {
     return "fn fibonacci(n)\n"
-           "    if n == 0 then\n"
-           "        return 0\n"
-           "    end\n"
-           "    if n == 1 then\n"
-           "        return 1\n"
+           "    if n < 2 then\n"
+           "        return n\n"
            "    end\n"
            "    return fibonacci(n - 1) + fibonacci(n - 2)\n"
            "end;\n"
