@@ -11,9 +11,9 @@ class TModule;
 
 struct TFrame {
 	// This is a reference to the global constant table
-	TConstantValueTable constantTable;
+	TConstantValueTable* constantTable;
 	// This is a reference to the local symbol table
-	TSymbolTable symbolTable;
+	TSymbolTable* symbolTable;
 	int funcIndex = -1;
 	int bsp = -1;     // stack base of function arguments
 	uint8_t nArgs = 0;    // number of arguments
