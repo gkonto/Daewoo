@@ -877,33 +877,9 @@ void VM::loadLocalSymbol(int index) {
 	copyToStack(stack_[index + bsp], frameStack_.top());
 }
 
-void VM::copyToStack(TMachineStackRecord& stackelem, TFrame& frame) {
-	stack_.push();
-	switch (stackelem.type()) {
-	case TStackRecordType::stInteger:
-		stack_.top().setType(TStackRecordType::stInteger);
-		stack_.top().setValue(stackelem.ivalue());
-		break;
-	case TStackRecordType::stBoolean:
-		stack_.top().setType(TStackRecordType::stBoolean);
-		stack_.top().setValue(stackelem.bvalue());
-		break;
-	case TStackRecordType::stDouble:
-		stack_.top().setType(TStackRecordType::stDouble);
-		stack_.top().setValue(stackelem.dvalue());
-		break;
-	case TStackRecordType::stString:
-		stack_.top().setType(TStackRecordType::stString);
-		stack_.top().setValue(stackelem.svalue());
-		break;
-	case TStackRecordType::stList:
-		stack_.top().setType(TStackRecordType::stList);
-		stack_.top().setValue(stackelem.lvalue());
-		break;
-	case TStackRecordType::stNone:
-		throw std::runtime_error("copyToStack> Undefined variable");
-		break;
-	}
+void VM::copyToStack(const TMachineStackRecord& stackelem, TFrame& frame) {
+	auto& record = stack_.push();
+	record = stackelem;
 }
 
 TFrame& TFrameStack::top() {
