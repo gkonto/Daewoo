@@ -800,7 +800,7 @@ void VM::isNotEq() {
 }
 
 void VM::loadSymbol(int index) {
-	auto symbol = symboltable().get(index);
+	const auto& symbol = symboltable().get(index);
 	switch (symbol.type()) {
 	case TSymbolElementType::symUndefined:
 		throw std::runtime_error("Undefined variable" + symbol.name());
