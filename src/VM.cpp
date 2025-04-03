@@ -137,8 +137,10 @@ void VM::run(const TProgram& code) {
 
 void VM::callUserFunction() {
 	int index = stack_.popInteger();
-	if (symboltable().get(index).type() == TSymbolElementType::symUserFunc) {
-		auto* funcRecord = symboltable().get(index).fvalue();
+	auto& symbols = symboltable();
+
+	if (symbols.get(index).type() == TSymbolElementType::symUserFunc) {
+		auto* funcRecord = symbols.get(index).fvalue();
 		frameStack_.increase();
 
 		// Set up the new frame
@@ -156,10 +158,6 @@ void VM::callUserFunction() {
 		stack_.increaseBy(nPureLocals);
 
 		run(funcRecord->funcCode());
-	}
-	else {
-		throw std::runtime_error("Call to symbol is not a user function: " +
-			symboltable().get(index).name());
 	}
 }
 
