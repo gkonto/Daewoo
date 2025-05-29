@@ -20,7 +20,7 @@ class TUserFunction;
 // using TSymbolValue = std::variant<int, double, bool, //TStringObject *,
 // TListObject *, TUserFunction *>;
 
-enum class TSymbolElementType : std::uint8_t {
+enum class TSymbolElementType {
 	symNonExistant,
 	symUndefined,
 	symInteger,

@@ -1,0 +1,52 @@
+
+set(MONKEY_SRC_FILES
+    Token.cpp
+    lexer.cpp
+    repl.cpp
+    ast.cpp
+    parser.cpp
+    object.cpp
+    evaluator.cpp
+    globals.cpp
+    environment.cpp
+    Token.hpp
+    lexer.hpp
+    repl.hpp
+    ast.hpp
+    parser.hpp
+    object.hpp
+    evaluator.hpp
+    globals.hpp
+    environment.hpp
+    macros.hpp
+    macros.cpp
+    SyntaxParser.cpp
+    SyntaxParser.hpp
+    TokenTable.cpp
+    TokenTable.hpp
+    ASTBuilder.cpp
+    ASTBuilder.hpp
+    ASTNode.cpp
+    ASTNode.hpp
+    ASTNodeTypes.hpp
+    VM.hpp
+    VM.cpp
+    TSymbolTable.hpp
+    TSymbolTable.cpp
+    OpCodes.hpp
+    OpCodes.cpp
+    MachineStack.hpp
+    MachineStack.cpp
+    ConstantTable.hpp
+    ConstantTable.cpp
+    TStringObject.hpp
+    MemoryManager.hpp
+    MemoryManager.cpp
+    TListObject.hpp
+    TListObject.cpp
+    TByteCodeBuilder.hpp
+    TByteCodeBuilder.cpp
+)
+
+add_library(Library STATIC ${MONKEY_SRC_FILES})
+target_include_directories(Library PUBLIC "./")
