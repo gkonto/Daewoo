@@ -6,7 +6,7 @@ project(
     LANGUAGES C CXX)
 
 # Global CMake variables
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -31,7 +31,6 @@ option(ENABLE_CMAKE_FORMAT "Enable to add cmake-format." OFF)
 option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 
 # Project / Library Names
-set(EXECUTABLE_NAME "monkey")
 
 # CMAKE MODULES
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
