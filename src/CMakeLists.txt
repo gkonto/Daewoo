@@ -53,3 +53,11 @@ set(LIBRARY_SOURCES
 
 add_library(Library STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 target_include_directories(Library PUBLIC "./")
+
+if(${ENABLE_LTO})
+    target_enable_lto(
+        TARGET
+        Library
+        ENABLE
+        ON)
+endif()

@@ -15,3 +15,11 @@ target_include_directories(${TEST_MAIN} PUBLIC ${TEST_INCLUDES})
 target_link_libraries(${TEST_MAIN} PUBLIC Library Catch2::Catch2WithMain)
 
 catch_discover_tests(${TEST_MAIN})
+
+if(${ENABLE_LTO})
+    target_enable_lto(
+        TARGET
+        unit_tests
+        ENABLE
+        ON)
+endif()
