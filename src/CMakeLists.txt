@@ -1,14 +1,5 @@
 
-set(MONKEY_SRC_FILES
-    Token.cpp
-    lexer.cpp
-    repl.cpp
-    ast.cpp
-    parser.cpp
-    object.cpp
-    evaluator.cpp
-    globals.cpp
-    environment.cpp
+set(LIBRARY_HEADERS
     Token.hpp
     lexer.hpp
     repl.hpp
@@ -19,34 +10,46 @@ set(MONKEY_SRC_FILES
     globals.hpp
     environment.hpp
     macros.hpp
+    SyntaxParser.hpp
+    ASTBuilder.hpp
+    TByteCodeBuilder.hpp
+    TListObject.hpp
+    TStringObject.hpp
+    ASTNodeTypes.hpp
+    ConstantTable.hpp
+    MachineStack.hpp
+    TokenTable.hpp
+    TSymbolTable.hpp
+    MemoryManager.hpp
+    ASTNode.hpp
+)
+
+set(LIBRARY_SOURCES
+    Token.cpp
+    lexer.cpp
+    repl.cpp
+    ast.cpp
+    parser.cpp
+    object.cpp
+    evaluator.cpp
+    globals.cpp
+    environment.cpp
     macros.cpp
     SyntaxParser.cpp
-    SyntaxParser.hpp
     TokenTable.cpp
-    TokenTable.hpp
     ASTBuilder.cpp
-    ASTBuilder.hpp
     ASTNode.cpp
-    ASTNode.hpp
-    ASTNodeTypes.hpp
     VM.hpp
     VM.cpp
-    TSymbolTable.hpp
     TSymbolTable.cpp
     OpCodes.hpp
     OpCodes.cpp
-    MachineStack.hpp
     MachineStack.cpp
-    ConstantTable.hpp
     ConstantTable.cpp
-    TStringObject.hpp
-    MemoryManager.hpp
     MemoryManager.cpp
-    TListObject.hpp
     TListObject.cpp
-    TByteCodeBuilder.hpp
     TByteCodeBuilder.cpp
 )
 
-add_library(Library STATIC ${MONKEY_SRC_FILES})
+add_library(Library STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 target_include_directories(Library PUBLIC "./")
