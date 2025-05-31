@@ -36,9 +36,19 @@ option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 
+include(FetchContent)
+
+FetchContent_Declare(
+    catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v2.13.9
+)
+FetchContent_MakeAvailable(catch2)
+
 add_subdirectory(configured)
 add_subdirectory(src)
 add_subdirectory(app)
+add_subdirectory(tests)
 
 
 
@@ -176,16 +186,7 @@ add_subdirectory(app)
 # # Optionally, build unit tests if enabled
 # if(BUILD_TESTS)
 #     # Include FetchContent to download Catch2
-#     include(FetchContent)
 
-#     FetchContent_Declare(
-#         catch2
-#         GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-#         GIT_TAG v3.4.0 # Ensure latest stable release
-#     )
-
-#     # Fetch and make Catch2 available
-#     FetchContent_MakeAvailable(catch2)
 
 #     # Test source files
 #     set(MONKEY_TEST_FILES
