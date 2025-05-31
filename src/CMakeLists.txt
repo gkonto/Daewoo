@@ -51,13 +51,17 @@ set(LIBRARY_SOURCES
     TByteCodeBuilder.cpp
 )
 
-add_library(Library STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
-target_include_directories(Library PUBLIC "./")
+add_library(${LIBRARY_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+target_include_directories(${LIBRARY_NAME} PUBLIC "./")
 
 if(${ENABLE_LTO})
     target_enable_lto(
         TARGET
-        Library
+        ${LIBRARY_NAME}
         ENABLE
         ON)
+endif()
+
+if (${ENABLE_CLANG_TIDY})
+    add_clang_tidy_to_target(${LIBRARY_NAME})
 endif()

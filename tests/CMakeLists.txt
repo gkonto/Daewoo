@@ -1,6 +1,5 @@
 include(Catch)
 
-set(TEST_MAIN "unit_tests")
 set(TEST_SOURCES
     evaluation.t.cpp
     lexer.t.cpp
@@ -10,16 +9,20 @@ set(TEST_SOURCES
 )
 set(TEST_INCLUDES "./")
 
-add_executable(${TEST_MAIN} ${TEST_SOURCES})
-target_include_directories(${TEST_MAIN} PUBLIC ${TEST_INCLUDES})
-target_link_libraries(${TEST_MAIN} PUBLIC Library Catch2::Catch2WithMain)
+add_executable(${TEST_NAME} ${TEST_SOURCES})
+target_include_directories(${TEST_NAME} PUBLIC ${TEST_INCLUDES})
+target_link_libraries(${TEST_NAME} PUBLIC Library Catch2::Catch2WithMain)
 
-catch_discover_tests(${TEST_MAIN})
+catch_discover_tests(${TEST_NAME})
 
 if(${ENABLE_LTO})
     target_enable_lto(
         TARGET
-        unit_tests
+        ${TEST_NAME}
         ENABLE
         ON)
+endif()
+
+if (${ENABLE_CLANG_TIDY})
+    add_clang_tidy_to_target(${TEST_NAME})
 endif()

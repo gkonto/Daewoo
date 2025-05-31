@@ -1,11 +1,11 @@
 
-add_executable(Benchmarks benchmarks.cpp)
-target_link_libraries(Benchmarks PUBLIC Library)
+add_executable(${BENCHMARKS_NAME} benchmarks.cpp)
+target_link_libraries(${BENCHMARKS_NAME} PUBLIC Library)
 
 if(${ENABLE_LTO})
     target_enable_lto(
         TARGET
-        Benchmarks
+        ${BENCHMARKS_NAME}
         ENABLE
         ON)
 endif()
