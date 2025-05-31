@@ -1,4 +1,3 @@
-
 set(LIBRARY_HEADERS
     Token.hpp
     lexer.hpp
@@ -21,8 +20,7 @@ set(LIBRARY_HEADERS
     TokenTable.hpp
     TSymbolTable.hpp
     MemoryManager.hpp
-    ASTNode.hpp
-)
+    ASTNode.hpp)
 
 set(LIBRARY_SOURCES
     Token.cpp
@@ -48,8 +46,7 @@ set(LIBRARY_SOURCES
     ConstantTable.cpp
     MemoryManager.cpp
     TListObject.cpp
-    TByteCodeBuilder.cpp
-)
+    TByteCodeBuilder.cpp)
 
 add_library(${LIBRARY_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
 target_include_directories(${LIBRARY_NAME} PUBLIC "./")
@@ -62,6 +59,6 @@ if(${ENABLE_LTO})
         ON)
 endif()
 
-if (${ENABLE_CLANG_TIDY})
+if(${ENABLE_CLANG_TIDY})
     add_clang_tidy_to_target(${LIBRARY_NAME})
 endif()

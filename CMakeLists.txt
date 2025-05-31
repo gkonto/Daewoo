@@ -30,14 +30,14 @@ option(ENABLE_SANITIZE_UNDEF "Enable undefined sanitize." OFF)
 option(ENABLE_SANITIZE_LEAK "Enable leak sanitize (Gcc/Clang only)." OFF)
 option(ENABLE_SANITIZE_THREAD "Enable thread sanitize (Gcc/Clang only)." OFF)
 
-option(ENABLE_CLANG_FORMAT "Enable to add clang-format." ON)
-option(ENABLE_CMAKE_FORMAT "Enable to add cmake-format." OFF)
+option(ENABLE_CLANG_FORMAT "Enable to add clang-format." OFF)
+option(ENABLE_CMAKE_FORMAT "Enable to add cmake-format." ON)
 
 option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-if (ENABLE_SANITIZE_ADDR OR ENABLE_SANITIZE_UNDEF)
+if(ENABLE_SANITIZE_ADDR OR ENABLE_SANITIZE_UNDEF)
     include(Sanitizers)
     add_sanitizer_flags()
 endif()
@@ -64,7 +64,7 @@ if(ENABLE_TESTING)
     list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 endif()
 
-if (ENABLE_TESTING AND ENABLE_COVERAGE)
+if(ENABLE_TESTING AND ENABLE_COVERAGE)
     include(CodeCoverage)
     append_coverage_compiler_flags()
 endif()
@@ -73,24 +73,11 @@ add_subdirectory(configured)
 add_subdirectory(src)
 add_subdirectory(app)
 
-if (ENABLE_TESTING)
+if(ENABLE_TESTING)
     include(CTest)
     enable_testing()
     add_subdirectory(tests)
 endif()
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Define build directories
 #set(BUILD_64 "build_64")
@@ -215,7 +202,6 @@ endif()
 # # Optionally, build unit tests if enabled
 # if(BUILD_TESTS)
 #     # Include FetchContent to download Catch2
-
 
 #     # Test source files
 #     set(MONKEY_TEST_FILES

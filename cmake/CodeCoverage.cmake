@@ -167,8 +167,11 @@ function(setup_target_for_coverage_gcovr_html)
         VERBATIM # Protect arguments to commands
         COMMENT "Running gcovr to produce HTML code coverage report.")
 
-        # Show info where to find the report
-        message(STATUS "Open ./${Coverage_NAME}/index.html in your browser to view the coverage report.")
+    # Show info where to find the report
+    message(
+        STATUS
+            "Open ./${Coverage_NAME}/index.html in your browser to view the coverage report."
+    )
 
 endfunction() # setup_target_for_coverage_gcovr_html
 

@@ -5,8 +5,7 @@ set(TEST_SOURCES
     lexer.t.cpp
     parser.t.cpp
     program.t.cpp
-    vm.t.cpp
-)
+    vm.t.cpp)
 set(TEST_INCLUDES "./")
 
 add_executable(${TEST_NAME} ${TEST_SOURCES})
@@ -23,7 +22,7 @@ if(${ENABLE_LTO})
         ON)
 endif()
 
-if (${ENABLE_CLANG_TIDY})
+if(${ENABLE_CLANG_TIDY})
     add_clang_tidy_to_target(${TEST_NAME})
 endif()
 
@@ -50,4 +49,3 @@ if(ENABLE_COVERAGE)
         BASE_DIRECTORY
         ${CMAKE_SOURCE_DIR})
 endif()
-

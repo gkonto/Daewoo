@@ -1,4 +1,3 @@
-
 add_executable(${BENCHMARKS_NAME} benchmarks.cpp)
 target_link_libraries(${BENCHMARKS_NAME} PUBLIC Library)
 
