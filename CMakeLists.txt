@@ -30,25 +30,32 @@ option(ENABLE_CMAKE_FORMAT "Enable to add cmake-format." OFF)
 
 option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
+
 # Project / Library Names
 
 # CMAKE MODULES
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-
-include(FetchContent)
-
-FetchContent_Declare(
-    catch2
-    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG v2.13.9
-)
-FetchContent_MakeAvailable(catch2)
+if(ENABLE_TESTING)
+    include(FetchContent)
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2
+        GIT_TAG v3.5.3
+        GIT_SHALLOW TRUE)
+    FetchContent_MakeAvailable(Catch2)
+    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+endif()
 
 add_subdirectory(configured)
 add_subdirectory(src)
 add_subdirectory(app)
-add_subdirectory(tests)
+if (ENABLE_TESTING)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
 
 
 
