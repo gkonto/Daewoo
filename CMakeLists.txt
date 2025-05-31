@@ -22,7 +22,7 @@ option(ENABLE_WARNINGS "Enable to add warnings to a target." OFF)
 option(ENABLE_WARNINGS_AS_ERRORS "Enable to treat warnings as errors." OFF)
 
 option(ENABLE_TESTING "Enable a Unit Testing build." ON)
-option(ENABLE_COVERAGE "Enable a Code Coverage build." OFF)
+option(ENABLE_COVERAGE "Enable a Code Coverage build." ON)
 option(ENABLE_CLANG_TIDY "Enable to a clang tidy." ON)
 
 option(ENABLE_SANITIZE_ADDR "Enable address sanitize." OFF)
@@ -59,6 +59,11 @@ if(ENABLE_TESTING)
         GIT_SHALLOW TRUE)
     FetchContent_MakeAvailable(Catch2)
     list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+endif()
+
+if (ENABLE_TESTING AND ENABLE_COVERAGE)
+    include(CodeCoverage)
+    append_coverage_compiler_flags()
 endif()
 
 add_subdirectory(configured)
