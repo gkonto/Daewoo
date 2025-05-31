@@ -1,11 +1,11 @@
 #ifndef EVAL_OBJECT_HPP_INCLUDED
 #define EVAL_OBJECT_HPP_INCLUDED
 
-#include <string>
+#include "macros.hpp"
 #include <memory>
+#include <string>
 #include <variant>
 #include <vector>
-#include "macros.hpp"
 
 class Environment;
 class BlockStatement;
@@ -24,12 +24,28 @@ enum class ObjType
 class Function
 {
 public:
-    Function(const std::vector<__Ptr<Identifier>> &params, __Ptr<BlockStatement> &body, __Ptr<Environment> env)
-        : parameters_(params), body_(body), env_(env) {}
-    size_t parametersCount() const { return parameters_.size(); }
-    const std::vector<__Ptr<Identifier>> &parameters() const { return parameters_; }
-    const __Ptr<BlockStatement> &body() const { return body_; }
-    __Ptr<Environment> environment() const { return env_; }
+    Function(const std::vector<__Ptr<Identifier>> &params,
+             __Ptr<BlockStatement> &body,
+             __Ptr<Environment> env)
+        : parameters_(params), body_(body), env_(env)
+    {
+    }
+    size_t parametersCount() const
+    {
+        return parameters_.size();
+    }
+    const std::vector<__Ptr<Identifier>> &parameters() const
+    {
+        return parameters_;
+    }
+    const __Ptr<BlockStatement> &body() const
+    {
+        return body_;
+    }
+    __Ptr<Environment> environment() const
+    {
+        return env_;
+    }
 
 private:
     std::vector<__Ptr<Identifier>> parameters_;
@@ -41,12 +57,27 @@ struct EvalObject
 {
     using Enclosed = __Ptr<EvalObject>;
 
-    int getInt() const { return std::get<int>(value); }
-    bool getBool() const { return std::get<bool>(value); }
-    Enclosed getObject() const { return std::get<Enclosed>(value); }
-    std::string getString() const { return std::get<std::string>(value); }
+    int getInt() const
+    {
+        return std::get<int>(value);
+    }
+    bool getBool() const
+    {
+        return std::get<bool>(value);
+    }
+    Enclosed getObject() const
+    {
+        return std::get<Enclosed>(value);
+    }
+    std::string getString() const
+    {
+        return std::get<std::string>(value);
+    }
 
-    Function getFunction() const { return std::get<Function>(value); }
+    Function getFunction() const
+    {
+        return std::get<Function>(value);
+    }
 
     ObjType type = ObjType::Null;
     std::variant<int, bool, Enclosed, std::string, Function> value;

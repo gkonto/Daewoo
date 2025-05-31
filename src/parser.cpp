@@ -5,49 +5,53 @@
 #include "ast.hpp"
 #include "macros.hpp"
 
-Parser::Parser(Lexer &l)
-    : lexer_(l)
+Parser::Parser(Lexer &l) : lexer_(l)
 {
     nextToken();
     nextToken();
 
-    registerPrefix(Token::Type::Ident, [this]()
-                   { return parseIdentifier(); });
-    registerPrefix(Token::Type::Int, [this]()
-                   { return parseIntegerLiteral(); });
-    registerPrefix(Token::Type::Bang, [this]()
-                   { return parsePrefixExpression(); });
-    registerPrefix(Token::Type::Minus, [this]()
-                   { return parsePrefixExpression(); });
-    registerPrefix(Token::Type::True, [this]()
-                   { return parseBoolean(); });
-    registerPrefix(Token::Type::False, [this]()
-                   { return parseBoolean(); });
-    registerPrefix(Token::Type::LParen, [this]()
-                   { return parseGroupedExpression(); });
-    registerPrefix(Token::Type::If, [this]()
-                   { return parseIfExpression(); });
-    registerPrefix(Token::Type::Function, [this]()
-                   { return parseFunctionLiteral(); });
+    registerPrefix(Token::Type::Ident, [this]() { return parseIdentifier(); });
+    registerPrefix(Token::Type::Int,
+                   [this]() { return parseIntegerLiteral(); });
+    registerPrefix(Token::Type::Bang,
+                   [this]() { return parsePrefixExpression(); });
+    registerPrefix(Token::Type::Minus,
+                   [this]() { return parsePrefixExpression(); });
+    registerPrefix(Token::Type::True, [this]() { return parseBoolean(); });
+    registerPrefix(Token::Type::False, [this]() { return parseBoolean(); });
+    registerPrefix(Token::Type::LParen,
+                   [this]() { return parseGroupedExpression(); });
+    registerPrefix(Token::Type::If, [this]() { return parseIfExpression(); });
+    registerPrefix(Token::Type::Function,
+                   [this]() { return parseFunctionLiteral(); });
 
-    registerInfix(Token::Type::Plus, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::Minus, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::Slash, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::Asterisk, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::EQ, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::NotEQ, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::LessThan, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::GreaterThan, [this](__Ptr<Expression> lhs)
-                  { return parseInfixExpression(std::move(lhs)); });
-    registerInfix(Token::Type::LParen, [this](__Ptr<Expression> lhs)
-                  { return parseCallExpression(std::move(lhs)); });
+    registerInfix(Token::Type::Plus, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::Minus, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::Slash, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::Asterisk, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::EQ, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::NotEQ, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::LessThan, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::GreaterThan, [this](__Ptr<Expression> lhs) {
+        return parseInfixExpression(std::move(lhs));
+    });
+    registerInfix(Token::Type::LParen, [this](__Ptr<Expression> lhs) {
+        return parseCallExpression(std::move(lhs));
+    });
 
     registerPrecedence(Token::Type::EQ, Precedence::Equals);
     registerPrecedence(Token::Type::NotEQ, Precedence::Equals);
@@ -139,7 +143,8 @@ __Ptr<ReturnStatement> Parser::parseReturnStatement()
 
 __Ptr<ExpressionStatement> Parser::parseExpressionStatement()
 {
-    auto stmt = std::make_shared<ExpressionStatement>(parseExpression(Precedence::Lowest));
+    auto stmt = std::make_shared<ExpressionStatement>(
+        parseExpression(Precedence::Lowest));
 
     if (peekTokenIs(Token::Type::Semicolon))
     {
@@ -176,7 +181,8 @@ bool Parser::expectPeek(Token::Type t)
 void Parser::peekError(Token::Type t)
 {
     std::stringstream ss;
-    ss << "expected next token to be " << tokenType2String(t) << ", got " << tokenType2String(peek_token_.type_) << " instead";
+    ss << "expected next token to be " << tokenType2String(t) << ", got "
+       << tokenType2String(peek_token_.type_) << " instead";
     errors_.emplace_back(ss.str());
 }
 
@@ -197,7 +203,8 @@ void Parser::registerPrecedence(Token::Type t, Precedence p)
 
 __Ptr<Expression> Parser::parseExpression(Precedence p)
 {
-    const auto &prefix = prefix_parse_fns_[static_cast<std::size_t>(cur_token_.type_)];
+    const auto &prefix =
+        prefix_parse_fns_[static_cast<std::size_t>(cur_token_.type_)];
     if (!prefix)
     {
         noPrefixParseFnError(cur_token_.type_);
@@ -207,7 +214,8 @@ __Ptr<Expression> Parser::parseExpression(Precedence p)
 
     while (!peekTokenIs(Token::Type::Semicolon) && p < peekPrecedence())
     {
-        auto infix = infix_parse_fns_[static_cast<std::size_t>(peek_token_.type_)];
+        auto infix =
+            infix_parse_fns_[static_cast<std::size_t>(peek_token_.type_)];
         if (!infix)
         {
             return leftExp;
@@ -229,7 +237,9 @@ __Ptr<Expression> Parser::parsePrefixExpression()
 {
     std::string op(lexer_.getLiteral(cur_token_));
     nextToken();
-    return std::make_shared<PrefixExpression>(op, parseExpression(Precedence::Prefix));
+    return std::make_shared<PrefixExpression>(
+        op,
+        parseExpression(Precedence::Prefix));
 }
 
 __Ptr<Boolean> Parser::parseBoolean()
@@ -277,7 +287,9 @@ __Ptr<Expression> Parser::parseIfExpression()
         alternative = parseBlockStatement();
     }
 
-    return std::make_shared<IfExpression>(std::move(condition), std::move(consequence), std::move(alternative));
+    return std::make_shared<IfExpression>(std::move(condition),
+                                          std::move(consequence),
+                                          std::move(alternative));
 }
 
 __Ptr<Expression> Parser::parseInfixExpression(__Ptr<Expression> left)
@@ -285,12 +297,15 @@ __Ptr<Expression> Parser::parseInfixExpression(__Ptr<Expression> left)
     std::string op(lexer_.getLiteral(cur_token_));
     auto precedence = curPrecedence();
     nextToken();
-    return std::make_shared<InfixExpression>(std::move(left), op, parseExpression(precedence));
+    return std::make_shared<InfixExpression>(std::move(left),
+                                             op,
+                                             parseExpression(precedence));
 }
 
 __Ptr<Expression> Parser::parseCallExpression(__Ptr<Expression> function)
 {
-    return std::make_shared<CallExpression>(std::move(function), parseCallArguments());
+    return std::make_shared<CallExpression>(std::move(function),
+                                            parseCallArguments());
 }
 
 std::vector<__Ptr<Expression>> Parser::parseCallArguments()
@@ -369,7 +384,8 @@ __Ptr<FunctionLiteral> Parser::parseFunctionLiteral()
     }
 
     auto body = parseBlockStatement();
-    return std::make_shared<FunctionLiteral>(std::move(body), std::move(parameters));
+    return std::make_shared<FunctionLiteral>(std::move(body),
+                                             std::move(parameters));
 }
 
 std::vector<__Ptr<Identifier>> Parser::parseFunctionParameters()
@@ -382,13 +398,15 @@ std::vector<__Ptr<Identifier>> Parser::parseFunctionParameters()
     }
 
     nextToken();
-    identifiers.emplace_back(std::make_shared<Identifier>(lexer_.getLiteral(cur_token_)));
+    identifiers.emplace_back(
+        std::make_shared<Identifier>(lexer_.getLiteral(cur_token_)));
 
     while (peekTokenIs(Token::Type::Comma))
     {
         nextToken();
         nextToken();
-        identifiers.emplace_back(std::make_shared<Identifier>(lexer_.getLiteral(cur_token_)));
+        identifiers.emplace_back(
+            std::make_shared<Identifier>(lexer_.getLiteral(cur_token_)));
     }
     if (!expectPeek(Token::Type::RParen))
     {

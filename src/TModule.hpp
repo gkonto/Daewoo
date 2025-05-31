@@ -5,15 +5,26 @@
 #include "TSymbolTable.hpp"
 
 /* A module is a pair of bytecode associated with a symboltable */
-class TModule {
+class TModule
+{
 public:
     TModule() = default;
-    explicit TModule(const std::string &name)
-        : name_(name) {}
+    explicit TModule(const std::string &name) : name_(name)
+    {
+    }
 
-    const TProgram &code() const { return code_; }
-    TProgram &code() { return code_; }
-    TSymbolTable &symboltable() { return symboltable_; }
+    const TProgram &code() const
+    {
+        return code_;
+    }
+    TProgram &code()
+    {
+        return code_;
+    }
+    TSymbolTable &symboltable()
+    {
+        return symboltable_;
+    }
 
 private:
     std::string name_ = "";

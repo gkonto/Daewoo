@@ -1,8 +1,8 @@
 #ifndef GLOBALS_HPP_INCLUDED
 #define GLOBALS_HPP_INCLUDED
 
-#include <memory>
 #include "macros.hpp"
+#include <memory>
 
 struct EvalObject;
 

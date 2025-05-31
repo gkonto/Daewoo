@@ -1,13 +1,13 @@
 #ifndef PARSER_HPP_INCLUDED
 #define PARSER_HPP_INCLUDED
 
-#include "lexer.hpp"
 #include "Token.hpp"
+#include "lexer.hpp"
 #include "macros.hpp"
-#include <memory>
-#include <string>
 #include <array>
 #include <functional>
+#include <memory>
+#include <string>
 
 class Program;
 class Statement;
@@ -22,7 +22,8 @@ class BlockStatement;
 class FunctionLiteral;
 class Identifier;
 
-enum Precedence {
+enum Precedence
+{
     Lowest,
     Equals,
     LessGreater,
@@ -32,7 +33,8 @@ enum Precedence {
     Call,
 };
 
-class Parser {
+class Parser
+{
 public:
     using PrefixParseF = std::function<__Ptr<Expression>()>;
     using InfixParseF = std::function<__Ptr<Expression>(__Ptr<Expression>)>;
@@ -66,14 +68,20 @@ public:
     bool expectPeek(Token::Type t);
     void peekError(Token::Type t);
 
-    const Errors &errors() const { return errors_; }
+    const Errors &errors() const
+    {
+        return errors_;
+    }
     void noPrefixParseFnError(Token::Type t);
 
     void registerPrefix(Token::Type t, PrefixParseF f);
     void registerInfix(Token::Type t, InfixParseF f);
     void registerPrecedence(Token::Type t, Precedence p);
 
-    size_t precedenceAsValue(Precedence p) { return static_cast<size_t>(p); }
+    size_t precedenceAsValue(Precedence p)
+    {
+        return static_cast<size_t>(p);
+    }
     Precedence peekPrecedence();
     Precedence curPrecedence();
 
@@ -85,7 +93,8 @@ private:
     Errors errors_;
     std::array<PrefixParseF, tokenTypesCount()> prefix_parse_fns_;
     std::array<InfixParseF, tokenTypesCount()> infix_parse_fns_;
-    std::array<Precedence, tokenTypesCount()> precedences_ = {Precedence::Lowest};
+    std::array<Precedence, tokenTypesCount()> precedences_ = {
+        Precedence::Lowest};
 };
 
 #endif

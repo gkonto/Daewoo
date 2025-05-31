@@ -1,8 +1,8 @@
 #ifndef TOKEN_HPP_INCLUDED
 #define TOKEN_HPP_INCLUDED
 
-#include <string>
 #include "defs.hpp"
+#include <string>
 
 enum class TokenCode
 {
@@ -70,29 +70,74 @@ enum class TokenCode
 class TokenRecord
 {
 public:
-    TokenCode code() const { return code_; }
-    void setCode(TokenCode c) { code_ = c; }
+    TokenCode code() const
+    {
+        return code_;
+    }
+    void setCode(TokenCode c)
+    {
+        code_ = c;
+    }
 
     std::string literal() const;
 
     template <typename T>
-    void setString(T &&v) { tString_ = std::forward<std::string>(v); }
-    const std::string &tString() const { return tString_; }
+    void setString(T &&v)
+    {
+        tString_ = std::forward<std::string>(v);
+    }
+    const std::string &tString() const
+    {
+        return tString_;
+    }
 
-    void setFloat(double v) { tFloat_ = v; }
-    double tFloat() const { return tFloat_; }
+    void setFloat(double v)
+    {
+        tFloat_ = v;
+    }
+    double tFloat() const
+    {
+        return tFloat_;
+    }
 
-    void setInt(int v) { tInt_ = v; }
-    int tInt() const { return tInt_; }
-    double tIntAsDouble() const { return tInt_; }
-    void setChar(char v) { tChar_ = v; }
-    char tChar() const { return tChar_; }
+    void setInt(int v)
+    {
+        tInt_ = v;
+    }
+    int tInt() const
+    {
+        return tInt_;
+    }
+    double tIntAsDouble() const
+    {
+        return tInt_;
+    }
+    void setChar(char v)
+    {
+        tChar_ = v;
+    }
+    char tChar() const
+    {
+        return tChar_;
+    }
 
-    void setColumnNumber(int v) { columnNumber_ = v; }
-    int columnNumber() const { return columnNumber_; }
+    void setColumnNumber(int v)
+    {
+        columnNumber_ = v;
+    }
+    int columnNumber() const
+    {
+        return columnNumber_;
+    }
 
-    void setLineNumber(int v) { lineNumber_ = v; }
-    int lineNumber() const { return lineNumber_; }
+    void setLineNumber(int v)
+    {
+        lineNumber_ = v;
+    }
+    int lineNumber() const
+    {
+        return lineNumber_;
+    }
 
 private:
     TokenCode code_;

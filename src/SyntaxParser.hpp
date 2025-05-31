@@ -1,30 +1,39 @@
 #ifndef SYNTAX_PARSER_HPP_INCLUDED
 #define SYNTAX_PARSER_HPP_INCLUDED
 
-#include <vector>
-#include <optional>
 #include "Token.hpp"
 #include "TokenTable.hpp"
+#include <optional>
+#include <vector>
 
 class Scanner;
 
-class SyntaxError {
+class SyntaxError
+{
 public:
     template <typename T>
-    SyntaxError(T &&msg)
-        : msg_(std::forward<std::string>(msg)) {}
+    SyntaxError(T &&msg) : msg_(std::forward<std::string>(msg))
+    {
+    }
 
-    const std::string &msg() const { return msg_; }
+    const std::string &msg() const
+    {
+        return msg_;
+    }
 
 private:
     std::string msg_;
 };
 
-class SyntaxParser {
+class SyntaxParser
+{
 public:
     explicit SyntaxParser(Scanner &sc);
     std::optional<SyntaxError> syntaxCheck();
-    TokensTable &tokens() { return tokenVector_; }
+    TokensTable &tokens()
+    {
+        return tokenVector_;
+    }
 
 private:
     TokensTable tokenVector_;
@@ -53,8 +62,14 @@ private:
     std::optional<SyntaxError> variable();
     std::optional<SyntaxError> functionArgument();
 
-    void enterUserFunctionScope() { inUserFunctionParsing_ = true; }
-    void exitUserFunctionScope() { inUserFunctionParsing_ = false; }
+    void enterUserFunctionScope()
+    {
+        inUserFunctionParsing_ = true;
+    }
+    void exitUserFunctionScope()
+    {
+        inUserFunctionParsing_ = false;
+    }
 
     bool inUserFunctionParsing_ = false;
     std::vector<std::string> globalVariableList;

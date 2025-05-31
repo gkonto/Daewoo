@@ -1,8 +1,8 @@
 #ifndef EVALUATOR_HPP_INCLUDED
 #define EVALUATOR_HPP_INCLUDED
 
-#include <memory>
 #include "object.hpp"
+#include <memory>
 
 class Node;
 class Environment;

@@ -1,12 +1,13 @@
 #ifndef ASTCONSTRUCT_HPP_INCLUDED
 #define ASTCONSTRUCT_HPP_INCLUDED
 
-#include <memory>
-#include "TokenTable.hpp"
-#include "Token.hpp"
 #include "ASTNode.hpp"
+#include "Token.hpp"
+#include "TokenTable.hpp"
+#include <memory>
 
-class ASTBuilder {
+class ASTBuilder
+{
 public:
     explicit ASTBuilder(TokensTable &sc);
     std::unique_ptr<ASTProgram> build();
@@ -35,13 +36,34 @@ private:
     std::unique_ptr<ASTNodeList> expressionList();
     std::unique_ptr<ASTNode> letStatement();
 
-    void enterUserFunctionScope() { inUserFunctionParsing = true; }
-    void exitUserFunctionScope() { inUserFunctionParsing = false; }
-    TokenCode code() const { return sc_.token().code(); }
-    void nextToken() { sc_.nextToken(); }
-    int lineNumber() const { return sc_.token().lineNumber(); }
-    int columnNumber() const { return sc_.token().columnNumber(); }
-    const TokenRecord &token() const { return sc_.token(); }
+    void enterUserFunctionScope()
+    {
+        inUserFunctionParsing = true;
+    }
+    void exitUserFunctionScope()
+    {
+        inUserFunctionParsing = false;
+    }
+    TokenCode code() const
+    {
+        return sc_.token().code();
+    }
+    void nextToken()
+    {
+        sc_.nextToken();
+    }
+    int lineNumber() const
+    {
+        return sc_.token().lineNumber();
+    }
+    int columnNumber() const
+    {
+        return sc_.token().columnNumber();
+    }
+    const TokenRecord &token() const
+    {
+        return sc_.token();
+    }
 
     TokensTable &sc_;
     bool inUserFunctionParsing = false;

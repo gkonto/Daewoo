@@ -1,59 +1,84 @@
 #include "SyntaxParser.hpp"
 #include "lexer.hpp"
 
-SyntaxParser::SyntaxParser(Scanner &sc)
-    : sc_(sc) {}
+SyntaxParser::SyntaxParser(Scanner &sc) : sc_(sc)
+{
+}
 
-std::optional<SyntaxError> SyntaxParser::syntaxCheck() {
+std::optional<SyntaxError> SyntaxParser::syntaxCheck()
+{
     tokenVector_.clearCode();
     nextToken();
 
-    if (tokenVector_.token().code() != TokenCode::tEndofStream) return statementList();
+    if (tokenVector_.token().code() != TokenCode::tEndofStream)
+        return statementList();
 
     return std::nullopt;
 }
 
 // statementList = statement { [ ; ] statement }
-std::optional<SyntaxError> SyntaxParser::statementList() {
+std::optional<SyntaxError> SyntaxParser::statementList()
+{
     auto err = statement();
-    if (err.has_value()) return err;
+    if (err.has_value())
+        return err;
 
-    while (true) {
-        if (tokenVector_.token().code() == TokenCode::tSemicolon) {
+    while (true)
+    {
+        if (tokenVector_.token().code() == TokenCode::tSemicolon)
+        {
             err = expect(TokenCode::tSemicolon);
-            if (err) return err;
+            if (err)
+                return err;
         }
 
         // all the following tokens can and a statement.
         if (tokenVector_.token().code() == TokenCode::tEnd ||
             tokenVector_.token().code() == TokenCode::tElse ||
-            tokenVector_.token().code() == TokenCode::tEndofStream) {
+            tokenVector_.token().code() == TokenCode::tEndofStream)
+        {
             return std::nullopt;
         }
 
         err = statement();
-        if (err.has_value()) return err;
+        if (err.has_value())
+            return err;
     }
 }
 
 // statement = exprStatement | ifStatement | returnStatment | function | letStatement
-std::optional<SyntaxError> SyntaxParser::statement() {
+std::optional<SyntaxError> SyntaxParser::statement()
+{
     std::optional<SyntaxError> err;
 
     auto tokenCode = tokenVector_.token().code();
-    if (tokenCode == TokenCode::tIf) {
+    if (tokenCode == TokenCode::tIf)
+    {
         err = ifStatement();
-    } else if (tokenCode == TokenCode::tReturn) {
+    }
+    else if (tokenCode == TokenCode::tReturn)
+    {
         return err = returnStatement();
-    } else if (tokenCode == TokenCode::tFunction) {
+    }
+    else if (tokenCode == TokenCode::tFunction)
+    {
         err = parseUserDefinedFunction();
-    } else if (tokenCode == TokenCode::tEnd || tokenCode == TokenCode::tEndofStream) {
+    }
+    else if (tokenCode == TokenCode::tEnd ||
+             tokenCode == TokenCode::tEndofStream)
+    {
         return err;
-    } else if (tokenCode == TokenCode::tLet) {
+    }
+    else if (tokenCode == TokenCode::tLet)
+    {
         err = letStatement();
-    } else if (tokenCode == TokenCode::tError) {
+    }
+    else if (tokenCode == TokenCode::tError)
+    {
         err = SyntaxError("Syntax error: " + tokenVector_.token().tString());
-    } else {
+    }
+    else
+    {
         err = expressionStatement();
     }
     return err;
@@ -68,19 +93,26 @@ std::optional<SyntaxError> SyntaxParser::statement() {
 // to the next caller. This means that the error node will get inserted into the ast tree
 // At compilation, if an error node is encountered the compiler can report the error at
 // that point in time.
-std::optional<SyntaxError> SyntaxParser::expect(TokenCode tc) {
-    if (tokenVector_.token().code() != tc) {
-        if (error_.has_value()) {
-            return SyntaxError("expecting token: '" + tokenToString(tc) + "' got: '" +
-                               tokenToString(tokenVector_.token().code()) + "'");
+std::optional<SyntaxError> SyntaxParser::expect(TokenCode tc)
+{
+    if (tokenVector_.token().code() != tc)
+    {
+        if (error_.has_value())
+        {
+            return SyntaxError(
+                "expecting token: '" + tokenToString(tc) + "' got: '" +
+                tokenToString(tokenVector_.token().code()) + "'");
         }
-    } else {
+    }
+    else
+    {
         nextToken();
     }
     return std::nullopt;
 }
 
-void SyntaxParser::nextToken() {
+void SyntaxParser::nextToken()
+{
     sc_.nextToken();
     tokenVector_.add(sc_.token());
 }
@@ -107,33 +139,44 @@ void SyntaxParser::nextToken() {
 // AST:
 // (exprStatement) -> (identifier) and (expression)
 // OR (exprStatement) -> (expression)
-std::optional<SyntaxError> SyntaxParser::expressionStatement() {
+std::optional<SyntaxError> SyntaxParser::expressionStatement()
+{
     auto err = expression();
-    if (err.has_value()) return err;
+    if (err.has_value())
+        return err;
 
-    if (tokenVector_.token().code() == TokenCode::tAssign) {
+    if (tokenVector_.token().code() == TokenCode::tAssign)
+    {
         nextToken();
         err = expression();
-        if (err) return err;
+        if (err)
+            return err;
     }
 
     return std::nullopt;
 }
 
 // expression = simpleExpression | simpleExpression relationalOp simpleExpression
-std::optional<SyntaxError> SyntaxParser::relationalOperators() {
+std::optional<SyntaxError> SyntaxParser::relationalOperators()
+{
     auto err = simpleExpression();
-    if (err) return err;
+    if (err)
+        return err;
 
-    while (true) {
+    while (true)
+    {
         auto tc = tokenVector_.token().code();
         if (tc == TokenCode::tLessThan || tc == TokenCode::tLessThanOrEqual ||
             tc == TokenCode::tMoreThan || tc == TokenCode::tMoreThanOrEqual ||
-            tc == TokenCode::tNotEqual || tc == TokenCode::tEquivalence) {
+            tc == TokenCode::tNotEqual || tc == TokenCode::tEquivalence)
+        {
             nextToken();
             err = simpleExpression();
-            if (err) return err;
-        } else {
+            if (err)
+                return err;
+        }
+        else
+        {
             break;
         }
     }
@@ -141,138 +184,173 @@ std::optional<SyntaxError> SyntaxParser::relationalOperators() {
 }
 
 // expression = simpleExpression | simpleExpression relationalOp simpleExpression
-std::optional<SyntaxError> SyntaxParser::expression() {
+std::optional<SyntaxError> SyntaxParser::expression()
+{
     auto err = relationalOperators();
-    if (err) return err;
+    if (err)
+        return err;
 
     while (tokenVector_.token().code() == TokenCode::tOr ||
-           tokenVector_.token().code() == TokenCode::tAnd) {
+           tokenVector_.token().code() == TokenCode::tAnd)
+    {
         nextToken();
         err = relationalOperators();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
 
 // expression = term { ('+' | '-' | MOD | DIV) power }
-std::optional<SyntaxError> SyntaxParser::simpleExpression() {
+std::optional<SyntaxError> SyntaxParser::simpleExpression()
+{
     auto err = term();
-    if (err) return err;
+    if (err)
+        return err;
 
     while (tokenVector_.token().code() == TokenCode::tPlus ||
-           tokenVector_.token().code() == TokenCode::tMinus) {
+           tokenVector_.token().code() == TokenCode::tMinus)
+    {
         nextToken();
         err = term();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return err;
 }
 
 // term = power { ('*', '/', MOD, DIV) power }
-std::optional<SyntaxError> SyntaxParser::term() {
+std::optional<SyntaxError> SyntaxParser::term()
+{
     auto err = power();
-    if (err) return err;
+    if (err)
+        return err;
 
     while (tokenVector_.token().code() == TokenCode::tMult ||
-           tokenVector_.token().code() == TokenCode::tDivide) {
+           tokenVector_.token().code() == TokenCode::tDivide)
+    {
         nextToken();
         err = power();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
 
-std::optional<SyntaxError> SyntaxParser::power() {
+std::optional<SyntaxError> SyntaxParser::power()
+{
     while (tokenVector_.token().code() == TokenCode::tMinus ||
-           tokenVector_.token().code() == TokenCode::tPlus) {
+           tokenVector_.token().code() == TokenCode::tPlus)
+    {
         nextToken();
     }
 
     auto err = primary();
-    if (err) return err;
+    if (err)
+        return err;
 
-    if (tokenVector_.token().code() == TokenCode::tPower) {
+    if (tokenVector_.token().code() == TokenCode::tPower)
+    {
         nextToken();
         err = power();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
 
 // primary => factor primaryPlus
-std::optional<SyntaxError> SyntaxParser::primary() {
+std::optional<SyntaxError> SyntaxParser::primary()
+{
     auto err = factor();
-    if (err) return err;
+    if (err)
+        return err;
 
     err = primaryPlus();
-    if (err) return err;
+    if (err)
+        return err;
 
     return std::nullopt;
 }
 
-std::optional<SyntaxError> SyntaxParser::factor() {
+std::optional<SyntaxError> SyntaxParser::factor()
+{
     std::optional<SyntaxError> err;
-    switch (tokenVector_.token().code()) {
-        case (TokenCode::tInteger):
-            nextToken();
-            break;
-        case (TokenCode::tFloat):
-            nextToken();
-            break;
-        case (TokenCode::tIdentifier):
-            nextToken();
-            break;
-        case (TokenCode::tString):
-            nextToken();
-            break;
-        case (TokenCode::tFalse):
-            nextToken();
-            break;
-        case (TokenCode::tTrue):
-            nextToken();
-            break;
-        case (TokenCode::tLeftParenthesis): {
-            nextToken();
-            err = expression();
-            if (err) return err;
-            err = expect(TokenCode::tRightParenthesis);
-            if (err) return err;
-            break;
+    switch (tokenVector_.token().code())
+    {
+    case (TokenCode::tInteger):
+        nextToken();
+        break;
+    case (TokenCode::tFloat):
+        nextToken();
+        break;
+    case (TokenCode::tIdentifier):
+        nextToken();
+        break;
+    case (TokenCode::tString):
+        nextToken();
+        break;
+    case (TokenCode::tFalse):
+        nextToken();
+        break;
+    case (TokenCode::tTrue):
+        nextToken();
+        break;
+    case (TokenCode::tLeftParenthesis):
+    {
+        nextToken();
+        err = expression();
+        if (err)
+            return err;
+        err = expect(TokenCode::tRightParenthesis);
+        if (err)
+            return err;
+        break;
+    }
+    case (TokenCode::tNot):
+    {
+        nextToken();
+        auto node = expression();
+        if (err)
+        {
+            return err;
         }
-        case (TokenCode::tNot): {
-            nextToken();
-            auto node = expression();
-            if (err) {
-                return err;
-            }
 
-            break;
-        }
-        case (TokenCode::tError):
-            err = SyntaxError("Expecting a factor [literal, identifier]");
-            break;
-        default:
-            err = SyntaxError("Expecting a factor [literal, identifier]");
-            break;
+        break;
+    }
+    case (TokenCode::tError):
+        err = SyntaxError("Expecting a factor [literal, identifier]");
+        break;
+    default:
+        err = SyntaxError("Expecting a factor [literal, identifier]");
+        break;
     }
     return err;
 }
 
-std::optional<SyntaxError> SyntaxParser::primaryPlus() {
-    if (tokenVector_.token().code() == TokenCode::tPeriod) {
+std::optional<SyntaxError> SyntaxParser::primaryPlus()
+{
+    if (tokenVector_.token().code() == TokenCode::tPeriod)
+    {
         nextToken();
         auto err = expect(TokenCode::tIdentifier);
-        if (err) return err;
+        if (err)
+            return err;
 
         err = primaryPlus();
-        if (err) return err;
-    } else if (tokenVector_.token().code() == TokenCode::tLeftParenthesis) {
+        if (err)
+            return err;
+    }
+    else if (tokenVector_.token().code() == TokenCode::tLeftParenthesis)
+    {
         nextToken();
         auto err = parseFunctionCall();
-        if (err) return err;
+        if (err)
+            return err;
 
         err = primaryPlus();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
@@ -281,88 +359,115 @@ std::optional<SyntaxError> SyntaxParser::primaryPlus() {
 // ifEnd = END | ELSE statementList END
 // AST:
 // (if) -> (condition) and (thenStatementList) and (elseStatementList)
-std::optional<SyntaxError> SyntaxParser::ifStatement() {
+std::optional<SyntaxError> SyntaxParser::ifStatement()
+{
     auto err = expect(TokenCode::tIf);
-    if (err) return err;
+    if (err)
+        return err;
 
     err = expression();
-    if (err) return err;
+    if (err)
+        return err;
 
     err = expect(TokenCode::tThen);
-    if (err) return err;
+    if (err)
+        return err;
 
     err = statementList();
-    if (err) return err;
+    if (err)
+        return err;
 
-    if (tokenVector_.token().code() == TokenCode::tElse) {
+    if (tokenVector_.token().code() == TokenCode::tElse)
+    {
         nextToken();
         err = statementList();
-        if (err) return err;
+        if (err)
+            return err;
 
         err = expect(TokenCode::tEnd);
-        if (err) return err;
-    } else {
+        if (err)
+            return err;
+    }
+    else
+    {
         err = expect(TokenCode::tEnd);
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
 
 // returnStatement = RETURN expression
-std::optional<SyntaxError> SyntaxParser::returnStatement() {
-    if (!inUserFunctionParsing_) {
-        return SyntaxError("You cannot use a return statement outside a user function");
+std::optional<SyntaxError> SyntaxParser::returnStatement()
+{
+    if (!inUserFunctionParsing_)
+    {
+        return SyntaxError(
+            "You cannot use a return statement outside a user function");
     }
 
     auto err = expect(TokenCode::tReturn);
-    if (err) return err;
+    if (err)
+        return err;
 
     err = expression();
-    if (err) return err;
+    if (err)
+        return err;
 
     return std::nullopt;
 }
 
 // letStatement = "let" identifier '=' expression
-std::optional<SyntaxError> SyntaxParser::letStatement() {
+std::optional<SyntaxError> SyntaxParser::letStatement()
+{
     auto err = expect(TokenCode::tLet);
-    if (err) return err;
+    if (err)
+        return err;
 
     err = variable();
-    if (err) return err;
+    if (err)
+        return err;
 
     err = expect(TokenCode::tAssign);
-    if (err) return err;
+    if (err)
+        return err;
 
     err = expression();
-    if (err) return err;
+    if (err)
+        return err;
 
     return std::nullopt;
 }
 
 // function = function identifier '(' argumentList ')' statementList
-std::optional<SyntaxError> SyntaxParser::parseUserDefinedFunction() {
+std::optional<SyntaxError> SyntaxParser::parseUserDefinedFunction()
+{
     std::optional<SyntaxError> err;
     std::string functionName;
 
     nextToken();
-    if (tokenVector_.token().code() == TokenCode::tIdentifier) {
+    if (tokenVector_.token().code() == TokenCode::tIdentifier)
+    {
         functionName = tokenVector_.token().tString();
     }
 
     globalVariableList.clear();
     enterUserFunctionScope();
     nextToken();
-    if (tokenVector_.token().code() == TokenCode::tLeftParenthesis) {
+    if (tokenVector_.token().code() == TokenCode::tLeftParenthesis)
+    {
         nextToken();
         err = functionArgumentList();
-        if (err) return err;
+        if (err)
+            return err;
 
         err = expect(TokenCode::tRightParenthesis);
-        if (err) return err;
+        if (err)
+            return err;
     }
     err = statementList();
-    if (err) return err;
+    if (err)
+        return err;
 
     exitUserFunctionScope();
     globalVariableList.clear();
@@ -373,56 +478,75 @@ std::optional<SyntaxError> SyntaxParser::parseUserDefinedFunction() {
 // argumentList = argument { ',' argument }
 // AST:
 // nodeList -> (arg) and (arg) and (arg) and ....
-std::optional<SyntaxError> SyntaxParser::functionArgumentList() {
-    if (tokenVector_.token().code() == TokenCode::tIdentifier) {
+std::optional<SyntaxError> SyntaxParser::functionArgumentList()
+{
+    if (tokenVector_.token().code() == TokenCode::tIdentifier)
+    {
         auto err = functionArgument();
-        if (err) return err;
+        if (err)
+            return err;
     }
-    while (tokenVector_.token().code() == TokenCode::tComma) {
+    while (tokenVector_.token().code() == TokenCode::tComma)
+    {
         nextToken();
         auto err = functionArgument();
-        if (err) return err;
+        if (err)
+            return err;
     }
     return std::nullopt;
 }
 
 // argument = identifier | REF identifier
-std::optional<SyntaxError> SyntaxParser::functionArgument() {
+std::optional<SyntaxError> SyntaxParser::functionArgument()
+{
     return variable();
 }
 
 // Parse a function argument in a function definition
-std::optional<SyntaxError> SyntaxParser::variable() {
-    if (tokenVector_.token().code() != TokenCode::tIdentifier) {
-        return SyntaxError("expecting identifier in function argument definition");
-    } else {
+std::optional<SyntaxError> SyntaxParser::variable()
+{
+    if (tokenVector_.token().code() != TokenCode::tIdentifier)
+    {
+        return SyntaxError(
+            "expecting identifier in function argument definition");
+    }
+    else
+    {
         nextToken();
     }
     return std::nullopt;
 }
 
-std::optional<SyntaxError> SyntaxParser::parseFunctionCall() {
-    if (tokenVector_.token().code() != TokenCode::tRightParenthesis) {
+std::optional<SyntaxError> SyntaxParser::parseFunctionCall()
+{
+    if (tokenVector_.token().code() != TokenCode::tRightParenthesis)
+    {
         auto err = expressionList();
-        if (err) return err;
+        if (err)
+            return err;
     }
 
     auto err = expect(TokenCode::tRightParenthesis);
-    if (err) return err;
+    if (err)
+        return err;
 
     return std::nullopt;
 }
 
 // argumentList = expression { ',' expression }
 // Returns the number of expressions that were parsed
-std::optional<SyntaxError> SyntaxParser::expressionList() {
+std::optional<SyntaxError> SyntaxParser::expressionList()
+{
     auto err = expression();
-    if (err) return err;
+    if (err)
+        return err;
 
-    while (tokenVector_.token().code() == TokenCode::tComma) {
+    while (tokenVector_.token().code() == TokenCode::tComma)
+    {
         nextToken();
         err = expression();
-        if (err) return err;
+        if (err)
+            return err;
     }
 
     return std::nullopt;

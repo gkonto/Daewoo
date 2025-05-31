@@ -1,22 +1,27 @@
-#include <assert.h>
-#include <sstream>
 #include "TByteCodeBuilder.hpp"
 #include "TModule.hpp"
 #include "lexer.hpp"
+#include <assert.h>
+#include <sstream>
 
-void TByteCodeBuilder::expect(TokenCode tcode) {
-    if (code() != tcode) {
+void TByteCodeBuilder::expect(TokenCode tcode)
+{
+    if (code() != tcode)
+    {
         std::stringstream ss;
         ss << "TByteCodeBuilder> expected variable: " << tokenToString(tcode)
            << " got: " << tokenToString(code());
         throw std::runtime_error(ss.str());
-    } else {
+    }
+    else
+    {
         nextToken();
     }
 }
 
 // program = statementList
-void TByteCodeBuilder::build(TModule *module) {
+void TByteCodeBuilder::build(TModule *module)
+{
     sc_.reset();
     sc_.setMode(TokensTable::Mode::Reading);
     nextToken();
@@ -27,15 +32,19 @@ void TByteCodeBuilder::build(TModule *module) {
 }
 
 // statementList = statement { statement }
-void TByteCodeBuilder::statementList(TProgram &program) {
+void TByteCodeBuilder::statementList(TProgram &program)
+{
     statement(program);
-    while (true) {
-        if (code() == TokenCode::tSemicolon) {
+    while (true)
+    {
+        if (code() == TokenCode::tSemicolon)
+        {
             expect(TokenCode::tSemicolon);
         }
 
         if (code() == TokenCode::tEnd || code() == TokenCode::tElse ||
-            code() == TokenCode::tEndofStream) {
+            code() == TokenCode::tEndofStream)
+        {
             return;
         }
         statement(program);
@@ -51,20 +60,22 @@ void TByteCodeBuilder::statementList(TProgram &program) {
 // assignment = leftHandSide '=' expression
 // rightHandside = expression
 // leftHandSide = identifier ( '[' expression ']' )
-void TByteCodeBuilder::statement(TProgram &program) {
-    switch (code()) {
-        case TokenCode::tIf:
-            return ifStatement(program);
-        case TokenCode::tReturn:
-            return returnStmt(program);
-        case TokenCode::tFunction:
-            return functionDef(program);
-        case TokenCode::tLet:
-            return letStatement(program);
-        case TokenCode::tEnd:
-            return;
-        default:
-            return exprStatement(program);
+void TByteCodeBuilder::statement(TProgram &program)
+{
+    switch (code())
+    {
+    case TokenCode::tIf:
+        return ifStatement(program);
+    case TokenCode::tReturn:
+        return returnStmt(program);
+    case TokenCode::tFunction:
+        return functionDef(program);
+    case TokenCode::tLet:
+        return letStatement(program);
+    case TokenCode::tEnd:
+        return;
+    default:
+        return exprStatement(program);
     }
 }
 
@@ -86,23 +97,33 @@ void TByteCodeBuilder::statement(TProgram &program) {
 
 // This approach will allow us to identify illegal left-hand sides
 // qw well as permit indices for lists to be of any complexity
-void TByteCodeBuilder::exprStatement(TProgram &program) {
+void TByteCodeBuilder::exprStatement(TProgram &program)
+{
     TProgram progFragment;
     expression(progFragment);
-    if (code() == TokenCode::tAssign) {
+    if (code() == TokenCode::tAssign)
+    {
         nextToken();
         expression(program);
         auto &bytecode = progFragment.last();
-        if (bytecode.opCode == OpCode::Load) {
+        if (bytecode.opCode == OpCode::Load)
+        {
             bytecode.opCode = OpCode::Store;
-        } else if (bytecode.opCode == OpCode::LoadLocal) {
+        }
+        else if (bytecode.opCode == OpCode::LoadLocal)
+        {
             bytecode.opCode = OpCode::StoreLocal;
-        } else {
+        }
+        else
+        {
             throw std::runtime_error("Left-hand side cannot be assigned to");
         }
         program.appendProgram(progFragment);
-    } else {
-        if (inUserFunctionParsing_) {
+    }
+    else
+    {
+        if (inUserFunctionParsing_)
+        {
             progFragment.addByteCode(OpCode::Pop);
         }
         program.appendProgram(progFragment);
@@ -110,7 +131,8 @@ void TByteCodeBuilder::exprStatement(TProgram &program) {
 }
 
 // letStatement = "let" identifier '=' expression
-void TByteCodeBuilder::letStatement(TProgram &program) {
+void TByteCodeBuilder::letStatement(TProgram &program)
+{
     expect(TokenCode::tLet);
     enterVariableDefinition();
     exprStatement(program);
@@ -132,40 +154,53 @@ void TByteCodeBuilder::letStatement(TProgram &program) {
 
 // ifStatement = IF expression THEN statement ifEnd
 // ifEnd = END | ELSE statementList END
-void TByteCodeBuilder::ifStatement(TProgram &program) {
+void TByteCodeBuilder::ifStatement(TProgram &program)
+{
     expect(TokenCode::tIf);
     expression(program);
-    int jmpLocation_1 = static_cast<int>(program.addByteCode(OpCode::JmpIfFalse));
+    int jmpLocation_1 =
+        static_cast<int>(program.addByteCode(OpCode::JmpIfFalse));
     expect(TokenCode::tThen);
     statementList(program);
-    if (code() == TokenCode::tElse) {
+    if (code() == TokenCode::tElse)
+    {
         int jmpLocation_2 = static_cast<int>(program.addByteCode(OpCode::Jmp));
-        program.setGotoLabel(jmpLocation_1,
-                             static_cast<int>(program.getCurrentInstructionPointer()) -
-                                 jmpLocation_1);
+        program.setGotoLabel(
+            jmpLocation_1,
+            static_cast<int>(program.getCurrentInstructionPointer()) -
+                jmpLocation_1);
         nextToken();
         statementList(program);
-        program.setGotoLabel(jmpLocation_2,
-                             static_cast<int>(program.getCurrentInstructionPointer()) -
-                                 jmpLocation_2);
+        program.setGotoLabel(
+            jmpLocation_2,
+            static_cast<int>(program.getCurrentInstructionPointer()) -
+                jmpLocation_2);
         expect(TokenCode::tEnd);
-    } else {
+    }
+    else
+    {
         expect(TokenCode::tEnd);
-        program.setGotoLabel(jmpLocation_1,
-                             static_cast<int>(program.getCurrentInstructionPointer()) -
-                                 jmpLocation_1);
+        program.setGotoLabel(
+            jmpLocation_1,
+            static_cast<int>(program.getCurrentInstructionPointer()) -
+                jmpLocation_1);
     }
 }
 
-void TByteCodeBuilder::expression(TProgram &program) {
+void TByteCodeBuilder::expression(TProgram &program)
+{
     relationalOperators(program);
-    while (code() == TokenCode::tOr || code() == TokenCode::tAnd) {
+    while (code() == TokenCode::tOr || code() == TokenCode::tAnd)
+    {
         TokenCode op = code();
         nextToken();
         relationalOperators(program);
-        if (op == TokenCode::tOr) {
+        if (op == TokenCode::tOr)
+        {
             program.addByteCode(OpCode::Or);
-        } else if (op == TokenCode::tAnd) {
+        }
+        else if (op == TokenCode::tAnd)
+        {
             program.addByteCode(OpCode::And);
         }
     }
@@ -173,121 +208,171 @@ void TByteCodeBuilder::expression(TProgram &program) {
 
 // expression = simpleExpression | simpleExpression relationalOp
 // simpleExpression
-void TByteCodeBuilder::relationalOperators(TProgram &program) {
+void TByteCodeBuilder::relationalOperators(TProgram &program)
+{
     simpleExpression(program);
-    while (code() == TokenCode::tLessThan || code() == TokenCode::tLessThanOrEqual ||
-           code() == TokenCode::tMoreThan || code() == TokenCode::tMoreThanOrEqual ||
-           code() == TokenCode::tNotEqual || code() == TokenCode::tEquivalence) {
+    while (code() == TokenCode::tLessThan ||
+           code() == TokenCode::tLessThanOrEqual ||
+           code() == TokenCode::tMoreThan ||
+           code() == TokenCode::tMoreThanOrEqual ||
+           code() == TokenCode::tNotEqual || code() == TokenCode::tEquivalence)
+    {
         auto op = code();
         nextToken();
         simpleExpression(program);
-        if (op == TokenCode::tEquivalence) {
+        if (op == TokenCode::tEquivalence)
+        {
             program.addByteCode(OpCode::IsEq);
-        } else if (op == TokenCode::tLessThan) {
+        }
+        else if (op == TokenCode::tLessThan)
+        {
             program.addByteCode(OpCode::IsLt);
-        } else if (op == TokenCode::tMoreThan) {
+        }
+        else if (op == TokenCode::tMoreThan)
+        {
             program.addByteCode(OpCode::IsGt);
-        } else if (op == TokenCode::tMoreThanOrEqual) {
+        }
+        else if (op == TokenCode::tMoreThanOrEqual)
+        {
             program.addByteCode(OpCode::IsGte);
-        } else if (op == TokenCode::tLessThanOrEqual) {
+        }
+        else if (op == TokenCode::tLessThanOrEqual)
+        {
             program.addByteCode(OpCode::IsLte);
-        } else if (op == TokenCode::tNotEqual) {
+        }
+        else if (op == TokenCode::tNotEqual)
+        {
             program.addByteCode(OpCode::IsNotEq);
         }
     }
 }
 
 // expression = term { ('+' | '-' | MOD | DIV) power }
-void TByteCodeBuilder::simpleExpression(TProgram &program) {
+void TByteCodeBuilder::simpleExpression(TProgram &program)
+{
     term(program);
-    while (code() == TokenCode::tPlus || code() == TokenCode::tMinus) {
+    while (code() == TokenCode::tPlus || code() == TokenCode::tMinus)
+    {
         auto op = code();
         nextToken();
         term(program);
-        if (op == TokenCode::tPlus) {
+        if (op == TokenCode::tPlus)
+        {
             program.addByteCode(OpCode::Add);
-        } else if (op == TokenCode::tMinus) {
+        }
+        else if (op == TokenCode::tMinus)
+        {
             program.addByteCode(OpCode::Sub);
         }
     }
 }
 
 // term = power { ('*', '/', MOD, DIV) power }
-void TByteCodeBuilder::term(TProgram &program) {
+void TByteCodeBuilder::term(TProgram &program)
+{
     power(program);
-    while (code() == TokenCode::tMult || code() == TokenCode::tDivide) {
+    while (code() == TokenCode::tMult || code() == TokenCode::tDivide)
+    {
         auto op = code();
         nextToken();
         power(program);
-        if (op == TokenCode::tMult) {
+        if (op == TokenCode::tMult)
+        {
             program.addByteCode(OpCode::Mult);
-        } else if (op == TokenCode::tDivide) {
+        }
+        else if (op == TokenCode::tDivide)
+        {
             program.addByteCode(OpCode::Divide);
         }
     }
 }
 
 // power = {'+' | '-'} factor [ '^' power ]
-void TByteCodeBuilder::power(TProgram &program) {
+void TByteCodeBuilder::power(TProgram &program)
+{
     int unaryMinus_count = 0;
-    while (code() == TokenCode::tMinus || code() == TokenCode::tPlus) {
-        if (code() == TokenCode::tMinus) {
+    while (code() == TokenCode::tMinus || code() == TokenCode::tPlus)
+    {
+        if (code() == TokenCode::tMinus)
+        {
             ++unaryMinus_count;
         }
         nextToken();
     }
     factor(program);
-    if (code() == TokenCode::tPower) {
+    if (code() == TokenCode::tPower)
+    {
         nextToken();
         power(program);
         program.addByteCode(OpCode::Power);
     }
 
-    for (int i = 0; i < unaryMinus_count; ++i) {
+    for (int i = 0; i < unaryMinus_count; ++i)
+    {
         program.addByteCode(OpCode::Umi);
     }
 }
 
 // factor = integer | float | '(' expression ')' | etc
-void TByteCodeBuilder::factor(TProgram &program) {
-    if (code() == TokenCode::tInteger) {
+void TByteCodeBuilder::factor(TProgram &program)
+{
+    if (code() == TokenCode::tInteger)
+    {
         program.addByteCode(OpCode::Pushi, token().tInt());
         nextToken();
-    } else if (code() == TokenCode::tFloat) {
+    }
+    else if (code() == TokenCode::tFloat)
+    {
         program.addByteCode(OpCode::Pushd, token().tFloat());
         nextToken();
-    } else if (code() == TokenCode::tLeftParenthesis) {
+    }
+    else if (code() == TokenCode::tLeftParenthesis)
+    {
         nextToken();
         expression(program);
         expect(TokenCode::tRightParenthesis);
-    } else if (code() == TokenCode::tIdentifier) {
+    }
+    else if (code() == TokenCode::tIdentifier)
+    {
         parseIdentifier(program);
-    } else if (code() == TokenCode::tString) {
+    }
+    else if (code() == TokenCode::tString)
+    {
         program.addByteCode(OpCode::Pushs, token().tString());
         nextToken();
-    } else if (code() == TokenCode::tNot) {
+    }
+    else if (code() == TokenCode::tNot)
+    {
         nextToken();
         expression(program);
         program.addByteCode(OpCode::Not);
-    } else if (code() == TokenCode::tFalse) {
+    }
+    else if (code() == TokenCode::tFalse)
+    {
         program.addByteCode(OpCode::Pushb, false);
         nextToken();
-    } else if (code() == TokenCode::tTrue) {
+    }
+    else if (code() == TokenCode::tTrue)
+    {
         program.addByteCode(OpCode::Pushb, true);
         nextToken();
-    } else {
-        throw std::runtime_error(
-            "TByteCodeBuilder> expecting scalar, identifier or left parenthesis");
+    }
+    else
+    {
+        throw std::runtime_error("TByteCodeBuilder> expecting scalar, "
+                                 "identifier or left parenthesis");
     }
 }
 
 // argumentList = expression { ',' expression }
 // Returns the number of expressions that were parsed
-int TByteCodeBuilder::expressionList(TProgram &program) {
+int TByteCodeBuilder::expressionList(TProgram &program)
+{
     int nArguments = 0;
     expression(program);
     ++nArguments;
-    while (code() == TokenCode::tComma) {
+    while (code() == TokenCode::tComma)
+    {
         nextToken();
         expression(program);
         ++nArguments;
@@ -295,16 +380,20 @@ int TByteCodeBuilder::expressionList(TProgram &program) {
     return nArguments;
 }
 
-void TByteCodeBuilder::parseFunctionCall(TProgram &program, int expectedArguments) {
+void TByteCodeBuilder::parseFunctionCall(TProgram &program,
+                                         int expectedArguments)
+{
     int nArguments = 0;
     auto identifier = token().tString();
     nextToken();
-    if (code() != TokenCode::tRightParenthesis) {
+    if (code() != TokenCode::tRightParenthesis)
+    {
         nArguments = expressionList(program);
     }
-    if (nArguments != expectedArguments) {
-        throw std::runtime_error(
-            "incorrect number of arguments in function call: [' + identifier + ']");
+    if (nArguments != expectedArguments)
+    {
+        throw std::runtime_error("incorrect number of arguments in function "
+                                 "call: [' + identifier + ']");
     }
     expect(TokenCode::tRightParenthesis);
 }
@@ -313,31 +402,43 @@ void TByteCodeBuilder::parseFunctionCall(TProgram &program, int expectedArgument
 // 1. As a function call, eg func (a,b)
 // 2. As an indexed variable, eg x[i]
 // 3. An ordinary variable, eg x
-void TByteCodeBuilder::parseIdentifier(TProgram &program) {
+void TByteCodeBuilder::parseIdentifier(TProgram &program)
+{
     // bool globalVariable = false;
     auto identifier = token().tString();
     nextToken();
     int index = 0;
 
-    if (code() == TokenCode::tLeftParenthesis) {
+    if (code() == TokenCode::tLeftParenthesis)
+    {
         // It's the start of a function call, eg func (1,2)
         // Check that the function already exists in the main symbol table
         // We do a reverse search, look for most recent declared functions
-        if (symboltable().find(identifier, index)) {
-            if (symboltable().get(index).type() == TSymbolElementType::symUserFunc) {
-                parseFunctionCall(program, symboltable().get(index).fvalue()->numberOfArguments());
+        if (symboltable().find(identifier, index))
+        {
+            if (symboltable().get(index).type() ==
+                TSymbolElementType::symUserFunc)
+            {
+                parseFunctionCall(
+                    program,
+                    symboltable().get(index).fvalue()->numberOfArguments());
                 program.addByteCode(OpCode::Pushi, index);
                 program.addByteCode(OpCode::Call);
                 return;
-            } else {
+            }
+            else
+            {
                 throw std::runtime_error(
-                    "A name was found in front of '(', but the name is not a user function name: "
+                    "A name was found in front of '(', but the name is not a "
+                    "user function name: "
                     "[" +
                     identifier + "]");
             }
-        } else {
-            throw std::runtime_error(
-                "TByteCodeBuilder>Builtin function reading not yet implemented");
+        }
+        else
+        {
+            throw std::runtime_error("TByteCodeBuilder>Builtin function "
+                                     "reading not yet implemented");
         }
     }
 
@@ -351,77 +452,112 @@ void TByteCodeBuilder::parseIdentifier(TProgram &program) {
     bool localVariable = false;
     int localindex = -1;
     int globalindex = -1;
-    if (inUserFunctionScope()) {
-        bool localfound = currentUserFunction->symboltable().find(identifier, localindex);
-        bool globalfound = currentUserFunction->globalVariableList().find(identifier, globalindex);
-        if (!localfound) {
-            if (inVariableDefinition()) {
+    if (inUserFunctionScope())
+    {
+        bool localfound =
+            currentUserFunction->symboltable().find(identifier, localindex);
+        bool globalfound =
+            currentUserFunction->globalVariableList().find(identifier,
+                                                           globalindex);
+        if (!localfound)
+        {
+            if (inVariableDefinition())
+            {
                 // Then its a new local variable, add it to local symbol table
-                localindex = currentUserFunction->symboltable().addSymbol(identifier);
+                localindex =
+                    currentUserFunction->symboltable().addSymbol(identifier);
                 localVariable = true;
-            } else if (globalfound) {
+            }
+            else if (globalfound)
+            {
                 globalVariable = true;
             }
 
-            if (code() == TokenCode::tLeftBracket) {
+            if (code() == TokenCode::tLeftBracket)
+            {
                 throw std::runtime_error("Implementation missing");
-            } else {
-                if (localVariable) {
+            }
+            else
+            {
+                if (localVariable)
+                {
                     program.addByteCode(OpCode::LoadLocal, localindex);
-                } else if (globalVariable) {
-                    program.addByteCode(OpCode::Load,
-                                        currentUserFunction->globalVariableList()[globalindex]);
-                } else {
+                }
+                else if (globalVariable)
+                {
+                    program.addByteCode(
+                        OpCode::Load,
+                        currentUserFunction->globalVariableList()[globalindex]);
+                }
+                else
+                {
                     throw std::runtime_error("Undefined variable");
                 }
             }
-        } else {
+        }
+        else
+        {
             program.addByteCode(OpCode::LoadLocal, localindex);
         }
-    } else {
+    }
+    else
+    {
         bool found = module_->symboltable().find(identifier, index);
-        if (!found) {
-            if (inVariableDefinition()) {
+        if (!found)
+        {
+            if (inVariableDefinition())
+            {
                 index = module_->symboltable().addSymbol(identifier);
-            } else {
+            }
+            else
+            {
                 std::stringstream ss;
                 ss << "TByteCodeBuilder> undefined variable: " << identifier;
                 throw std::runtime_error(ss.str());
             }
         }
 
-        if (code() == TokenCode::tLeftBracket) {
+        if (code() == TokenCode::tLeftBracket)
+        {
             throw std::runtime_error("TByteCodeBuilder> Not yet implemented");
-        } else {
+        }
+        else
+        {
             program.addByteCode(OpCode::Load, index);
         }
     }
 }
 
 // argument = identifier
-void TByteCodeBuilder::argument(TProgram &program) {
-    if (code() != TokenCode::tIdentifier) {
-        throw std::runtime_error(
-            "TByteCodeBuilder> expecting identifier in function argument definition");
+void TByteCodeBuilder::argument(TProgram &program)
+{
+    if (code() != TokenCode::tIdentifier)
+    {
+        throw std::runtime_error("TByteCodeBuilder> expecting identifier in "
+                                 "function argument definition");
     }
 
     // Add the argument symbol to the user function local symbol table
     int index = 0;
-    if (!currentUserFunction->symboltable().find(token().tString(), index)) {
+    if (!currentUserFunction->symboltable().find(token().tString(), index))
+    {
         currentUserFunction->symboltable().addSymbol(token().tString());
     }
     nextToken();
 }
 
 // argumentList = argument { ',' argument }
-int TByteCodeBuilder::argumentList(TProgram &program) {
+int TByteCodeBuilder::argumentList(TProgram &program)
+{
     int count = 0;
-    if (code() == TokenCode::tIdentifier) {
+    if (code() == TokenCode::tIdentifier)
+    {
         count = 1;
         argument(program);
     }
 
-    while (code() == TokenCode::tComma) {
+    while (code() == TokenCode::tComma)
+    {
         nextToken();
         argument(program);
         ++count;
@@ -430,13 +566,17 @@ int TByteCodeBuilder::argumentList(TProgram &program) {
 }
 
 // function = function identifier '(' argumentList ')' statementList
-void TByteCodeBuilder::functionDef(TProgram &program) {
+void TByteCodeBuilder::functionDef(TProgram &program)
+{
     nextToken();
     bool newUserFunction = false;
     std::string functionName;
-    if (code() != TokenCode::tIdentifier) {
+    if (code() != TokenCode::tIdentifier)
+    {
         throw std::runtime_error("TByteCodeBuilder> expecting function name");
-    } else {
+    }
+    else
+    {
         functionName = sc_.token().tString();
     }
     currentUserFunction = new TUserFunction(functionName);
@@ -445,7 +585,8 @@ void TByteCodeBuilder::functionDef(TProgram &program) {
     enterUserFunctionScope();
     nextToken();
     expect(TokenCode::tLeftParenthesis);
-    currentUserFunction->setNumberOfArguments(argumentList(currentUserFunction->funcCode()));
+    currentUserFunction->setNumberOfArguments(
+        argumentList(currentUserFunction->funcCode()));
     expect(TokenCode::tRightParenthesis);
 
     statementList(currentUserFunction->funcCode());
@@ -457,9 +598,12 @@ void TByteCodeBuilder::functionDef(TProgram &program) {
 }
 
 // returnStatement = RETURN expression
-void TByteCodeBuilder::returnStmt(TProgram &program) {
-    if (!inUserFunctionScope()) {
-        throw std::runtime_error("TByteCodeBuilder> return statement outside function");
+void TByteCodeBuilder::returnStmt(TProgram &program)
+{
+    if (!inUserFunctionScope())
+    {
+        throw std::runtime_error(
+            "TByteCodeBuilder> return statement outside function");
     }
     expect(TokenCode::tReturn);
     expression(program);

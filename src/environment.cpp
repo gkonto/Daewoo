@@ -1,8 +1,7 @@
 #include "environment.hpp"
 #include "object.hpp"
 
-__Ptr<EvalObject>
-Environment::get(const std::string &name) const
+__Ptr<EvalObject> Environment::get(const std::string &name) const
 {
     auto it = repo_.find(name);
     if (it == repo_.end() && outer_)

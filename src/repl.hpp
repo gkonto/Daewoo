@@ -6,10 +6,10 @@
 class Repl
 {
 public:
-	void start();
+    void start();
 
 private:
-	static constexpr const char *prompt = ">>> ";
+    static constexpr const char *prompt = ">>> ";
 };
 
 #endif

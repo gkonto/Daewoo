@@ -1,9 +1,9 @@
 #ifndef TBYTECODEBUILDER_HPP_INCLUDED
 #define TBYTECODEBUILDER_HPP_INCLUDED
 
-#include "lexer.hpp"
-#include "TokenTable.hpp"
 #include "TModule.hpp"
+#include "TokenTable.hpp"
+#include "lexer.hpp"
 
 class Scanner;
 class TProgram;
@@ -14,25 +14,54 @@ class TSymbolTable;
  * The TByteCodeBuilder assumes that the code is valid.
  * SyntaxAnalysis is responsible for this.
  */
-class TByteCodeBuilder {
+class TByteCodeBuilder
+{
 public:
-    explicit TByteCodeBuilder(TokensTable &sc)
-        : sc_(sc) {}
+    explicit TByteCodeBuilder(TokensTable &sc) : sc_(sc)
+    {
+    }
 
     void build(TModule *module);
 
 private:
-    TokenCode code() const { return sc_.token().code(); }
+    TokenCode code() const
+    {
+        return sc_.token().code();
+    }
     void expect(TokenCode tcode);
-    void nextToken() { sc_.nextToken(); }
-    const TokenRecord &token() const { return sc_.token(); }
+    void nextToken()
+    {
+        sc_.nextToken();
+    }
+    const TokenRecord &token() const
+    {
+        return sc_.token();
+    }
 
-    void enterUserFunctionScope() { inUserFunctionParsing_ = true; }
-    void enterVariableDefinition() { inVariableDefinition_ = true; }
-    void exitUserFunctionScope() { inUserFunctionParsing_ = false; }
-    void exitVariableDefinition() { inVariableDefinition_ = false; }
-    bool inUserFunctionScope() const { return inUserFunctionParsing_; }
-    bool inVariableDefinition() const { return inVariableDefinition_; }
+    void enterUserFunctionScope()
+    {
+        inUserFunctionParsing_ = true;
+    }
+    void enterVariableDefinition()
+    {
+        inVariableDefinition_ = true;
+    }
+    void exitUserFunctionScope()
+    {
+        inUserFunctionParsing_ = false;
+    }
+    void exitVariableDefinition()
+    {
+        inVariableDefinition_ = false;
+    }
+    bool inUserFunctionScope() const
+    {
+        return inUserFunctionParsing_;
+    }
+    bool inVariableDefinition() const
+    {
+        return inVariableDefinition_;
+    }
 
     void statementList(TProgram &program);
     void statement(TProgram &program);
@@ -53,7 +82,10 @@ private:
     void parseFunctionCall(TProgram &program, int expectedArguments);
     int expressionList(TProgram &program);
 
-    TSymbolTable &symboltable() { return module_->symboltable(); }
+    TSymbolTable &symboltable()
+    {
+        return module_->symboltable();
+    }
 
     TokensTable &sc_;
     TModule *module_ = nullptr;

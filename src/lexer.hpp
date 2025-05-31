@@ -1,31 +1,37 @@
 #ifndef LEXER_HPP_INCLUDED
 #define LEXER_HPP_INCLUDED
 
-#include <string>
-#include <unordered_map>
-#include <istream>
-#include <utility>
-#include <deque>
 #include "Token.hpp"
 #include "defs.hpp"
+#include <deque>
+#include <istream>
+#include <string>
+#include <unordered_map>
+#include <utility>
 
-class ScannerError {
+class ScannerError
+{
 public:
     ScannerError() = default;
     ScannerError(const std::string &errorMsg, int lineNumber, int columnNumber)
-        : errorMsg_(errorMsg),
-          lineNumber_(lineNumber),
-          columnNumber_(columnNumber) {}
+        : errorMsg_(errorMsg), lineNumber_(lineNumber),
+          columnNumber_(columnNumber)
+    {
+    }
 
     template <typename T>
-    void setError(T &&msg, int lineNumber, int columnNumber) {
+    void setError(T &&msg, int lineNumber, int columnNumber)
+    {
         errorMsg_ = std::forward<std::string>(msg);
         lineNumber_ = lineNumber;
         columnNumber_ = columnNumber;
         throw std::runtime_error(errorMsg_);
     }
 
-    bool empty() const { return errorMsg_.empty(); }
+    bool empty() const
+    {
+        return errorMsg_.empty();
+    }
 
 private:
     std::string errorMsg_;
@@ -33,16 +39,23 @@ private:
     int columnNumber_ = 0;
 };
 
-class Scanner {
+class Scanner
+{
 public:
     Scanner(std::istream &input);
     void nextToken();
-    const TokenRecord &token() const { return tokenRecord_; }
+    const TokenRecord &token() const
+    {
+        return tokenRecord_;
+    }
 
     std::string tokenToString(TokenCode code);
 
 private:
-    bool isEof() const { return reader_.eof(); }
+    bool isEof() const
+    {
+        return reader_.eof();
+    }
     void startScanner();
     void skipBlanksAndComments();
     void skipSingleLineComment();
@@ -79,7 +92,8 @@ private:
     static constexpr char CR = '\r';
 };
 
-class Lexer {
+class Lexer
+{
 public:
     explicit Lexer(const std::string &input);
 
