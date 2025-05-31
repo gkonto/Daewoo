@@ -36,6 +36,7 @@ option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 
+add_subdirectory(configured)
 add_subdirectory(src)
 add_subdirectory(app)
 
