@@ -32,9 +32,11 @@ option(ENABLE_LTO "Enable to add Link Time Optimization." ON)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
-# Project / Library Names
+if (ENABLE_SANITIZE_ADDR OR ENABLE_SANITIZE_UNDEF)
+    include(Sanitizers)
+    add_sanitizer_flags()
+endif()
 
-# CMAKE MODULES
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 if(ENABLE_TESTING)
@@ -51,6 +53,7 @@ endif()
 add_subdirectory(configured)
 add_subdirectory(src)
 add_subdirectory(app)
+
 if (ENABLE_TESTING)
     include(CTest)
     enable_testing()
