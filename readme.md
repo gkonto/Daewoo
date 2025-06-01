@@ -79,7 +79,7 @@ cd app
 - Unit testing
 
 ```shell
-cmake -H. -Bbuild -DCMAKE_BUILD_TYPE="Debug"
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE="Debug" -DENABLE_TESTING="On"
 cmake --build build --config Debug
 cd build
 ctest .
