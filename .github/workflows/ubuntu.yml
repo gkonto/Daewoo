@@ -19,7 +19,7 @@ jobs:
         make prepare
     - name: configure
       run: |
-        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On
+        cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On -DENABLE_TESTING=On
     - name: building and testing
       run: |
         cmake --build build --config Debug --target coverage -j4
