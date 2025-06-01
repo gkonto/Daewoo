@@ -10,7 +10,7 @@ set(TEST_INCLUDES "./")
 
 add_executable(${TEST_NAME} ${TEST_SOURCES})
 target_include_directories(${TEST_NAME} PUBLIC ${TEST_INCLUDES})
-target_link_libraries(${TEST_NAME} PUBLIC Library Catch2::Catch2WithMain)
+target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARY_NAME} Catch2::Catch2WithMain)
 
 catch_discover_tests(${TEST_NAME})
 

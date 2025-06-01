@@ -1,7 +1,7 @@
 set(LIBRARY_INCLUDES "./" "${CMAKE_BINARY_DIR}/configured_files/include")
 
 add_executable(${REPL_NAME} main.cpp)
-target_link_libraries(${REPL_NAME} PUBLIC Library)
+target_link_libraries(${REPL_NAME} PUBLIC ${LIBRARY_NAME})
 target_include_directories(${REPL_NAME} PUBLIC ${LIBRARY_INCLUDES})
 
 if(${ENABLE_LTO})

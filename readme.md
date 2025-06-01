@@ -1,88 +1,114 @@
-# [PROJECT UNDER DEVELOPMENT]
+# Daewoo
 
-# 🐒 Monkey Interpreter
+![C++](https://img.shields.io/badge/C%2B%2B-11%2F14%2F17%2F20%2F23-blue)
+![License](https://img.shields.io/github/license/franneck94/CppProjectTemplate)
+![Linux Build](https://github.com/franneck94/CppProjectTemplate/workflows/Ubuntu%20CI%20Test/badge.svg)
 
----
-
-## 🛠️ Building the Project
-
-To build and run the project, follow these steps:
-
-### 1. Setup build directories
-
-```bash
-./setup_builds.sh
-```
-
-```powershell
-powershell -ExecutionPolicy Bypass -File setup_builds.ps1
-```
-
-### 2. Build the project
-
-cmake --build build_64 # Debug
-cmake --build build_64rel # Release
-cmake --build build_64RelWithDebInfo # Release with debug
-
-Generate the necessary build files using CMake. If you're using Unix Makefiles, run the following command:
-
-# [OLD DOCUMENTATION]
-
-# 🐒 Monkey Interpreter
-
-Welcome to the **Monkey Interpreter** project! This repository implements a recursive descent parser for a programming language based on a _top-down operator precedence_ approach, also known as a **Pratt parser**, named after Vaughan Pratt.
-
-The key difference between top-down and bottom-up parsers is that **top-down parsers** construct the root node of the Abstract Syntax Tree (AST) first, then descend, while **bottom-up parsers** start from the leaves and build upwards.
+Daewoo is a custom programming language with a handcrafted bytecode interpreter, written entirely in C++/C. It is designed as a learning-focused, minimalist runtime for exploring internals of programming language execution - from parsing to virtual machine.
 
 ---
 
 ## 🚀 Features
 
-- **Top-down parsing:** Implemented using a Pratt parser to handle operator precedence grammars.
-- **Recursive Descent:** Efficient parsing for complex expressions.
-- **Abstract Syntax Tree (AST):** The interpreter constructs an AST from the parsed input, enabling expression evaluation.
+- **Bytecode Execution Egnine**<br>
+A register-based virtual machine capable of executing compiled Daewoo bytecode.
+- **Custom Instruction Set**<br>
+Tailored instruction set with support for basic operations, control flow, and function calls.
+- **Minimal Runtime**<br>
+Lightweight and fast, with zero external dependencies.
+- **Error Reporting**<br>
+Basic diagnostics and runtime error handling to help with debugging.
+- **Designed for Extensibility**<br>
+AST evaluation, gargabe collection, and advanced types planned in future versions.
 
 ---
 
+
+## Structure
+
+
+``` text
+├── CMakeLists.txt
+├── app
+│   ├── repl/...
+│   └── benchmarks/...
+├── cmake
+│   └── cmake modules
+├── src
+│   ├── CMakesLists.txt
+│   ├── *.hpp
+│   └── *.cpp
+└── tests
+    ├── CMakeLists.txt
+    └── *.t.cpp
+```
+
+Library code goes into [src/](src/), main program code in [app/](app) and tests go in [tests/](tests/).
+
+
+
+## Software Requirements
+
+- CMake 3.21+
+- GNU Makefile
+- MSVC 2017 (or higher), G++9 (or higher), Clang++9 (or higher)
+- Optional: Code Coverage (only on GNU|Clang): gcovr, clang-tidy, clang-format, cmake-format
+- Optional: Makefile
+
+
 ## 🛠️ Building the Project
 
-To build and run the Monkey Interpreter, follow these steps:
+First, clone this repo and do the preliminary work:
 
-### 1. Create a Build Directory
-
-Start by creating a `build` directory inside the project directory to store build artifacts:
-
-```bash
-mkdir build_64
-
-mkdir build_64rel
-
+```shell
+git clone --recursive https://github.com/gkonto/InterpreterCompiler.git
+mkdir build
+#or make prepare
 ```
 
-### 2. Run CMake
+- REPL Executable
 
-Generate the necessary build files using CMake. If you're using Unix Makefiles, run the following command:
-
-```bash
-cd build_64rel
+```shell
+cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j{num_procs}
-cd ..
-
-cd build_64
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-make -j{num_procs}
+cmake --build . --config Release --target repl
+cd app
+./main
 ```
 
-### 3. Build the Project
+- Unit testing
 
-Once CMake has generated the build files, you can compile the project. Depending on the platform or build system you are using, the command might differ. Below are the typical commands for various systems:
+```shell
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE="Debug"
+cmake --build build --config Debug
+cd build
+ctest .
+```
 
-#### For Unix-like Systems (Linux/macOS) using `make`:
+- Code Coverage (Unix only)
 
-```bash
-cmake --build . --config Debug -j10 --target monkey
-cmake --build . --config Debug -j10 --target monkey_test
+```shell
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=On -DENABLE_TESTING=On
+cmake --build build --config Debug --target coverage -j4
+# open in your browser ./build/coverage/index.html
+```
+
+- Running clang-tidy
+```shell
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_TIDY=On
+cmake --build build --config Debug --target daewoo_clangtidy
+```
+
+- Formatting cmake files
+```shell
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_CMAKE_FORMAT=On
+cmake --build build --config Debug --target run_cmake_format
+```
+
+- Formatting source code
+```shell
+cmake -H. -Bbuild -DCMAKE_BUILD_TYPE=Debug -DENABLE_CLANG_FORMAT=On
+cmake --build build --config Debug --target run_clang_format
 ```
 
 ## 📚 Understanding the Pratt Parser
